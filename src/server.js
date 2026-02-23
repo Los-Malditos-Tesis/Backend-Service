@@ -1,4 +1,4 @@
-import app from "./bootstrap/app.js";
+import app from "./app.js";
 import {config} from "../pkg/config/config.js"
 import { log } from "../pkg/logger/logger.js";
 

@@ -1,5 +1,9 @@
+import { Connection } from "pg";
+
 export const consoleKeys = {
     StartKey: "start",
     FinishKey: "finish",
-    ErrorKey: "error"
+    ErrorKey: "error",
+    SyncKey: "sync",
+    ConnectionKey: "connection",
 }
