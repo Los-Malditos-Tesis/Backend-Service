@@ -1,4 +1,3 @@
-import { Connection } from "pg";
 
 export const consoleKeys = {
     StartKey: "start",

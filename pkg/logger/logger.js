@@ -95,4 +95,4 @@ class Logger {
     }
 }
 
-export const log = new Logger();
+export const Log = new Logger();
