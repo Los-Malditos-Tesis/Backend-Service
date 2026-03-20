@@ -27,3 +27,8 @@ export const ENTITY_NAME = {
     ROLE: 'roles',
     USER: 'users'
 }
+
+export const MOVEMENT_TYPE = {
+    EXIT: 'SLD',
+    ENTRY: 'ENT'
+}

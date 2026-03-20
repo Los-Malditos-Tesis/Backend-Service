@@ -54,6 +54,7 @@ export default (sequelize) => {
     })
 
     Pallet.associate = (models) => {
+        Pallet.hasMany(models.InventoryMovement, { foreignKey: "pallet_id" });
         Pallet.hasMany(models.Box, { foreignKey: "pallet_id" });
         Pallet.belongsTo(models.Location, { foreignKey: "location_id" });
     }
