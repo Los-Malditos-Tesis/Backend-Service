@@ -31,5 +31,11 @@ export default (sequelize) => {
         paranoid: true
     })
 
+    Location.associate = (models) => {
+        Location.hasMany(models.Pallet, { foreignKey: "location_id" });
+        Location.hasMany(models.Camera, { foreignKey: "location_id" });
+        Location.belongsTo(models.Warehouse, { foreignKey: "warehouse_id" });
+    }
+
     return Location;
 }

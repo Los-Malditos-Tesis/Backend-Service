@@ -8,9 +8,6 @@ export default (sequelize) => {
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
         },
-        productId: {
-            type: DataTypes.UUID,
-        },
         palletId: {
             type: DataTypes.UUID,
         },
@@ -49,6 +46,11 @@ export default (sequelize) => {
         timestamp: true,
         paranoid: true
     })
+
+    Box.associate = (models) => {
+        Box.belongsTo(models.Product, { foreingKey: "product_id" });
+        Box.belongsTo(models.Pallet, { foreignKey: "pallet_id" });
+    }
 
     return Box;
 }

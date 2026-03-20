@@ -52,5 +52,9 @@ export default (sequelize) => {
         paranoid: true
     })
 
+    Audit.associate = (models) => {
+        Audit.belongsTo(models.User, { foreignKey: "user_id" })
+    }
+
     return Audit;
 }

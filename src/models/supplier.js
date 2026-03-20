@@ -36,5 +36,9 @@ export default (sequelize) => {
         paranoid: true
     })
 
+    Supplier.associate = (models) => {
+        Supplier.hasMany(models.Product, { foreignKey: "supplier_id" });
+    }
+
     return Supplier;
 }

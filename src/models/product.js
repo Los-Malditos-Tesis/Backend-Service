@@ -51,21 +51,17 @@ export default (sequelize) => {
                 is: /^[a-zA-Z0-9._-]+$/
             }
         },
-        supplierCode: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true,
-                len: [3, 30],
-                is: /^[a-zA-Z0-9._-]+$/
-            }
-        }
     }, {
         tableName: "products",
         underscored: true,
         timestamp: true,
         paranoid: true
     })
+
+    Product.associate = (models) => {
+        Product.belongsTo(models.Supplier, { foreignKey: "supplier_id" }),
+            Product.hasMany(models.Box, { foreignKey: "product_id" })
+    }
 
     return Product;
 }

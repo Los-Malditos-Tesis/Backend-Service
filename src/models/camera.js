@@ -31,5 +31,10 @@ export default (sequelize) => {
         paranoid: true
     })
 
+    Camera.associate = (models) => {
+        Camera.belongsTo(models.Location, { foreignKey: "location_id" });
+        Camera.hasMany(models.ScanEvent, { foreignKey: "camera_id" });
+    }
+
     return Camera;
 }

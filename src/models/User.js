@@ -77,7 +77,9 @@ export default (sequelize) => {
 
         User.hasMany(models.Token, {
             foreignKey: "userId"
-        })
+        });
+
+        User.hasMany(models.Audit, { foreignKey: "user_id" })
     };
 
     return User;

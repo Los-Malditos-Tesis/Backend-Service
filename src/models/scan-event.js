@@ -40,5 +40,9 @@ export default (sequelize) => {
         paranoid: true
     })
 
+    ScanEvent.associate = (models) => {
+        ScanEvent.belongsTo(models.Camera, { foreignKey: "camera_id" })
+    }
+
     return ScanEvent;
 }

@@ -46,16 +46,17 @@ export default (sequelize) => {
                 isIn: [Object.values[PALLETS_STATUS]]
             }
         },
-        locationId: {
-            type: DataTypes.UUID,
-            allowNull: false,
-        }
     }, {
         tableName: "pallets",
         underscored: true,
         timestamp: true,
         paranoid: true
     })
+
+    Pallet.associate = (models) => {
+        Pallet.hasMany(models.Box, { foreignKey: "pallet_id" });
+        Pallet.belongsTo(models.Location, { foreignKey: "location_id" });
+    }
 
     return Pallet;
 }
