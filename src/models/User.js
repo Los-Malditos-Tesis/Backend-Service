@@ -71,13 +71,15 @@ export default (sequelize) => {
     User.associate = (models) => {
         User.belongsToMany(models.Role, {
             through: "user_role",
-            foreignKey: "userId",
-            otherKey: "roleId"
+            foreignKey: "user_id",
+            otherKey: "role_id"
         });
 
         User.hasMany(models.Token, {
-            foreignKey: "userId"
-        })
+            foreignKey: "user_id"
+        });
+
+        User.hasMany(models.Audit, { foreignKey: "user_id" })
     };
 
     return User;
