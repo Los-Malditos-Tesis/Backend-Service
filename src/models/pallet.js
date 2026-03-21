@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { PALLETS_STATUS } from "../utils/status.js";
+import { PALLETS_STATUS } from "../utils/const/status.js";
 
 export default (sequelize) => {
     const Pallet = sequelize.define("Pallet", {

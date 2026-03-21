@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { PALLETS_STATUS } from "../utils/status.js";
+import { PALLETS_STATUS } from "../utils/const/status.js";
 
 export default (sequelize) => {
     const Box = sequelize.define("Box", {
@@ -7,9 +7,6 @@ export default (sequelize) => {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
-        },
-        palletId: {
-            type: DataTypes.UUID,
         },
         qrCode: {
             type: DataTypes.STRING,
