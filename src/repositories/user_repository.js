@@ -1,3 +1,4 @@
+import { ValidationError } from "sequelize"
 import db from "../models/index.js"
 import { Log } from "../../pkg/logger/logger.js"
 import { consoleKeys } from "../../pkg/logger/console/constant.js"
@@ -12,9 +13,14 @@ export const save = async (user = {}, ctx) => {
 
         return newUser
     } catch (e) {
+        if (e instanceof ValidationError) {
+            const newError = new Error("Sequelize Errors");
+            newError.errors = e.errors.map(err => err.message);
+            e = newError;
+        }
+
         Log.errorCtx(ctx, authRepository + consoleKeys.FailKey, e)
         throw e
-
     } finally {
         Log.infoCtx(ctx, authRepository + consoleKeys.FinishKey)
     }
@@ -29,12 +35,17 @@ export const findByEmail = async (email = "", ctx) => {
             }
         })
 
-        Log.infoCtx(ctx, authRepository, consoleKeys.ResponseKey, obfuscatePass(user.dataValues))
+        Log.infoCtx(ctx, authRepository, consoleKeys.ResponseKey, obfuscatePass(user?.dataValues))
         return user
     } catch (e) {
-        Log.errorCtx(ctx, authRepository + consoleKeys.FailKey, consoleKeys.ErrorKey, e)
-        throw e
+        if (e instanceof ValidationError) {
+            const newError = new Error("Sequelize Errors");
+            newError.errors = e.errors.map(err => err.message);
+            e = newError;
+        }
 
+        Log.errorCtx(ctx, authRepository + consoleKeys.FailKey, consoleKeys.ErrorKey, e)
+        throw e;
     } finally {
         Log.infoCtx(ctx, authRepository + consoleKeys.FinishKey)
     }

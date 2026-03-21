@@ -57,7 +57,8 @@ class Logger {
             level: "ERROR",
             source: getSource(),
             msg,
-            error: err?.message || err,
+            errorMsg:err?.message,
+            error: err,
             stack: err?.stack,
             ...ctx,
             ...kvToObject(kv)
