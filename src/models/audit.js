@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { ENTITY_ACTIONS, ENTITY_NAME, PALLETS_STATUS } from "../utils/status.js";
+import { ENTITY_ACTIONS, ENTITY_NAME, PALLETS_STATUS } from "../utils/const/status.js";
 
 export default (sequelize) => {
     const Audit = sequelize.define("Audit", {
@@ -7,10 +7,6 @@ export default (sequelize) => {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
-        },
-        userId: {
-            type: DataTypes.UUID,
-            allowNull: false,
         },
         actions: {
             type: DataTypes.ENUM(...Object.values(ENTITY_ACTIONS)),
