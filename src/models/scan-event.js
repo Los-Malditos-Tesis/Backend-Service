@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { ITEM_TYPES, PALLETS_STATUS } from "../utils/status.js";
+import { ITEM_TYPES } from "../utils/status.js";
 
 export default (sequelize) => {
     const ScanEvent = sequelize.define("ScanEvent", {
@@ -28,10 +28,6 @@ export default (sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0,
-        },
-        cameraId: {
-            type: DataTypes.UUID,
-            allowNull: false,
         }
     }, {
         tableName: "scan_events",

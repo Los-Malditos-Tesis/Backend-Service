@@ -19,10 +19,6 @@ export default (sequelize) => {
                 len: [3, 30],
                 is: /^[a-zA-Z0-9._-]+$/
             }
-        },
-        locationId: {
-            type: DataTypes.UUID,
-            allowNull: false,
         }
     }, {
         tableName: "cameras",

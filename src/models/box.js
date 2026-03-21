@@ -35,10 +35,6 @@ export default (sequelize) => {
             validate: {
                 isIn: [Object.values[PALLETS_STATUS]]
             }
-        },
-        locationId: {
-            type: DataTypes.UUID,
-            allowNull: false,
         }
     }, {
         tableName: "boxes",
