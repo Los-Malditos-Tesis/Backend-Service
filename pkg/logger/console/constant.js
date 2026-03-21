@@ -5,4 +5,7 @@ export const consoleKeys = {
     ErrorKey: "error",
     SyncKey: "sync",
     ConnectionKey: "connection",
+    RequestKey: "request",
+    FailKey: "fail",
+    ResponseKey: "response"
 }
