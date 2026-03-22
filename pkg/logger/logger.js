@@ -1,4 +1,3 @@
-
 import pino from "pino"
 import { getSource } from "./handler/sourece.js"
 
@@ -58,7 +57,8 @@ class Logger {
             level: "ERROR",
             source: getSource(),
             msg,
-            error: err?.message,
+            errorMsg:err?.message,
+            error: err,
             stack: err?.stack,
             ...ctx,
             ...kvToObject(kv)
