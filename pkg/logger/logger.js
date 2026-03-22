@@ -1,16 +1,11 @@
 import pino from "pino"
 import { getSource } from "./handler/sourece.js"
+import { config } from "../config/config.js";
+import { generateTime } from "../utils/utils.js";
 
 const baseLogger = pino({
     level: process.env.LOG_LEVEL || "info",
-    timestamp: () => {
-        const date = new Date().toLocaleString("sv-SE", {
-            timeZone: "America/El_Salvador",
-            hour12: false,
-        }).replace(" ", "T");
-
-        return `,"time":"${date}"`;
-    }
+    timestamp: ()=>`,"time":"${generateTime()}"`
 })
 
 const kvToObject = (kv) => {

@@ -9,4 +9,6 @@ export const config = Object.freeze({
     host: env.DB_HOST,
     dialect: env.DB_DIALECT,
     dbPort: env.DB_PORT,
+    appLocal: env.APP_LOCALE,
+    appTimeZone: env.APP_TIMEZONE
 })
