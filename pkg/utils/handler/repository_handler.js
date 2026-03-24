@@ -26,7 +26,7 @@ export const repositoryHandler = (repositoryName, operation, transformation = (d
         try {
             Log.infoCtx(ctx, repositoryName + consoleKeys.StartKey, consoleKeys.RequestKey, transformation(payload))
 
-            const result = await operation(...args)
+            const result = await operation(...params)
 
             Log.infoCtx(ctx, repositoryName, consoleKeys.ResponseKey, result?.dataValues || result);
             return result;
