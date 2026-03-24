@@ -22,5 +22,6 @@ export const env = {
     DB_HOST: require("DB_HOST"),
     DB_DIALECT: require("DB_DIALECT"),
     DB_PORT: require("DB_PORT"),
-     // Add more environment variables as needed
+    APP_LOCALE: require("APP_LOCALE"),
+    APP_TIMEZONE: require("APP_TIMEZONE")
 }

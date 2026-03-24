@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { ENTITY_ACTIONS, ENTITY_NAME, PALLETS_STATUS } from "../utils/const/status.js";
+import { ENTITY_ACTIONS, ENTITY_NAME, PALLETS_STATUS } from "../../pkg/utils/const/status.js";
 
 export default (sequelize) => {
     const Audit = sequelize.define("Audit", {
