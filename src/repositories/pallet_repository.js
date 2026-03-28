@@ -65,7 +65,7 @@ export const findByLocationId = repositoryHandler(
                 location_id: locationId
             },
             include: [
-                { model: db.Location, as: "location" }
+                { model: db.Location, as: "Location" }
             ]
         })
     }
