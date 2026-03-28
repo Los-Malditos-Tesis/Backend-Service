@@ -56,7 +56,7 @@ export const findByProductId = repositoryHandler(
                 status: PALLETS_STATUS.CREATED
             },
             include: [
-                { model: db.Product, as: 'product' }
+                { model: db.Product, as: 'Product' }
             ],
             limit: limit,
             order: [['created_at', 'ASC']]
