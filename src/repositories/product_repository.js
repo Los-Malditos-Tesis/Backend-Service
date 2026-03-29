@@ -1,5 +1,5 @@
 import db from "../models/index.js"
-const { Op } = require('sequelize');
+import { Op } from "sequelize";
 import { repositoryHandler } from "../../pkg/utils/handler/repository_handler.js"
 
 const productRepository = "product repository: "
