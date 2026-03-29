@@ -1,6 +1,6 @@
 import db from "../models/index.js"
-import { obfuscatePass } from "../../pkg/utils/obfuscate/obfucates.js"
-import { repositoryHandler } from "../../pkg/utils/handler/repository_handler.js"
+import { repositoryHandler } from "../utils/handler/repository_handler.js";
+import { obfuscatePass } from "../utils/obfuscate/obfucates.js"
 
 const authRepository = "auth repository: "
 
