@@ -21,8 +21,10 @@ export default (sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
-                min: 1,
-                msg: 'El valor no puede ser menor a la unidad'
+                min: {
+                    args: [1],
+                    msg: 'El valor no puede ser menor a la unidad'
+                }
             }
         },
         status: {
@@ -30,7 +32,10 @@ export default (sequelize) => {
             allowNull: false,
             defaultValue: PALLETS_STATUS.CREATED,
             validate: {
-                isIn: [Object.values[PALLETS_STATUS]]
+                isIn: {
+                    args: [Object.values(PALLETS_STATUS)],
+                    msg: "El estado proporcionado no es válido"
+                }
             }
         }
     }, {

@@ -21,7 +21,7 @@ export default (sequelize) => {
             type: DataTypes.ENUM(...Object.values(ITEM_TYPES)),
             allowNull: false,
             validate: {
-                isIn: [Object.values[ITEM_TYPES]]
+                isIn: [Object.values(ITEM_TYPES)]
             }
         },
     }, {
