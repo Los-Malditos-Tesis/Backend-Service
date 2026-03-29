@@ -13,14 +13,14 @@ export default (sequelize) => {
             allowNull: false,
             defaultValue: ENTITY_ACTIONS.CREATE,
             validate: {
-                isIn: [Object.values[ENTITY_ACTIONS]]
+                isIn: [Object.values(ENTITY_ACTIONS)]
             }
         },
         table: {
             type: DataTypes.ENUM(...Object.values(ENTITY_NAME)),
             allowNull: false,
             validate: {
-                isIn: [Object.values[PALLETS_STATUS]]
+                isIn: [Object.values(ENTITY_NAME)]
             }
         },
         newValue: {

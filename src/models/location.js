@@ -20,10 +20,6 @@ export default (sequelize) => {
                 is: /^[a-zA-Z0-9._-]+$/
             }
         },
-        warehouse: {
-            type: DataTypes.UUID,
-            allowNull: false,
-        },
     }, {
         tableName: "locations",
         underscored: true,
