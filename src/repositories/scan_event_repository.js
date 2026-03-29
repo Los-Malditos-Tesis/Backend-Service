@@ -1,6 +1,6 @@
 import db from "../models/index.js"
 import { repositoryHandler } from "../../pkg/utils/handler/repository_handler.js"
-import { ITEM_TYPES } from "../../pkg/utils/const/status"
+import { ITEM_TYPES } from "../../pkg/utils/const/status.js"
 import { Op } from "sequelize"
 
 const scanEventRepository = "scan event repository: "
