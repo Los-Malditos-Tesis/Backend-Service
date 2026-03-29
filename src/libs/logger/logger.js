@@ -1,7 +1,6 @@
 import pino from "pino"
 import { getSource } from "./handler/sourece.js"
-import { config } from "../config/config.js";
-import { generateTime } from "../utils/utils.js";
+import { generateTime } from "../../utils/utils.js";
 
 const baseLogger = pino({
     level: process.env.LOG_LEVEL || "info",

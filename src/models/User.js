@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import bcrypt from "bcryptjs";
+import { config } from "../config/config.js";
 
 export default (sequelize) => {
     const User = sequelize.define("User", {
@@ -52,13 +53,13 @@ export default (sequelize) => {
         hooks: {
             beforeCreate: async (user) => {
                 if (user.password) {
-                    user.password = await bcrypt.hash(user.password, 10)
+                    user.password = await bcrypt.hash(user.password, config.encryptSalt)
                 }
             },
 
             beforeUpdate: async (user) => {
                 if (user.change("password")) {
-                    user.password = await bcrypt.hash(user.password, 10)
+                    user.password = await bcrypt.hash(user.password, config.encryptSalt)
                 }
             }
         }

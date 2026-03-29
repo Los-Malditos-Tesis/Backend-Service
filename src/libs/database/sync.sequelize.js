@@ -1,6 +1,6 @@
-import db from '../models/index.js';
-import { Log } from '../../pkg/logger/logger.js';
-import { consoleKeys } from '../../pkg/logger/console/constant.js';
+import db from '../../models/index.js';
+import {Log} from '../logger/logger.js'
+import { consoleKeys } from '../logger/console/constant.js';
 
 const syncSequelizeKey = "syncSequelize";
 

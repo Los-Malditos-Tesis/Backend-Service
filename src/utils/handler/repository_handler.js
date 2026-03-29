@@ -1,6 +1,6 @@
 import { ValidationError } from "sequelize";
-import { Log } from "../../../pkg/logger/logger.js"
-import { consoleKeys } from "../../../pkg/logger/console/constant.js";
+import { Log } from "../../libs/logger/logger.js"
+import { consoleKeys } from "../../libs/logger/console/constant.js";
 
 /**
  * @description function that handle errors and logging

@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { ITEM_TYPES } from "../../pkg/utils/const/status.js";
+import { ITEM_TYPES } from "../utils/const/status.js";
 
 export default (sequelize) => {
     const ScanEvent = sequelize.define("ScanEvent", {
