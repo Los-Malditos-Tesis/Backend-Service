@@ -1,15 +1,15 @@
 import "dotenv/config"
 
-const require=(name)=>{
+const require = (name) => {
     const value = process.env[name]
-    if (!value){
+    if (!value) {
         throw new Error(`Missing environment variable: ${name}`)
     }
 
     return value
 }
 
-const optional=(name, defaultValue)=>{
+const optional = (name, defaultValue) => {
     return process.env[name] ?? defaultValue
 }
 
@@ -22,5 +22,12 @@ export const env = {
     DB_HOST: require("DB_HOST"),
     DB_DIALECT: require("DB_DIALECT"),
     DB_PORT: require("DB_PORT"),
-     // Add more environment variables as needed
+    APP_LOCALE: require("APP_LOCALE"),
+    APP_TIMEZONE: require("APP_TIMEZONE"),
+    JWT_SECRET_KEY: require("JWT_SECRET_KEY"),
+    JWT_EXPIRATION: require("JWT_EXPIRATION"),
+    JWT_ALGORITHM: require("JWT_ALGORITHM"),
+    JWT_ISSUER: require("JWT_ISSUER"),
+    JWT_AUDIENCE: require("JWT_AUDIENCE"),
+    ENCRYP_SALT: require("ENCRYP_SALT")
 }

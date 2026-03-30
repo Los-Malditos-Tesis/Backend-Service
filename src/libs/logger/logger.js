@@ -1,17 +1,10 @@
-
 import pino from "pino"
 import { getSource } from "./handler/sourece.js"
+import { generateTime } from "../../utils/utils.js";
 
 const baseLogger = pino({
     level: process.env.LOG_LEVEL || "info",
-    timestamp: () => {
-        const date = new Date().toLocaleString("sv-SE", {
-            timeZone: "America/El_Salvador",
-            hour12: false,
-        }).replace(" ", "T");
-
-        return `,"time":"${date}"`;
-    }
+    timestamp: ()=>`,"time":"${generateTime()}"`
 })
 
 const kvToObject = (kv) => {
@@ -58,7 +51,8 @@ class Logger {
             level: "ERROR",
             source: getSource(),
             msg,
-            error: err?.message,
+            errorMsg:err?.message,
+            error: err,
             stack: err?.stack,
             ...ctx,
             ...kvToObject(kv)
@@ -95,4 +89,4 @@ class Logger {
     }
 }
 
-export const log = new Logger();
+export const Log = new Logger();
