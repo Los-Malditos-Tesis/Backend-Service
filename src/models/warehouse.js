@@ -13,7 +13,16 @@ export default (sequelize) => {
             validate: {
                 notEmpty: true,
                 len: [3, 30],
-                is: /^[a-zA-Z0-9._-]+$/
+                is: /^[a-zA-Z0-9._\s,\\\-#áéíóúÁÉÍÓÚñÑ]+$/
+            }
+        },
+        address: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+                len: [3, 250],
+                is: /^[a-zA-Z0-9._\s,\\\-#áéíóúÁÉÍÓÚñÑ]+$/
             }
         },
     }, {

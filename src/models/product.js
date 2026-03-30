@@ -59,8 +59,8 @@ export default (sequelize) => {
     })
 
     Product.associate = (models) => {
-        Product.belongsTo(models.Supplier, { foreignKey: "supplier_id" }),
-            Product.hasMany(models.Box, { foreignKey: "product_id" })
+        Product.belongsTo(models.Supplier, { foreignKey: "supplier_id" });
+        Product.hasMany(models.Box, { foreignKey: "product_id" });
     }
 
     return Product;
