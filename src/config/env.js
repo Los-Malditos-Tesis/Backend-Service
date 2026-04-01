@@ -29,5 +29,6 @@ export const env = {
     JWT_ALGORITHM: require("JWT_ALGORITHM"),
     JWT_ISSUER: require("JWT_ISSUER"),
     JWT_AUDIENCE: require("JWT_AUDIENCE"),
-    ENCRYP_SALT: require("ENCRYP_SALT")
+    ENCRYP_SALT: require("ENCRYP_SALT"),
+    DUMMY_HASH: require("DUMMY_HASH")
 }
