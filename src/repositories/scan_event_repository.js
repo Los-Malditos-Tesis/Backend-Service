@@ -72,6 +72,22 @@ export const findByCameraId = repositoryHandler(
     }
 )
 
+export const findCameraByLowConfidense = repositoryHandler(
+    scanEventRepository,
+    async (confidense = 0.4, ctx) => {
+        return await db.ScanEvent.findAll({
+            where: {
+                confidense: {
+                    [Op.lt]: confidense
+                }
+            },
+            include: [
+                { model: db.Camera, as: "Camera" }
+            ]
+        })
+    }
+)
+
 export const deleteById = repositoryHandler(
     scanEventRepository,
     async (id = "", ctx) => {

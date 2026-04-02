@@ -64,6 +64,20 @@ export const findByProductId = repositoryHandler(
     }
 )
 
+export const findHistoryByBoxId = repositoryHandler(
+    boxRepository,
+    async (boxId = "", ctx) => {
+        return await db.Box.findAll({
+            where: {
+                id: boxId
+            },
+            include: [
+                { model: db.InventoryMovement, as: "InventoryMovements" }
+            ]
+        })
+    }
+)
+
 export const deleteById = repositoryHandler(
     boxRepository,
     async (id = "", ctx) => {
