@@ -1,6 +1,5 @@
 import { DataTypes } from "sequelize";
-import bcrypt from "bcryptjs";
-import { config } from "../config/config.js";
+import { encryptPassword, comparePassword } from "../libs/encrypt/encrypt.js";
 
 export default (sequelize) => {
     const User = sequelize.define("User", {
@@ -24,6 +23,9 @@ export default (sequelize) => {
             unique: {
                 args: true,
                 msg: 'Email already in user!'
+            },
+            set(value) {
+                this.setDataValue('email', value.trim().toLowerCase());
             },
             validate: {
                 isEmail: {
@@ -53,20 +55,21 @@ export default (sequelize) => {
         hooks: {
             beforeCreate: async (user) => {
                 if (user.password) {
-                    user.password = await bcrypt.hash(user.password, config.encryptSalt)
+                    user.password = await encryptPassword(user.password)
                 }
             },
 
             beforeUpdate: async (user) => {
-                if (user.change("password")) {
-                    user.password = await bcrypt.hash(user.password, config.encryptSalt)
+                if (user.changed("password")) {
+                    user.password = await encryptPassword(user.password)
                 }
             }
         }
     })
 
     User.prototype.validatePassword = async function (password) {
-        return bcrypt.compare(password, this.password)
+        if (!this.password) return false;
+        return comparePassword(password, this.password)
     }
 
     User.associate = (models) => {
