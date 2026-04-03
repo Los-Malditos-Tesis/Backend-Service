@@ -28,7 +28,7 @@ export const repositoryHandler = (repositoryName, operation, transformation = (d
 
             const result = await operation(...params)
 
-            Log.infoCtx(ctx, repositoryName, consoleKeys.ResponseKey, result?.dataValues || result);
+            Log.infoCtx(ctx, repositoryName + consoleKeys.SuccessKey, consoleKeys.ResponseKey, transformation(result.dataValues || result?.toJSON()));
             return result;
         } catch (e) {
             if (e instanceof ValidationError) {

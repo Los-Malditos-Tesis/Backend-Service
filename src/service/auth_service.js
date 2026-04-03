@@ -7,6 +7,7 @@ import { authCodes } from "../errors/error_codes.js";
 import { generateToken } from "../libs/jwt/jwt.js";
 import { comparePassword } from "../libs/encrypt/encrypt.js";
 import { config } from "../config/config.js";
+import { getRoleById } from "./role_service.js";
 
 const authService = "auth service: "
 
@@ -18,8 +19,12 @@ export const registerUser = async (user = {}, ctx) => {
         if (existUser)
             throw new AppError('El usuario ya existe', 400, authCodes.ALREADI_ALREADY_EXISTS)
 
-        const newUser = await save(user, ctx);
+        const defaultRole = await getRoleById(config.defaultRole, ctx);
 
+        const newUser = await save(user, ctx);
+        await newUser.addRole(defaultRole.id);
+        
+        Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, obfuscatePass(newUser.toJSON()))
         return newUser
     } catch (e) {
         let error = e;
