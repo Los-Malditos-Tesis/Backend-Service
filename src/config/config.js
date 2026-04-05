@@ -16,5 +16,6 @@ export const config = Object.freeze({
     jwtAlgorithm: env.JWT_ALGORITHM,
     jwtAudience: env.JWT_AUDIENCE,
     jwtIssuer: env.JWT_ISSUER,
-    encryptSalt: Number(env.ENCRYP_SALT)
+    encryptSalt: Number(env.ENCRYP_SALT),
+    dummyHash: env.DUMMY_HASH
 })
