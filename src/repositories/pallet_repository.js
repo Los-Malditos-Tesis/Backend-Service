@@ -71,6 +71,20 @@ export const findByLocationId = repositoryHandler(
     }
 )
 
+export const findHistoryByPalletId = repositoryHandler(
+    palletRepository,
+    async (palletId = "", ctx) => {
+        return await db.Pallet.findAll({
+            where: {
+                id: palletId
+            },
+            include: [
+                { model: db.InventoryMovement, as: "InventoryMovements" }
+            ]
+        })
+    }
+)
+
 export const deleteById = repositoryHandler(
     palletRepository,
     async (id = "", ctx) => {

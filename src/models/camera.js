@@ -12,7 +12,7 @@ export default (sequelize) => {
             allowNull: false,
             unique: {
                 args: true,
-                msg: 'Code already in pallets!'
+                msg: 'Code already in cameras!'
             },
             validate: {
                 notEmpty: true,
