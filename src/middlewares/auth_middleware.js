@@ -24,13 +24,10 @@ const authMiddleware = async(req, res, next)=>{
         const user = await getUserByEmail(req.ctx, decoded.email);
         if (!user) 
             throw new AppError('User not found', 404, authCodes.NOT_FOUND);
-        
+
         req.user = user;
         next();
     }catch(e){
-        Log.errorCtx(req.ctx, AuthMiddleware + consoleKeys.FailKey, e);
         next(e);
-    }finally{
-        Log.infoCtx(req.ctx, AuthMiddleware + consoleKeys.FinishKey)
     }
 }
