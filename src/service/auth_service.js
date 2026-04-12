@@ -8,10 +8,11 @@ import { generateToken } from "../libs/jwt/jwt.js";
 import { comparePassword } from "../libs/encrypt/encrypt.js";
 import { config } from "../config/config.js";
 import { getRoleById } from "./role_service.js";
+import { save as saveToken } from "../repositories/token_repository.js";
 
 const authService = "auth service: "
 
-export const registerUser = async (user = {}, ctx) => {
+export const registerUser = async (ctx, user = {}) => {
     try {
         Log.infoCtx(ctx, authService + consoleKeys.StartKey, consoleKeys.RequestKey, obfuscatePass(user))
         const existUser = await findByEmail(user.email, ctx);
@@ -46,7 +47,7 @@ export const registerUser = async (user = {}, ctx) => {
     }
 }
 
-export const loginUser = async (authData = {}, ctx) => {
+export const loginUser = async (ctx, authData = {}) => {
     try {
         Log.infoCtx(ctx, authService + consoleKeys.StartKey, consoleKeys.RequestKey, obfuscatePass(authData))
         const user = await findByEmail(authData.email, ctx);
@@ -59,7 +60,8 @@ export const loginUser = async (authData = {}, ctx) => {
             throw new AppError('Credenciales inválidas', 401, authCodes.INVALID_CREDENTIALS)
 
         const token = generateToken({ userId: user.id, email: user.email });
-
+        await saveToken({ userId: user.id, content: token }, ctx);
+        
         Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, { token })
         return { token }
     } catch (e) {
