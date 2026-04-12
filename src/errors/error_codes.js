@@ -3,3 +3,7 @@ export const authCodes = {
     ALREADI_ALREADY_EXISTS: 1001,
     INVALID_CREDENTIALS: 1002,
 }
+
+export const roleCodes = {
+    NOT_FOUND: 2000,
+}

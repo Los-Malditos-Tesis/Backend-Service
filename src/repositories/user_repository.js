@@ -18,8 +18,13 @@ export const findByEmail = repositoryHandler(
     async (email = "", ctx) => {
         return await db.User.findOne({
             where: {
-                email: email
-            }
+                email: email,
+            },
+            include:  [{
+                model: db.Role,
+                attributes: ['id', 'name'],
+                through: { attributes: [] }
+            }]
         })
     },
     obfuscatePass

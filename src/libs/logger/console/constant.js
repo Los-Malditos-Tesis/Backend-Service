@@ -7,5 +7,6 @@ export const consoleKeys = {
     ConnectionKey: "connection",
     RequestKey: "request",
     FailKey: "fail",
-    ResponseKey: "response"
+    ResponseKey: "response",
+    SuccessKey: "success"
 }
