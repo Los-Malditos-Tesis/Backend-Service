@@ -21,14 +21,12 @@ export const findAllByUserId = repositoryHandler(
     }
 )
 
-export const findByUserIdAndContent = repositoryHandler(
+export const findByContent = repositoryHandler(
     tokenRepository,
-    async (userId = "", content = "", isActive = true, ctx) => {
+    async (content = "", ctx) => {
         return await db.Token.findOne({
             where: {
-                userId: userId,
-                content: content,
-                isActive: isActive
+                content: content
             }
         })
     }

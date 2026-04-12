@@ -7,7 +7,7 @@ import { authCodes } from "../errors/error_codes.js";
 import { generateToken, verifyToken } from "../libs/jwt/jwt.js";
 import { comparePassword } from "../libs/encrypt/encrypt.js";
 import { config } from "../config/config.js";
-import { save, findByUserIdAndContent } from "../repositories/token_repository.js";
+import { save, findByContent } from "../repositories/token_repository.js";
 
 const authService = "auth service: "
 
@@ -81,7 +81,7 @@ export const verifyAuthToken = async (ctx, token = "", userId = "") => {
     try {
         Log.infoCtx(ctx, authService + consoleKeys.StartKey, consoleKeys.RequestKey, { token, userId })
 
-        const validToken = await findByUserIdAndContent(userId, token, true, ctx);
+        const validToken = await findByContent(token, ctx);
 
         if (!validToken)
             throw new AppError('Token inválido', 401, authCodes.INVALID_TOKEN)
@@ -89,7 +89,6 @@ export const verifyAuthToken = async (ctx, token = "", userId = "") => {
         const decoded = verifyToken(token);
         if (!decoded.valid){
             await save({ ...validToken.toJSON(), isActive: false }, ctx);
-            Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, 'Token expirado o inválido')
         }
 
         Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, decoded)
