@@ -1,32 +1,24 @@
-import { save, findByEmail } from "../repositories/user_repository.js";
+import { saveUser, getUserByEmail } from "./user_service.js";
 import { AppError } from "../errors/app_error.js";
 import { Log } from "../libs/logger/logger.js";
 import { obfuscatePass } from "../utils/obfuscate/obfucates.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { authCodes } from "../errors/error_codes.js";
-import { generateToken } from "../libs/jwt/jwt.js";
+import { generateToken, verifyToken } from "../libs/jwt/jwt.js";
 import { comparePassword } from "../libs/encrypt/encrypt.js";
 import { config } from "../config/config.js";
-import { getRoleById } from "./role_service.js";
-import { save as saveToken } from "../repositories/token_repository.js";
+import { save, findByUserIdAndContent } from "../repositories/token_repository.js";
 
 const authService = "auth service: "
 
 export const registerUser = async (ctx, user = {}) => {
     try {
         Log.infoCtx(ctx, authService + consoleKeys.StartKey, consoleKeys.RequestKey, obfuscatePass(user))
-        const existUser = await findByEmail(user.email, ctx);
 
-        if (existUser)
-            throw new AppError('El usuario ya existe', 400, authCodes.ALREADI_ALREADY_EXISTS)
-
-        const defaultRole = await getRoleById(config.defaultRole, ctx);
-
-        const newUser = await save(user, ctx);
-        await newUser.addRole(defaultRole.id);
+        const user = await saveUser(ctx, user);
         
-        Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, obfuscatePass(newUser.toJSON()))
-        return newUser
+        Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, obfuscatePass(user.toJSON()))
+        return user
     } catch (e) {
         let error = e;
 
@@ -50,7 +42,7 @@ export const registerUser = async (ctx, user = {}) => {
 export const loginUser = async (ctx, authData = {}) => {
     try {
         Log.infoCtx(ctx, authService + consoleKeys.StartKey, consoleKeys.RequestKey, obfuscatePass(authData))
-        const user = await findByEmail(authData.email, ctx);
+        const user = await getUserByEmail(ctx, authData.email);
         
         const validPassword = user 
             ? await user.validatePassword(authData.password) 
@@ -61,9 +53,47 @@ export const loginUser = async (ctx, authData = {}) => {
 
         const token = generateToken({ userId: user.id, email: user.email });
         await saveToken({ userId: user.id, content: token }, ctx);
-        
+
         Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, { token })
         return { token }
+    } catch (e) {
+        let error = e;
+
+        if (!(e instanceof AppError)) {
+            error = new AppError(
+                e.message || 'Internal error',
+                500,
+                authCodes.NOT_FOUND,
+                error?.errors
+            );
+        }
+
+        Log.errorCtx(ctx, authService + consoleKeys.FailKey, error);
+
+        throw error;
+    } finally {
+        Log.infoCtx(ctx, authService + consoleKeys.FinishKey)
+
+    }
+}
+
+export const verifyAuthToken = async (ctx, token = "", userId = "") => {
+    try {
+        Log.infoCtx(ctx, authService + consoleKeys.StartKey, consoleKeys.RequestKey, { token, userId })
+
+        const validToken = await findByUserIdAndContent(userId, token, true, ctx);
+
+        if (!validToken)
+            throw new AppError('Token inválido', 401, authCodes.INVALID_TOKEN)
+
+        const decoded = verifyToken(token);
+        if (!decoded.valid){
+            await save({ ...validToken.toJSON(), isActive: false }, ctx);
+            Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, 'Token expirado o inválido')
+        }
+
+        Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, decoded)
+        return decoded;
     } catch (e) {
         let error = e;
 
