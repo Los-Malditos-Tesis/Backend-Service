@@ -20,20 +20,10 @@ import { AppError } from "../errors/app_error.js";
 
 export const serviceHandler = (serviceName, internalErrorCode, operation) => {
     return async (...args) => {
-        //getting last argument as ctx
-        const ctx = args[args.length - 1]
-
-        //getting all model arguments
-        const params = args.slice(0, - 1)
-        const payload = params.length === 1 ? params[0] : params;
+        const ctx = args[args.length - 1];
 
         try {
-            Log.infoCtx(ctx, serviceName + consoleKeys.StartKey, consoleKeys.RequestKey, payload)
-
-            const result = await operation(...params)
-
-            Log.infoCtx(ctx, serviceName, consoleKeys.ResponseKey, result?.dataValues || result);
-            return result;
+            return await operation(...args);
         } catch (e) {
             let error = e;
 
@@ -47,11 +37,9 @@ export const serviceHandler = (serviceName, internalErrorCode, operation) => {
             }
 
             Log.errorCtx(ctx, serviceName + consoleKeys.FailKey, error);
-
             throw error;
         } finally {
-            Log.infoCtx(ctx, serviceName + consoleKeys.FinishKey)
+            Log.infoCtx(ctx, serviceName + consoleKeys.FinishKey);
         }
-
-    }
-}
+    };
+};
