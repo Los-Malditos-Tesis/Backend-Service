@@ -7,3 +7,13 @@ export const authCodes = {
 export const roleCodes = {
     NOT_FOUND: 2000,
 }
+
+export const productCodes = {
+    NOT_FOUND: 3000,
+    ALREADY_EXISTS: 3001,
+}
+
+export const supplierCodes = {
+    NOT_FOUND: 4000,
+    ALREADY_EXISTS: 4001,
+}
