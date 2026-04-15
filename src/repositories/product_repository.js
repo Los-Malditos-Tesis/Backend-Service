@@ -1,6 +1,7 @@
 import db from "../models/index.js"
-import { Op } from "sequelize";
+import { Op, literal } from "sequelize";
 import { repositoryHandler } from "../../pkg/utils/handler/repository_handler.js"
+import { PALLETS_STATUS } from "../utils/const/status.js";
 
 const productRepository = "product repository: "
 
@@ -79,5 +80,59 @@ export const deleteById = repositoryHandler(
                 id: id
             }
         })
+    }
+)
+
+export const search = repositoryHandler(
+    productRepository,
+    async (query = "", warehouseId, limit = 10, page = 1, ctx) => {
+
+        const offset = (page - 1) * limit;
+        const { name, sku, code, category } = query;
+        const whereClouse = {
+            deleted_at: null
+        };
+
+        if (name) whereClouse.name = { [Op.iLike]: `%${name}%` };
+        if (sku) whereClouse.sku = { [Op.iLike]: `%${sku}%` };
+        if (code) whereClouse.code = { [Op.iLike]: `%${code}%` };
+        if (category) whereClouse.category = { [Op.iLike]: `%${category}%` };
+
+        const countProducts = `(
+            SELECT COALESCE(SUM(
+                (p.quantity_box * p.quantity_units_in_box) - 
+                (
+                    SELECT COUNT(*) * b.quantity 
+                    FROM boxes AS b 
+                    WHERE b.pallet_id = p.id 
+                    AND b.status != ${PALLETS_STATUS.STORED}
+                    AND b.deleted_at IS NULL
+                )
+            ), 0)
+            FROM pallets AS p
+            WHERE p.product_id = "Product".id
+            AND p.status = ${PALLETS_STATUS.STORED}
+            ${warehouseId ? `AND p.warehouse_id = '${warehouseId}'` : ''}
+            AND p.deleted_at IS NULL
+        )`;
+
+        const { rows, count } = await db.Product.findAndCountAll({
+            whereClouse,
+            attributes: {
+                include: [
+                    [literal(countProducts), 'total_available_units']
+                ]
+            },
+            limit,
+            offset,
+            order: [['name', 'ASC']],
+        });
+
+        return {
+            items: rows,
+            total: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page
+        };
     }
 )

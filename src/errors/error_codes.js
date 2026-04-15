@@ -11,6 +11,7 @@ export const roleCodes = {
 export const productCodes = {
     NOT_FOUND: 3000,
     ALREADY_EXISTS: 3001,
+    HAS_STOCK: 3002,
 }
 
 export const supplierCodes = {
