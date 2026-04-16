@@ -1,7 +1,5 @@
 import { getUserByEmail } from "../service/user_service.js";
 import { verifyAuthToken } from "../service/auth_service.js";
-import { Log } from "../libs/logger/logger.js";
-import { consoleKeys } from "../libs/logger/console/constant.js";
 import { AppError } from "../errors/app_error.js";
 import { authCodes } from "../errors/error_codes.js";
 
