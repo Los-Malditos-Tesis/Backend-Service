@@ -3,8 +3,6 @@ import { verifyAuthToken } from "../service/auth_service.js";
 import { AppError } from "../errors/app_error.js";
 import { authCodes } from "../errors/error_codes.js";
 
-const AuthMiddleware = "auth middleware: "
-
 const authMiddleware = async(req, res, next)=>{
     try{
         const authHeader = req.headers['authorization'];
@@ -21,7 +19,7 @@ const authMiddleware = async(req, res, next)=>{
 
         const user = await getUserByEmail(req.ctx, decoded.email);
         if (!user) 
-            throw new AppError('User not found', 404, authCodes.NOT_FOUND);
+            throw new AppError('Invalid token', 404, authCodes.NOT_FOUND);
 
         req.user = user;
         next();
