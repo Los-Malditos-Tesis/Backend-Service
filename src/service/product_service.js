@@ -79,18 +79,21 @@ export const updateProduct = serviceHandler(
     async (productData = {}, ctx) => {
         Log.infoCtx(ctx, productService + consoleKeys.StartKey, consoleKeys.RequestKey, productData)
 
-        const existSku = await findBySku(productData.sku, ctx);
-        const existCode = await findByCode(productData.code, ctx);
+        const product = await findById(productData.id, ctx);
+        if (!product) throw new AppError('El producto no existe', 404, productCodes.NOT_FOUND);
 
-        if (existSku.id === productData.id)
+        const existSku = await findBySku(productData.sku, ctx);
+        if (existSku && existSku.id !== productData.id)
             throw new AppError('El producto ya con sku existe', 400, productCodes.ALREADY_EXISTS);
 
-        if (existCode.id === productData.id)
+        const existCode = await findByCode(productData.code, ctx);
+        if (existCode && existCode && existCode.id !== productData.id)
             throw new AppError('El producto ya con codigo existe', 400, productCodes.ALREADY_EXISTS);
 
-        const existSupplier = await findSupplierById(productData.supplierId)
+        const existSupplier = await findSupplierById(productData.supplier_id, ctx)
         if (!existSupplier)
             throw new AppError('El proveedor no existe', 404, supplierCodes.NOT_FOUND);
+        console.log(productData.supplier_id + "KIAJ")
 
         await save(productData, ctx);
         Log.infoCtx(ctx, productService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, productData)

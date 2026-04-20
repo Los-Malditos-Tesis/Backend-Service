@@ -8,7 +8,8 @@ const productRepository = "product repository: "
 export const save = repositoryHandler(
     productRepository,
     async (product = {}, ctx) => {
-        return await db.Product.create(product)
+        const [result] = await db.Product.upsert(product);
+        return result;
     }
 )
 
