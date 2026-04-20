@@ -87,8 +87,6 @@ export const updateProduct = serviceHandler(
             throw new AppError('El producto ya con sku existe', 400, productCodes.ALREADY_EXISTS);
 
         const existCode = await findByCode(productData.code, ctx);
-        console.log("------------------------")
-        Log.info(existSku)
         if (existCode && existCode.length > 1)
             throw new AppError('El producto ya con codigo existe', 400, productCodes.ALREADY_EXISTS);
 
