@@ -34,6 +34,7 @@ export default (sequelize) => {
 
     Warehouse.associate = (models) => {
         Warehouse.hasMany(models.Location, { foreignKey: "warehouse_id" })
+        Warehouse.hasMany(models.User, { foreignKey: "warehouse_id" })
     }
 
     return Warehouse;

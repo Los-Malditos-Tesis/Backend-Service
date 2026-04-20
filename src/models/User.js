@@ -79,6 +79,10 @@ export default (sequelize) => {
             otherKey: "role_id"
         });
 
+        User.belongsTo(models.Warehouse, {
+            foreignKey: "warehouse_id"
+        });
+
         User.hasMany(models.Token, {
             foreignKey: "user_id"
         });
