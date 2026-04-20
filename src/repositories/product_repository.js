@@ -1,6 +1,6 @@
 import db from "../models/index.js"
 import { Op, literal } from "sequelize";
-import { repositoryHandler } from "../../pkg/utils/handler/repository_handler.js"
+import { repositoryHandler } from "../utils/handler/repository_handler.js"
 import { PALLETS_STATUS } from "../utils/const/status.js";
 
 const productRepository = "product repository: "

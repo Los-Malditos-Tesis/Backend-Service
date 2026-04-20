@@ -1,6 +1,6 @@
 import { Log } from "../../libs/logger/logger.js"
 import { consoleKeys } from "../../libs/logger/console/constant.js";
-import { AppError } from "../errors/app_error.js";
+import { AppError } from "../../errors/app_error.js";
 
 
 /**

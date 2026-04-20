@@ -32,13 +32,13 @@ export const createProduct = serviceHandler(
         if (existSku || existCode)
             throw new AppError('El producto ya existe', 400, productCodes.ALREADY_EXISTS);
 
-        const existSupplier = await findSupplierById(productData.supplierId)
+        const existSupplier = await findSupplierById(productData.supplier_id, ctx)
         if (!existSupplier)
             throw new AppError('El proveedor no existe', 404, supplierCodes.NOT_FOUND);
 
-        await save(productData, ctx);
-        Log.infoCtx(ctx, productService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, productData)
-
+        const product = await save(productData, ctx);
+        Log.infoCtx(ctx, productService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, product)
+        return product;
     }
 )
 
@@ -84,7 +84,7 @@ export const updateProduct = serviceHandler(
 
         if (existSku.id === productData.id)
             throw new AppError('El producto ya con sku existe', 400, productCodes.ALREADY_EXISTS);
-        
+
         if (existCode.id === productData.id)
             throw new AppError('El producto ya con codigo existe', 400, productCodes.ALREADY_EXISTS);
 

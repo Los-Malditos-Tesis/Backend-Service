@@ -32,10 +32,6 @@ export default (sequelize) => {
         category: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: {
-                args: true,
-                msg: 'Category already in products!'
-            },
             validate: {
                 notEmpty: true,
                 len: [3, 30],
