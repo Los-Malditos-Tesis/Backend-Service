@@ -102,22 +102,22 @@ export const search = repositoryHandler(
             SELECT COALESCE(SUM(
                 (p.quantity_box * p.quantity_units_in_box) - 
                 (
-                    SELECT COUNT(*) * b.quantity 
+                    SELECT COUNT(*) * p.quantity_units_in_box 
                     FROM boxes AS b 
                     WHERE b.pallet_id = p.id 
-                    AND b.status != ${PALLETS_STATUS.STORED}
+                    AND b.status != '${PALLETS_STATUS.STORED}'
                     AND b.deleted_at IS NULL
                 )
             ), 0)
             FROM pallets AS p
             WHERE p.product_id = "Product".id
-            AND p.status = ${PALLETS_STATUS.STORED}
+            AND p.status = '${PALLETS_STATUS.STORED}'
             ${warehouseId ? `AND p.warehouse_id = '${warehouseId}'` : ''}
             AND p.deleted_at IS NULL
         )`;
 
         const { rows, count } = await db.Product.findAndCountAll({
-            whereClouse,
+            where: whereClouse,
             attributes: {
                 include: [
                     [literal(countProducts), 'total_available_units']
