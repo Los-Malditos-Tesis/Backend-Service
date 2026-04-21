@@ -18,3 +18,9 @@ export const supplierCodes = {
     NOT_FOUND: 4000,
     ALREADY_EXISTS: 4001,
 }
+
+export const locationCodes = {
+    NOT_FOUND: 5000,
+    ALREADY_EXISTS: 5001,
+    HAS_STOCK: 5002,
+}
