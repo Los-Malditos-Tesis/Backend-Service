@@ -4,6 +4,7 @@ import { consoleKeys } from "../libs/logger/console/constant.js";
 import { locationCodes } from "../errors/error_codes.js";
 import { serviceHandler } from "../utils/handler/service_handler.js";
 import { deleteById, findById, findByZone, hasStoredPallets, save, search } from "../repositories/location_repository.js";
+import { findByLocationId } from "../repositories/camera_repository.js";
 
 const locationService = "location service: "
 
@@ -67,8 +68,10 @@ export const deleteLocation = serviceHandler(
 
         const hasStock = await hasStoredPallets(location.zone, ctx);
 
-        if (hasStock)
-            throw new AppError('La zona no puede ser eliminada porque tiene stock', 400, locationCodes.HAS_STOCK);
+        const hasCameras = await findByLocationId(location.id, ctx);
+
+        if (hasStock || hasCameras.length > 0)
+            throw new AppError('La zona no puede ser eliminada porque tiene stock o camaras en uso', 400, locationCodes.HAS_STOCK);
 
         Log.infoCtx(ctx, locationService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, location)
         return await deleteById(id, ctx);
