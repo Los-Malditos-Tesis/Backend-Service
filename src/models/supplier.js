@@ -51,6 +51,14 @@ export default (sequelize) => {
             validate: {
                 is: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
             }
+        },
+        location: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                len: [3, 80],
+                is: /^[a-zA-Z0-9 ._-]+$/
+            }
         }
     }, {
         tableName: "suppliers",

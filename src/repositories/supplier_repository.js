@@ -88,7 +88,7 @@ export const search = repositoryHandler(
     async (query = "", limit = 10, page = 1, ctx) => {
 
         const offset = (page - 1) * limit;
-        const { id, name, code, phone, email, contactName } = query;
+        const { id, name, code, phone, email, contactName, location } = query;
         const whereClouse = {
             deleted_at: null
         };
@@ -99,7 +99,7 @@ export const search = repositoryHandler(
         if (phone) whereClouse.phone = { [Op.iLike]: `%${phone}%` };
         if (email) whereClouse.email = { [Op.iLike]: `%${email}%` };
         if (contactName) whereClouse.contactName = { [Op.iLike]: `%${contactName}%` };
-
+        if (location) whereClouse.location = { [Op.iLike]: `%${location}%` };
 
         const productsQuery = {
             model: db.Product,
