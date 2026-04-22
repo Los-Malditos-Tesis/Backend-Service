@@ -111,7 +111,7 @@ export const search = repositoryHandler(
             limit,
             offset,
             order: [['name', 'ASC']],
-            // include: [productsQuery]
+            include: [productsQuery]
         });
 
         return {
