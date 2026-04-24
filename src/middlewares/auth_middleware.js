@@ -2,6 +2,7 @@ import { getUserByEmail } from "../service/user_service.js";
 import { verifyAuthToken } from "../service/auth_service.js";
 import { AppError } from "../errors/app_error.js";
 import { authCodes } from "../errors/error_codes.js";
+import { Log } from "../libs/logger/logger.js";
 
 const authMiddleware = async(req, res, next)=>{
     try{
@@ -24,6 +25,7 @@ const authMiddleware = async(req, res, next)=>{
         req.user = user;
         next();
     }catch(e){
+        Log.error("Auth middleware error:", e);
         next(e);
     }
 }
