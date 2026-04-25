@@ -3,10 +3,16 @@ import { verifyAuthToken } from "../service/auth_service.js";
 import { AppError } from "../errors/app_error.js";
 import { authCodes } from "../errors/error_codes.js";
 import { Log } from "../libs/logger/logger.js";
+import { consoleKeys } from "../libs/logger/console/constant.js";
+import { obfuscatePass } from "../utils/obfuscate/obfucates.js";
 
-const authMiddleware = async(req, res, next)=>{
+const authMiddlewareKey = "auth middleware: "
+
+export const authMiddleware = async(req, res, next)=>{
     try{
+        Log.infoCtx(req.ctx, authMiddlewareKey + consoleKeys.StartKey)
         const authHeader = req.headers['authorization'];
+        
         if (!authHeader) 
             throw new AppError('Authorization header is missing', 401, authCodes.INAUTHORIZED);
 
@@ -18,15 +24,18 @@ const authMiddleware = async(req, res, next)=>{
         if (!decoded.valid) 
             throw new AppError('Invalid token', 401, authCodes.INVALID_TOKEN);
 
-        const user = await getUserByEmail(req.ctx, decoded.email);
+        const user = await getUserByEmail(req.ctx, decoded.payload?.email);
         if (!user) 
             throw new AppError('Invalid token', 404, authCodes.NOT_FOUND);
 
+        Log.infoCtx(req.ctx, authMiddlewareKey + consoleKeys.SuccessKey, consoleKeys.InformationKey, obfuscatePass(user.toJSON()))
+
         req.user = user;
         req.ctx = { ...req.ctx, user_id: user.id }
+        Log.infoCtx(req.ctx, authMiddlewareKey + consoleKeys.FinishKey)
         next();
     }catch(e){
-        Log.error("Auth middleware error:", e);
+        Log.errorCtx(req.ctx, authMiddlewareKey + consoleKeys.FailKey, e);
         next(e);
     }
 }

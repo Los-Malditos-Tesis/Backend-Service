@@ -80,7 +80,7 @@ export const loginUser = async (ctx, authData = {}) => {
 
 export const verifyAuthToken = async (ctx, token = "", userId = "") => {
     try {
-        Log.infoCtx(ctx, authService + consoleKeys.StartKey, consoleKeys.RequestKey, { token, userId })
+        Log.infoCtx(ctx, authService + consoleKeys.StartKey, consoleKeys.RequestKey, obfuscateToken({ token, userId }))
 
         const validToken = await findByContent(token, ctx);
 
