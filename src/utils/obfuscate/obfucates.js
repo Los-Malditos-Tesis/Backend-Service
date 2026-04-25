@@ -8,3 +8,14 @@ export const obfuscatePass = (data = {})=>{
 
     return clone;
 }
+
+export const obfuscateToken = (data = {})=>{
+    if (!data || typeof data !== "object") return data;
+    const clone = { ...data };
+
+    if ("content" in clone) {
+        clone.content = "[REDACTED]";
+    }
+
+    return clone;
+}

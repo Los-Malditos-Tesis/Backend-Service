@@ -1,7 +1,7 @@
 import { saveUser, getUserByEmail } from "./user_service.js";
 import { AppError } from "../errors/app_error.js";
 import { Log } from "../libs/logger/logger.js";
-import { obfuscatePass } from "../utils/obfuscate/obfucates.js";
+import { obfuscatePass, obfuscateToken } from "../utils/obfuscate/obfucates.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { authCodes } from "../errors/error_codes.js";
 import { generateToken, verifyToken } from "../libs/jwt/jwt.js";
@@ -51,11 +51,12 @@ export const loginUser = async (ctx, authData = {}) => {
         if (!user || !validPassword)
             throw new AppError('Credenciales inválidas', 401, authCodes.INVALID_CREDENTIALS)
 
-        const token = generateToken({ userId: user.id, email: user.email });
-        await save({ userId: user.id, content: token }, ctx);
+        const tokenString = generateToken({ userId: user.id, email: user.email });
+        const token = {user_id: user.id, content: tokenString, isActive: true}
+        await save(token, ctx);
 
-        Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, { token })
-        return { token }
+        Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, obfuscateToken( token ))
+        return token
     } catch (e) {
         let error = e;
 

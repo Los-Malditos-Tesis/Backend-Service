@@ -1,5 +1,6 @@
 import db from "../models/index.js"
 import { repositoryHandler } from "../utils/handler/repository_handler.js"
+import { obfuscateToken } from "../utils/obfuscate/obfucates.js"
 
 const tokenRepository = "token repository: "
 
@@ -7,7 +8,8 @@ export const save = repositoryHandler(
     tokenRepository,
     async (token = {}, ctx) => {
         return await db.Token.create(token)
-    }
+    },
+    obfuscateToken
 )
 
 export const findAllByUserId = repositoryHandler(
@@ -29,5 +31,6 @@ export const findByContent = repositoryHandler(
                 content: content
             }
         })
-    }
+    },
+    obfuscateToken
 )
