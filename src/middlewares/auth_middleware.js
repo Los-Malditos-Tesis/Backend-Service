@@ -23,6 +23,7 @@ const authMiddleware = async(req, res, next)=>{
             throw new AppError('Invalid token', 404, authCodes.NOT_FOUND);
 
         req.user = user;
+        req.ctx = { ...req.ctx, user_id: user.id }
         next();
     }catch(e){
         Log.error("Auth middleware error:", e);
