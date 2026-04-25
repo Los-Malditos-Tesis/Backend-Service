@@ -1,9 +1,9 @@
 import { validationResult } from "express-validator";
 import {Log} from "../libs/logger/logger.js";
 
-export const validateRequest = (req, res, next) => {
+export const validateMiddleware = (req, res, next) => {
   const errors = validationResult(req);
-  Log.info("Validation errors:", errors.array());
+  Log.info("Validation errors: ");
 
   if (!errors.isEmpty()) {
     const errorMessages = errors.array().map((err) => err.msg);

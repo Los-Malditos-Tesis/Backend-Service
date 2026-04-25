@@ -8,3 +8,7 @@ export const authCodes = {
 export const roleCodes = {
     NOT_FOUND: 2000,
 }
+
+export const tokenCodes = {
+    NOT_FOUND: 3000,
+}

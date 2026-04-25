@@ -1,14 +1,14 @@
-import { loginUser, registerUser } from "../service/auth_service";
-import { Log } from "../libs/logger/logger";
+import { loginUser, registerUser } from "../service/auth_service.js";
+import { Log } from "../libs/logger/logger.js";
 import { obfuscatePass } from "../utils/obfuscate/obfucates.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { registerUserDto } from "../dto/register_user_dto.js";
 
 const authController = "auth controller: "
 
-export const register = async (req, res, next)=>{
+export const registerController = async (req, res, next)=>{
     try{
-        Log.infoCtx(req.ctx, authController + consoleKeys.StartKey, consoleKeys.RequestKey, obfuscatePass(data))
+        Log.infoCtx(req.ctx, authController + consoleKeys.StartKey, consoleKeys.RequestKey, obfuscatePass(req.body))
         const serviceResp = await registerUser(req.ctx, req.body);
 
         const resp = registerUserDto(serviceResp.toJSON())
@@ -23,7 +23,7 @@ export const register = async (req, res, next)=>{
     }
 }
 
-export const login = async (req, res, next)=>{
+export const loginController = async (req, res, next)=>{
     try{
         Log.infoCtx(req.ctx, authController + consoleKeys.StartKey, consoleKeys.RequestKey, obfuscatePass(req.body))
         const serviceResp = await loginUser(req.ctx, req.body);

@@ -11,11 +11,11 @@ import { save, findByContent } from "../repositories/token_repository.js";
 
 const authService = "auth service: "
 
-export const registerUser = async (ctx, user = {}) => {
+export const registerUser = async (ctx, userData = {}) => {
     try {
-        Log.infoCtx(ctx, authService + consoleKeys.StartKey, consoleKeys.RequestKey, obfuscatePass(user))
+        Log.infoCtx(ctx, authService + consoleKeys.StartKey, consoleKeys.RequestKey, obfuscatePass(userData))
 
-        const user = await saveUser(ctx, user);
+        const user = await saveUser(ctx, userData);
         
         Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, obfuscatePass(user.toJSON()))
         return user
@@ -52,7 +52,7 @@ export const loginUser = async (ctx, authData = {}) => {
             throw new AppError('Credenciales inválidas', 401, authCodes.INVALID_CREDENTIALS)
 
         const token = generateToken({ userId: user.id, email: user.email });
-        await saveToken({ userId: user.id, content: token }, ctx);
+        await save({ userId: user.id, content: token }, ctx);
 
         Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, { token })
         return { token }
