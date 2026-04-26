@@ -1,4 +1,4 @@
-import { Op } from "sequelize"
+import { Op, where } from "sequelize"
 import db from "../models/index.js"
 import { repositoryHandler } from "../utils/handler/repository_handler.js"
 
@@ -13,8 +13,35 @@ export const save = repositoryHandler(
 
 export const findAll = repositoryHandler(
     cameraRepository,
-    async (ctx) => {
-        return await db.Camera.findAll()
+    async ({ page = 1, limit = 10, locationId, code, includeLocation = true }, ctx) => {
+
+        const offset = (page - 1) * limit;
+
+        const where = {};
+
+        if (locationId) {
+            where.location_id = locationId;
+        }
+
+        if (code) {
+            where.code = {
+                [Op.like]: `%${code}%`
+            };
+        }
+
+        return await db.Camera.findAndCountAll({
+            where,
+            limit,
+            offset,
+            order: [["created_at", "DESC"]],
+            include: includeLocation ? [
+                {
+                    model: db.Location,
+                    as: "location",
+                    attributes: ["id", "zone"]
+                }
+            ] : []
+        });
     }
 )
 
@@ -99,5 +126,12 @@ export const deleteById = repositoryHandler(
                 id: id
             }
         })
+    }
+)
+
+export const updateCamera = repositoryHandler(
+    cameraRepository,
+    async (data = {}, camera = {}, ctx) => {
+        return await camera.update(data)
     }
 )

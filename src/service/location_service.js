@@ -60,14 +60,12 @@ export const updateLocation = serviceHandler(
 
 export const deleteLocation = serviceHandler(
     locationService,
-    locationCodes.NOT_FOUND,
+    CODES.LOCATION.NOT_FOUND,
     async (id, ctx) => {
         Log.infoCtx(ctx, locationService + consoleKeys.StartKey, consoleKeys.RequestKey, id)
-        const location = await findById(id, ctx);
-        if (!location) throw new AppError('La zona no existe', 404, locationCodes.NOT_FOUND);
 
+        const location = await findLocationById(id, ctx)
         const hasStock = await hasStoredPallets(location.zone, ctx);
-
         const hasCameras = await findByLocationId(location.id, ctx);
 
         if (hasStock || hasCameras.length > 0)
@@ -75,5 +73,19 @@ export const deleteLocation = serviceHandler(
 
         Log.infoCtx(ctx, locationService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, location)
         return await deleteById(id, ctx);
+    }
+)
+
+export const findLocationById = serviceHandler(
+    locationService,
+    CODES.LOCATION.NOT_FOUND,
+    async (id ="", ctx)=>{
+        Log.infoCtx(ctx, locationService + consoleKeys.StartKey, consoleKeys.RequestKey, id)
+        
+        const location = await findById(id)
+        if (!location) throw new AppError('La zona no existe', 404, locationCodes.NOT_FOUND);
+
+        Log.infoCtx(ctx, locationService+consoleKeys.SuccessKey, consoleKeys.ResponseKey, location)
+        return location;
     }
 )

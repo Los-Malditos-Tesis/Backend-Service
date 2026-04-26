@@ -33,9 +33,13 @@ export const CODES = {
         ALREADY_EXISTS: 6001,
     },
     LOCATION: {
-        NOT_FOUND: 5000,
-        ALREADY_EXISTS: 5001,
-        HAS_STOCK: 5002,
+        NOT_FOUND: 7000,
+        ALREADY_EXISTS: 7001,
+        HAS_STOCK: 7002,
+    },
+    CAMERA:{
+        NOT_FOUND: 8000,
+        ALREADY_EXISTS: 8001,
     },
     SERVER: {
         INTERNAL_ERROR: 9000,
