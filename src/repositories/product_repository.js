@@ -30,7 +30,7 @@ export const findById = repositoryHandler(
 export const findByCode = repositoryHandler(
     productRepository,
     async (code = "", ctx) => {
-        return await db.Product.findAll({
+        return await db.Product.findOne({
             where: {
                 code: code
             }
@@ -54,7 +54,7 @@ export const findByCategory = repositoryHandler(
 export const findBySku = repositoryHandler(
     productRepository,
     async (sku = "", ctx) => {
-        return await db.Product.findAll({
+        return await db.Product.findOne({
             where: {
                 sku: sku
             }
