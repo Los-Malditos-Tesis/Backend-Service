@@ -54,7 +54,7 @@ export const findByCategory = repositoryHandler(
 export const findBySku = repositoryHandler(
     productRepository,
     async (sku = "", ctx) => {
-        return await db.Product.findBySku({
+        return await db.Product.findOne({
             where: {
                 sku: sku
             }
