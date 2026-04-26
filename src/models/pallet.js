@@ -40,6 +40,16 @@ export default (sequelize) => {
                 },
             }
         },
+        quantityUnitsInBox: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            validate: {
+                min: {
+                    args: [1],
+                    msg: 'El valor no puede ser menor a la unidad'
+                },
+            }
+        },
         status: {
             type: DataTypes.ENUM(...Object.values(PALLETS_STATUS)),
             allowNull: false,
@@ -62,6 +72,7 @@ export default (sequelize) => {
         Pallet.hasMany(models.InventoryMovement, { foreignKey: "pallet_id" });
         Pallet.hasMany(models.Box, { foreignKey: "pallet_id" });
         Pallet.belongsTo(models.Location, { foreignKey: "location_id" });
+        Pallet.belongsTo(models.Product, { foreignKey: "product_id" });
     }
 
     return Pallet;
