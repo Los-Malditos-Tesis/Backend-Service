@@ -31,5 +31,6 @@ export const env = {
     JWT_AUDIENCE: require("JWT_AUDIENCE"),
     ENCRYP_SALT: require("ENCRYP_SALT"),
     DUMMY_HASH: require("DUMMY_HASH"),
-    DEFAULT_ROLE: require("DEFAULT_ROLE")
+    DEFAULT_ROLE: require("DEFAULT_ROLE"),
+    BASE_PATH: require("BASE_PATH")
 }
