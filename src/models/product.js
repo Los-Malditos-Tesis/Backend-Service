@@ -32,10 +32,6 @@ export default (sequelize) => {
         category: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: {
-                args: true,
-                msg: 'Category already in products!'
-            },
             validate: {
                 notEmpty: true,
                 len: [3, 30],
@@ -61,6 +57,7 @@ export default (sequelize) => {
     Product.associate = (models) => {
         Product.belongsTo(models.Supplier, { foreignKey: "supplier_id" });
         Product.hasMany(models.Box, { foreignKey: "product_id" });
+        Product.hasMany(models.Pallet, { foreignKey: "product_id" })
     }
 
     return Product;

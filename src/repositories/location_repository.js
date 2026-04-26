@@ -1,12 +1,15 @@
 import db from "../models/index.js"
+import { Op } from "sequelize";
 import { repositoryHandler } from "../utils/handler/repository_handler.js"
+import { PALLETS_STATUS } from "../utils/const/status.js";
 
 const locationRepository = "location repository: "
 
 export const save = repositoryHandler(
     locationRepository,
     async (location = {}, ctx) => {
-        return await db.Location.create(location)
+        const [result] = await db.Location.upsert(location)
+        return result;
     }
 )
 
@@ -78,5 +81,49 @@ export const deleteById = repositoryHandler(
                 id: id
             }
         })
+    }
+)
+
+export const search = repositoryHandler(
+    locationRepository,
+    async (query = "", limit = 10, page = 1, ctx) => {
+
+        const offset = (page - 1) * limit;
+        const { id, zone } = query;
+        const whereClouse = {
+            deleted_at: null
+        };
+
+        if (id) whereClouse.id = { [Op.iLike]: `%${id}%` };
+        if (zone) whereClouse.zone = { [Op.iLike]: `%${zone}%` };
+
+        const { rows, count } = await db.Location.findAndCountAll({
+            where: whereClouse,
+            limit,
+            offset,
+            order: [['zone', 'ASC']],
+        });
+
+        return {
+            items: rows,
+            total: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page
+        };
+    }
+)
+
+export const hasStoredPallets = repositoryHandler(
+    locationRepository,
+    async (zone = "", ctx) => {
+        const count = await db.Pallet.count({
+            include: [{
+                model: db.Location,
+                as: "Location",
+                where: { zone: zone }
+            }],
+            where: { status: PALLETS_STATUS.STORED }
+        });
+        return count > 0;
     }
 )

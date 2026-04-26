@@ -12,8 +12,8 @@ export default (sequelize) => {
             allowNull: false,
             validate: {
                 notEmpty: true,
-                len: [3, 30],
-                is: /^[a-zA-Z0-9._-]+$/
+                len: [3, 100],
+                is: /^[a-zA-Z0-9 ._-]+$/
             }
         },
         code: {
@@ -27,6 +27,37 @@ export default (sequelize) => {
                 notEmpty: true,
                 len: [3, 30],
                 is: /^[a-zA-Z0-9._-]+$/
+            }
+        },
+        contactName: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                len: [3, 80],
+                is: /^[a-zA-Z0-9 ._-]+$/
+            }
+        },
+        phone: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                len: [3, 30],
+                is: /^[0-9+() \-]+$/
+            }
+        },
+        email: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                is: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+            }
+        },
+        location: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                len: [3, 80],
+                is: /^[a-zA-Z0-9 ._-]+$/
             }
         }
     }, {

@@ -36,6 +36,17 @@ export const findByCode = repositoryHandler(
     }
 )
 
+export const findByLocationId = repositoryHandler(
+    cameraRepository,
+    async (locationId = "", ctx) => {
+        return await db.Camera.findAll({
+            where: {
+                location_id: locationId
+            }
+        })
+    }
+)
+
 export const findLiveZone = repositoryHandler(
     cameraRepository,
     async (id = "", zone = "", ctx) => {

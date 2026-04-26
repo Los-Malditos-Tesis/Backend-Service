@@ -19,12 +19,30 @@ export const CODES = {
         ALREADY_EXISTS: 3001,
         INVALID_OPERATION: 3002,
     },
-    USER:{
+    USER: {
         ALREADY_EXISTS: 4000,
 
     },
-    SERVER: {
-        INTERNAL_ERROR: 5000,
+    PRODUCT: {
+        NOT_FOUND: 5000,
+        ALREADY_EXISTS: 5001,
+        HAS_STOCK: 5002,
     },
-    
+    SUPPLIER: {
+        NOT_FOUND: 6000,
+        ALREADY_EXISTS: 6001,
+    },
+    LOCATION: {
+        NOT_FOUND: 5000,
+        ALREADY_EXISTS: 5001,
+        HAS_STOCK: 5002,
+    },
+    SERVER: {
+        INTERNAL_ERROR: 9000,
+    },
+
+}
+
+export const locationCodes = {
+
 }

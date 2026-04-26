@@ -31,7 +31,7 @@ export const repositoryHandler = (repositoryName, operation, transformation = (d
             const logData = result
                 ? (result.dataValues || (typeof result.toJSON === 'function' ? result.toJSON() : result))
                 : null;
-                
+
             Log.infoCtx(ctx, repositoryName + consoleKeys.SuccessKey, consoleKeys.ResponseKey, transformation(logData));
             return result;
         } catch (e) {

@@ -13,5 +13,4 @@ app.use(contextMiddleware)
 app.use(config.basePath, router)
 app.use(globalErrorHandler)
 
-
 export default app;
