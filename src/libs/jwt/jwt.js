@@ -1,5 +1,9 @@
 import jwt from 'jsonwebtoken'
 import { config } from "../../config/config.js";
+import { Log } from '../logger/logger.js';
+import { consoleKeys } from '../logger/console/constant.js';
+
+const jwtLib = "jwt lib: "
 
 export const generateToken = (payload = {}) => {
     const token = jwt.sign(payload, config.jwtSecretKey, {
@@ -27,7 +31,7 @@ export const verifyToken = (token = '') => {
             payload: decoded
         }
     } catch (e) {
-        if (error.name === 'TokenExpiredError') {
+        if (e.name === 'TokenExpiredError') {
             return {
                 valid: false,
                 expired: true,

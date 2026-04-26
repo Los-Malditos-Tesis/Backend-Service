@@ -3,11 +3,11 @@ import { AppError } from "../errors/app_error.js";
 import { Log } from "../libs/logger/logger.js";
 import { obfuscatePass, obfuscateToken } from "../utils/obfuscate/obfucates.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
-import { authCodes } from "../errors/error_codes.js";
+import { CODES } from "../utils/const/codes.js";
 import { generateToken, verifyToken } from "../libs/jwt/jwt.js";
 import { comparePassword } from "../libs/encrypt/encrypt.js";
 import { config } from "../config/config.js";
-import { save, findByContent } from "../repositories/token_repository.js";
+import { save, findByContent, updateToken } from "../repositories/token_repository.js";
 
 const authService = "auth service: "
 
@@ -21,12 +21,11 @@ export const registerUser = async (ctx, userData = {}) => {
         return user
     } catch (e) {
         let error = e;
-
         if (!(e instanceof AppError)) {
             error = new AppError(
                 e.message || 'Internal error',
                 500,
-                authCodes.NOT_FOUND,
+                CODES.AUTH.NOT_FOUND,
                 e?.errors
             );
         }
@@ -49,13 +48,13 @@ export const loginUser = async (ctx, authData = {}) => {
             : comparePassword(authData.password, config.dummyHash);
 
         if (!user || !validPassword)
-            throw new AppError('Credenciales inválidas', 401, authCodes.INVALID_CREDENTIALS)
+            throw new AppError('Credenciales inválidas', 401, CODES.AUTH.INVALID_CREDENTIALS)
 
         const tokenString = generateToken({ userId: user.id, email: user.email });
         const token = {user_id: user.id, content: tokenString, isActive: true}
         await save(token, ctx);
 
-        Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, obfuscateToken( token ))
+        Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, obfuscateToken( token))
         return token
     } catch (e) {
         let error = e;
@@ -64,8 +63,8 @@ export const loginUser = async (ctx, authData = {}) => {
             error = new AppError(
                 e.message || 'Internal error',
                 500,
-                authCodes.NOT_FOUND,
-                error?.errors
+                CODES.AUTH.NOT_FOUND,
+                e?.errors
             );
         }
 
@@ -80,16 +79,17 @@ export const loginUser = async (ctx, authData = {}) => {
 
 export const verifyAuthToken = async (ctx, token = "", userId = "") => {
     try {
-        Log.infoCtx(ctx, authService + consoleKeys.StartKey, consoleKeys.RequestKey, obfuscateToken({ token, userId }))
+        Log.infoCtx(ctx, authService + consoleKeys.StartKey, consoleKeys.RequestKey, obfuscateToken({token, userId}))
 
-        const validToken = await findByContent(token, ctx);
+        const validToken = await findByContent({ content: token }, ctx);
 
         if (!validToken)
-            throw new AppError('Token inválido', 401, authCodes.INVALID_TOKEN)
+            throw new AppError('Token inválido', 401, CODES.AUTH.INVALID_CREDENTIALS)
 
         const decoded = verifyToken(token);
+        Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, decoded)
         if (!decoded.valid){
-            await save({ ...validToken.toJSON(), isActive: false }, ctx);
+            await updateToken({ ...validToken.toJSON(), isActive: false }, ctx);
         }
 
         Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, decoded)
@@ -101,8 +101,8 @@ export const verifyAuthToken = async (ctx, token = "", userId = "") => {
             error = new AppError(
                 e.message || 'Internal error',
                 500,
-                authCodes.NOT_FOUND,
-                error?.errors
+                CODES.AUTH.NOT_FOUND,
+                e?.errors
             );
         }
 

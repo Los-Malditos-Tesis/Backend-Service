@@ -32,3 +32,10 @@ export const MOVEMENT_TYPE = {
     EXIT: 'SLD',
     ENTRY: 'ENT'
 }
+
+export const SUCCESS_CODES = {
+    OK: 0o0,
+    CREATED: 0o1,
+    UPDATED: 0o2,
+    DELETED: 0o3,
+}

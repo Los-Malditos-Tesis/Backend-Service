@@ -3,6 +3,8 @@ import { Log } from "../libs/logger/logger.js";
 import { obfuscatePass, obfuscateToken } from "../utils/obfuscate/obfucates.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { registerUserDto } from "../dto/register_user_dto.js";
+import { generalResponse } from "../utils/handler/response_handler.js";
+import { CODES } from "../utils/const/codes.js";
 
 const authController = "auth controller: "
 
@@ -14,7 +16,7 @@ export const registerController = async (req, res, next)=>{
         const resp = registerUserDto(serviceResp.toJSON())
         Log.infoCtx(req.ctx, authController + consoleKeys.SuccessKey, consoleKeys.ResponseKey, resp)
         
-        res.status(201).json(resp);
+        return generalResponse(res, 201, CODES.SUCCESS.CREATED, 'User registered successfully', resp)
     }catch(e){
         Log.errorCtx(req.ctx, authController + consoleKeys.FailKey, e);
         next(e);
@@ -30,7 +32,7 @@ export const loginController = async (req, res, next)=>{
 
         Log.infoCtx(req.ctx, authController + consoleKeys.SuccessKey, consoleKeys.ResponseKey, obfuscateToken(serviceResp))
         
-        res.status(200).json(serviceResp);
+        return generalResponse(res, 200, CODES.SUCCESS.OK, 'User logged in successfully', serviceResp);
     }catch(e){
         Log.errorCtx(req.ctx, authController + consoleKeys.FailKey, e);
         next(e);

@@ -2,7 +2,7 @@ import { findAllByIds, findById, findByName } from "../repositories/role_reposit
 import { AppError } from "../errors/app_error.js";
 import { Log } from "../libs/logger/logger.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
-import { roleCodes } from "../errors/error_codes.js";
+import { CODES } from "../utils/const/codes.js";
 
 const roleService = "role service: "
 
@@ -12,7 +12,7 @@ export const getRoleByName = async (name = "", ctx) => {
         const role = await findByName(name, ctx);
 
         if (!role)
-            throw new AppError('Rol no encontrado', 404, roleCodes.NOT_FOUND)
+            throw new AppError('Rol no encontrado', 404, CODES.RESOURCE.NOT_FOUND)
 
         Log.infoCtx(ctx, roleService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, role)
         return role
@@ -23,7 +23,7 @@ export const getRoleByName = async (name = "", ctx) => {
             error = new AppError(
                 e.message || 'Internal error',
                 500,
-                roleCodes.NOT_FOUND,
+                CODES.RESOURCE.NOT_FOUND,
                 e?.errors
             );
         }
@@ -41,7 +41,7 @@ export const getRolesByIds = async (ids = [], ctx) => {
         const roles = await findAllByIds(ids, ctx);
 
         if (!roles || roles.length === 0)
-            throw new AppError('Roles no encontrados', 404, roleCodes.NOT_FOUND)
+            throw new AppError('Roles no encontrados', 404, CODES.RESOURCE.NOT_FOUND)
 
         Log.infoCtx(ctx, roleService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, roles)
         return roles
@@ -52,7 +52,7 @@ export const getRolesByIds = async (ids = [], ctx) => {
             error = new AppError(
                 e.message || 'Internal error',
                 500,
-                roleCodes.NOT_FOUND,
+                CODES.RESOURCE.NOT_FOUND,
                 e?.errors
             );
         }
@@ -70,7 +70,7 @@ export const getRoleById = async (id = "", ctx) => {
         const role = await findById(id, ctx);
 
         if (!role)
-            throw new AppError('Rol no encontrado', 404, roleCodes.NOT_FOUND)
+            throw new AppError('Rol no encontrado', 404, CODES.RESOURCE.NOT_FOUND)
 
         Log.infoCtx(ctx, roleService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, role)
         return role
@@ -81,7 +81,7 @@ export const getRoleById = async (id = "", ctx) => {
             error = new AppError(
                 e.message || 'Internal error',
                 500,
-                roleCodes.NOT_FOUND,
+                CODES.RESOURCE.NOT_FOUND,
                 e?.errors
             );
         }

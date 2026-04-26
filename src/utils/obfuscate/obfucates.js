@@ -17,5 +17,9 @@ export const obfuscateToken = (data = {})=>{
         clone.content = "[REDACTED]";
     }
 
+    if("token" in clone){
+        clone.token = "[REDACTED]";
+    }
+
     return clone;
 }
