@@ -1,4 +1,5 @@
 import db from "../models/index.js"
+import { Op } from "sequelize"
 import { repositoryHandler } from "../utils/handler/repository_handler.js"
 
 const supplierRepository = "supplier repository: "
@@ -79,5 +80,45 @@ export const searchByName = repositoryHandler(
             },
             limit: 10
         })
+    }
+)
+
+export const search = repositoryHandler(
+    supplierRepository,
+    async (query = "", limit = 10, page = 1, ctx) => {
+
+        const offset = (page - 1) * limit;
+        const { id, name, code, phone, email, contactName, location } = query;
+        const whereClouse = {
+            deleted_at: null
+        };
+
+        if (id) whereClouse.id = { [Op.iLike]: `%${id}%` };
+        if (name) whereClouse.name = { [Op.iLike]: `%${name}%` };
+        if (code) whereClouse.code = { [Op.iLike]: `%${code}%` };
+        if (phone) whereClouse.phone = { [Op.iLike]: `%${phone}%` };
+        if (email) whereClouse.email = { [Op.iLike]: `%${email}%` };
+        if (contactName) whereClouse.contactName = { [Op.iLike]: `%${contactName}%` };
+        if (location) whereClouse.location = { [Op.iLike]: `%${location}%` };
+
+        const productsQuery = {
+            model: db.Product,
+            as: 'Products'
+        }
+
+        const { rows, count } = await db.Supplier.findAndCountAll({
+            where: whereClouse,
+            limit,
+            offset,
+            order: [['name', 'ASC']],
+            include: [productsQuery]
+        });
+
+        return {
+            items: rows,
+            total: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page
+        };
     }
 )
