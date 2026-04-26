@@ -1,9 +1,10 @@
-export const GlobalErrorHandler = (err, req, res, next)=>{
+export const globalErrorHandler = (err, req, res, next)=>{
     const statusCode = err.statusCode || 500;
 
     res.status(statusCode).json({
         success: false, 
         message: err.message || "Internal service error",
-        code: err.code || null
+        code: err.code || null,
+        details: err.cause || null
     })
 }

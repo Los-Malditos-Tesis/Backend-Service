@@ -1,5 +1,5 @@
-import { createCtx } from "../../pkg/logger/console/context";
-import { generateTime } from "../../pkg/utils/utils";
+import { createCtx } from "../libs/logger/console/context.js";
+import { generateTime } from "../utils/utils.js";
 
 export const contextMiddleware=(req, res, next)=>{
     req.ctx = createCtx({

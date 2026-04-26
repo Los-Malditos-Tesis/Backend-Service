@@ -76,7 +76,8 @@ export default (sequelize) => {
         User.belongsToMany(models.Role, {
             through: "user_role",
             foreignKey: "user_id",
-            otherKey: "role_id"
+            otherKey: "role_id",
+            as: "roles"
         });
 
         User.belongsTo(models.Warehouse, {

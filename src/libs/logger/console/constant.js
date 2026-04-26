@@ -8,5 +8,6 @@ export const consoleKeys = {
     RequestKey: "request",
     FailKey: "fail",
     ResponseKey: "response",
-    SuccessKey: "success"
+    SuccessKey: "success",
+    InformationKey: "information",
 }

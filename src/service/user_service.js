@@ -3,6 +3,9 @@ import { AppError } from "../errors/app_error.js";
 import { obfuscatePass } from "../utils/obfuscate/obfucates.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { getRoleById } from "./role_service.js";
+import { Log } from "../libs/logger/logger.js";
+import { config } from "../config/config.js";
+import { CODES } from "../utils/const/codes.js";
 
 const userService = "user service: "
 
@@ -12,7 +15,7 @@ export const saveUser = async (ctx, user = {}) => {
         const existUser = await findByEmail(user.email, ctx);
 
         if (existUser)
-            throw new AppError('El usuario ya existe', 400, authCodes.ALREADI_ALREADY_EXISTS)
+            throw new AppError('El usuario ya existe', 400, CODES.USER.ALREADY_EXISTS)
 
         const defaultRole = await getRoleById(config.defaultRole, ctx);
 
@@ -28,7 +31,7 @@ export const saveUser = async (ctx, user = {}) => {
             error = new AppError(
                 e.message || 'Internal error',
                 500,
-                authCodes.NOT_FOUND,
+                CODES.RESOURCE.NOT_FOUND,
                 e?.errors
             );
         }
@@ -47,8 +50,8 @@ export const getUserByEmail = async (ctx, email = "") => {
         const user = await findByEmail(email, ctx);
         
         if (!user)
-            throw new AppError('Usuario no encontrado', 404, authCodes.NOT_FOUND)
-
+            throw new AppError('Usuario no encontrado', 404, CODES.RESOURCE.NOT_FOUND)
+        
         Log.infoCtx(ctx, userService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, obfuscatePass(user.toJSON()))   
         return user
     } catch (e) {
@@ -58,7 +61,7 @@ export const getUserByEmail = async (ctx, email = "") => {
             error = new AppError(
                 e.message || 'Internal error',
                 500,
-                authCodes.NOT_FOUND,
+                CODES.RESOURCE.NOT_FOUND,
                 e?.errors
             );
         }

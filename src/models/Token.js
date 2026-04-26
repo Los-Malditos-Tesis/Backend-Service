@@ -8,7 +8,7 @@ export default (sequelize)=>{
             primaryKey: true
         },
         content:{
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(1000),
             allowNull: false,
             validate:{
                 notEmpty: true
