@@ -29,3 +29,11 @@ export const findByEmail = repositoryHandler(
     },
     obfuscatePass
 );
+
+export const findById = repositoryHandler(
+    authRepository,
+    async (id = "", ctx) => {
+        return await db.User.findByPk(id)
+    },
+    obfuscatePass
+);
