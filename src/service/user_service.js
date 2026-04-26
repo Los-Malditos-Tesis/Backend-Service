@@ -22,7 +22,7 @@ export const saveUser = async (ctx, user = {}) => {
         const newUser = await save(user, ctx);
         await newUser.addRole(defaultRole.id);
         
-        Log.infoCtx(ctx, userService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, obfuscatePass(newUser))
+        Log.infoCtx(ctx, userService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, obfuscatePass(newUser.toJSON()))
         return newUser
     } catch (e) {
         let error = e;

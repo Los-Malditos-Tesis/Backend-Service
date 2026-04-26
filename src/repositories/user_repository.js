@@ -20,7 +20,7 @@ export const findByEmail = repositoryHandler(
             where: {
                 email: email,
             },
-            include:  [{
+            include: [{
                 model: db.Role,
                 attributes: ['id'],
                 through: { attributes: [] },

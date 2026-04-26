@@ -52,6 +52,8 @@ export const loginUser = async (ctx, authData = {}) => {
 
         const tokenString = generateToken({ userId: user.id, email: user.email });
         const token = {user_id: user.id, content: tokenString, isActive: true}
+        Log.infoCtx(ctx, authService+"token generado", consoleKeys.InformationKey, obfuscateToken(token))
+        
         await save(token, ctx);
 
         Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, obfuscateToken( token))
@@ -87,7 +89,8 @@ export const verifyAuthToken = async (ctx, token = "", userId = "") => {
             throw new AppError('Token inválido', 401, CODES.AUTH.INVALID_CREDENTIALS)
 
         const decoded = verifyToken(token);
-        Log.infoCtx(ctx, authService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, decoded)
+        Log.infoCtx(ctx, authService+"decoded token", consoleKeys.ResponseKey, decoded)
+
         if (!decoded.valid){
             await updateToken({ ...validToken.toJSON(), isActive: false }, ctx);
         }
