@@ -19,5 +19,7 @@ export const config = Object.freeze({
     encryptSalt: Number(env.ENCRYP_SALT),
     dummyHash: env.DUMMY_HASH,
     defaultRole: env.DEFAULT_ROLE,
-    basePath: env.BASE_PATH
+    basePath: env.BASE_PATH,
+    jwtSecretKeyCam: env.JWT_SECRET_KEY_CAM,
+    jwtExpirationCam: env.JWT_EXPIRATION_CAM
 })

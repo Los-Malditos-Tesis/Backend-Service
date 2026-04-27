@@ -4,7 +4,7 @@ import { Log } from "../libs/logger/logger.js";
 import { obfuscatePass, obfuscateToken } from "../utils/obfuscate/obfucates.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { CODES } from "../utils/const/codes.js";
-import { generateToken, verifyToken } from "../libs/jwt/jwt.js";
+import { generateUserToken, verifyUserToken } from "../libs/jwt/jwt.js";
 import { comparePassword } from "../libs/encrypt/encrypt.js";
 import { config } from "../config/config.js";
 import { save, findByContent, updateToken } from "../repositories/token_repository.js";
@@ -50,7 +50,7 @@ export const loginUser = async (ctx, authData = {}) => {
         if (!user || !validPassword)
             throw new AppError('Credenciales inválidas', 401, CODES.AUTH.INVALID_CREDENTIALS)
 
-        const tokenString = generateToken({ userId: user.id, email: user.email });
+        const tokenString = generateUserToken(user);
         const token = {user_id: user.id, content: tokenString, isActive: true}
         Log.infoCtx(ctx, authService+"token generado", consoleKeys.InformationKey, obfuscateToken(token))
         
@@ -88,7 +88,7 @@ export const verifyAuthToken = async (ctx, token = "", userId = "") => {
         if (!validToken)
             throw new AppError('Token inválido', 401, CODES.AUTH.INVALID_CREDENTIALS)
 
-        const decoded = verifyToken(token);
+        const decoded = verifyUserToken(token);
         Log.infoCtx(ctx, authService+"decoded token", consoleKeys.ResponseKey, decoded)
 
         if (!decoded.valid){
