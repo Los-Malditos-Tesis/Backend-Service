@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { ITEM_TYPES } from "../utils/const/status.js";
+import { ITEM_TYPES, EVENT_STATUS } from "../utils/const/status.js";
 
 export default (sequelize) => {
     const ScanEvent = sequelize.define("ScanEvent", {
@@ -28,6 +28,13 @@ export default (sequelize) => {
             type: DataTypes.FLOAT,
             allowNull: false,
             defaultValue: 0,
+        },
+        status: {
+            type: DataTypes.ENUM(...Object.values(EVENT_STATUS)),
+            allowNull: false,
+            validate: {
+                isIn: [Object.values(EVENT_STATUS)]
+            }
         }
     }, {
         tableName: "scan_events",

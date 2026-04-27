@@ -33,9 +33,7 @@ export const MOVEMENT_TYPE = {
     ENTRY: 'ENT'
 }
 
-export const SUCCESS_CODES = {
-    OK: 0o0,
-    CREATED: 0o1,
-    UPDATED: 0o2,
-    DELETED: 0o3,
+export const EVENT_STATUS = {
+    REVIEW: 'REVIEW',
+    PENDING: 'PENDING'
 }

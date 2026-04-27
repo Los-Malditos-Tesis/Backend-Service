@@ -21,5 +21,6 @@ export const config = Object.freeze({
     defaultRole: env.DEFAULT_ROLE,
     basePath: env.BASE_PATH,
     jwtSecretKeyCam: env.JWT_SECRET_KEY_CAM,
-    jwtExpirationCam: env.JWT_EXPIRATION_CAM
+    jwtExpirationCam: env.JWT_EXPIRATION_CAM,
+    minConfidence: env.MIN_CONFIDENCE
 })

@@ -41,8 +41,11 @@ export const CODES = {
         NOT_FOUND: 8000,
         ALREADY_EXISTS: 8001,
     },
+    EVENT:{
+        NOT_FOUND: 9000,
+    },
     SERVER: {
-        INTERNAL_ERROR: 9000,
+        INTERNAL_ERROR: 10000,
     },
 
 }
