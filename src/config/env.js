@@ -32,5 +32,7 @@ export const env = {
     ENCRYP_SALT: require("ENCRYP_SALT"),
     DUMMY_HASH: require("DUMMY_HASH"),
     DEFAULT_ROLE: require("DEFAULT_ROLE"),
-    BASE_PATH: require("BASE_PATH")
+    BASE_PATH: require("BASE_PATH"),
+    JWT_SECRET_KEY_CAM: require("JWT_SECRET_KEY_CAM"),
+    JWT_EXPIRATION_CAM: require("JWT_EXPIRATION_CAM")
 }

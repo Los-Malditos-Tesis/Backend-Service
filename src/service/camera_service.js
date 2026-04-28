@@ -5,6 +5,8 @@ import { CODES } from "../utils/const/codes.js";
 import { serviceHandler } from "../utils/handler/service_handler.js";
 import { findAll, findByLocationId, save, findById, findByCode, updateCamera, deleteById } from "../repositories/camera_repository.js";
 import { findLocationById } from "./location_service.js";
+import { obfuscateApiKey } from "../utils/obfuscate/obfucates.js";
+import { generateCameraToken } from "../libs/jwt/jwt.js";
 
 
 const cameraService = "camera service: ";
@@ -20,10 +22,13 @@ export const registerCamera = serviceHandler(
         if (existsCamera)
             throw new AppError('El codigo de camara esta en uso', 400, CODES.CAMERA.ALREADY_EXISTS);
 
+        data.api_key = crypto.randomBytes(32).toString("hex");
+
         const location = await findByLocationId(data.location_id, ctx);
+        Log.infoCtx(ctx, cameraService + consoleKeys.InformationKey, consoleKeys.InformationKey, obfuscateApiKey(data))
         const camera = await save(data, ctx)
 
-        Log.infoCtx(ctx, cameraService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, data);
+        Log.infoCtx(ctx, cameraService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, obfuscateApiKey(data));
         return camera;
     }
 
@@ -44,6 +49,7 @@ export const findCameraById = serviceHandler(
     }
 )
 
+
 export const findAllCameras = serviceHandler(
     cameraService,
     CODES.CAMERA.NOT_FOUND,
@@ -60,6 +66,7 @@ export const findAllCameras = serviceHandler(
         return cameras;
     }
 )
+
 
 export const updateCameraData = serviceHandler(
     cameraService,
@@ -80,6 +87,7 @@ export const updateCameraData = serviceHandler(
     }
 )
 
+
 export const deleteCamera = serviceHandler(
     cameraService,
     CODES.CAMERA.NOT_FOUND,
@@ -96,5 +104,23 @@ export const deleteCamera = serviceHandler(
 
         Log.infoCtx(ctx, cameraService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, { id, message });
         return message;
+    }
+)
+
+export const authCamera = serviceHandler(
+    cameraService,
+    CODES.CAMERA.NOT_FOUND,
+    async (authData = {}, ctx) => {
+        Log.infoCtx(ctx, cameraService + consoleKeys.StartKey, consoleKeys.RequestKey, obfuscateApiKey(authData))
+        
+        const camera = await findByCode(authData.code, ctx);
+
+        if (!camera || camera.api_key != authData.api_key)
+            throw new AppError('Credenciales invalidas', 400, CODES.CAMERA.NOT_FOUND);
+
+        const token = generateCameraToken(camera)
+
+        Log.info(ctx, cameraService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, { token })
+        return { token }
     }
 )
