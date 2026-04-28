@@ -7,7 +7,8 @@ const warehouseRepository = "warehouse repository: "
 export const save = repositoryHandler(
     warehouseRepository,
     async (warehouse = {}, ctx) => {
-        return await db.Warehouse.create(warehouse)
+        const [result] = await db.Warehouse.upsert(warehouse)
+        return result
     }
 )
 
@@ -118,7 +119,7 @@ export const deleteById = repositoryHandler(
     }
 )
 
-export const searchWarehouse = repositoryHandler(
+export const search = repositoryHandler(
     warehouseRepository,
     async (query = "", limit = 10, page = 1, ctx) => {
         const { name, address, user_id } = query;

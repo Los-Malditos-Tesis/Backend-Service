@@ -23,7 +23,8 @@ export const findByEmail = repositoryHandler(
             include: [{
                 model: db.Role,
                 attributes: ['id', 'name'],
-                through: { attributes: [] }
+                through: { attributes: [] },
+                as: 'roles'
             }]
         })
     },
