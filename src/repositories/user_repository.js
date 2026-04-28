@@ -22,9 +22,8 @@ export const findByEmail = repositoryHandler(
             },
             include: [{
                 model: db.Role,
-                attributes: ['id'],
-                through: { attributes: [] },
-                as: 'roles'
+                attributes: ['id', 'name'],
+                through: { attributes: [] }
             }]
         })
     },
@@ -34,7 +33,14 @@ export const findByEmail = repositoryHandler(
 export const findById = repositoryHandler(
     authRepository,
     async (id = "", ctx) => {
-        return await db.User.findByPk(id)
+        return await db.User.findByPk(id, {
+            include: [{
+                model: db.Role,
+                attributes: ['id'],
+                through: { attributes: [] },
+                as: 'roles'
+            }]
+        })
     },
     obfuscatePass
 );
