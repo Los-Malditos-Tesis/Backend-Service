@@ -37,12 +37,17 @@ export const CODES = {
         ALREADY_EXISTS: 7001,
         HAS_STOCK: 7002,
     },
-    CAMERA:{
+    CAMERA: {
         NOT_FOUND: 8000,
         ALREADY_EXISTS: 8001,
     },
+    WAREHOUSE: {
+        NOT_FOUND: 9000,
+        ALREADY_EXISTS: 9001,
+        NOT_PERMISSIONS: 9002,
+    },
     SERVER: {
-        INTERNAL_ERROR: 9000,
+        INTERNAL_ERROR: 10000,
     },
 
 }

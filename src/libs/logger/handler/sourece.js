@@ -1,32 +1,27 @@
 import path from "path"
 
 const LOGGER_DIR = path.sep + "logger" + path.sep
-
 export function getSource() {
-    const err = new Error()
-    const stack = err.stack?.split("\n") || []
+    const obj = {}
+    Error.captureStackTrace(obj, getSource)
 
-    for (const line of stack) {
-        
-        // ignorar node internals
+    const stack = obj.stack?.split("\n") || []
+
+    for (const rawLine of stack) {
+        const line = rawLine.replace(/\\/g, "/")
+
         if (
             line.includes("node:internal") ||
-            line.includes("node_modules") ||
-            line.includes("ModuleJob.run")
-        ) {
-            continue
-        }
+            line.includes("node_modules")
+        ) continue
 
-        // ignorar archivos del logger
-        if (line.includes(LOGGER_DIR)) {
-            continue
-        }
+        if (line.includes("/logger/")) continue
 
-        const match = line.match(/at (.+) \((.+):(\d+):(\d+)\)/)
+        const match = line.match(/at\s+(?:(.+?)\s+\()?(.+):(\d+):(\d+)\)?/)
         if (!match) continue
 
-        const fn = match[1]
-        const file = match[2].split("/").pop()
+        const fn = match[1] || "anonymous"
+        const file = path.basename(match[2])
         const lineNo = match[3]
 
         return `${fn} [${file}:${lineNo}]`

@@ -13,4 +13,10 @@ app.use(contextMiddleware)
 app.use(config.basePath, router)
 app.use(globalErrorHandler)
 
+const runTests = async () => {
+    const mockCtx = { context: "test" };
+}
+
+runTests()
+
 export default app;
