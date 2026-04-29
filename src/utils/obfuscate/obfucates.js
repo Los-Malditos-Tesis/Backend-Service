@@ -3,7 +3,7 @@ export const obfuscatePass = (data = {})=>{
     const clone = { ...data };
 
     if ("password" in clone) {
-        clone.password = "[REDACTED]";
+        clone.password = "[PASSWORD]";
     }
 
     return clone;
@@ -14,11 +14,26 @@ export const obfuscateToken = (data = {})=>{
     const clone = { ...data };
 
     if ("content" in clone) {
-        clone.content = "[REDACTED]";
+        clone.content = "[TOKEN]";
     }
 
     if("token" in clone){
-        clone.token = "[REDACTED]";
+        clone.token = "[TOKEN]";
+    }
+
+    return clone;
+}
+
+export const obfuscateApiKey = (data={})=>{
+    if (!data || typeof data !== "object") return data;
+    const clone = { ...data };
+
+    if ("content" in clone) {
+        clone.content = "[APY_KEY]";
+    }
+
+    if("token" in clone){
+        clone.token = "[APY_KEY]";
     }
 
     return clone;
