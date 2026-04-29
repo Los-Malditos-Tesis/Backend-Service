@@ -4,7 +4,14 @@ import { generateTime } from "../../utils/utils.js";
 
 const baseLogger = pino({
     level: process.env.LOG_LEVEL || "info",
-    timestamp: ()=>`,"time":"${generateTime()}"`
+    timestamp: () => `,"time":"${generateTime()}"`,
+    transport: {
+        target: 'pino-pretty',
+        options: {
+            translateTime: true,
+            ignore: 'pid,hostname'
+        }
+    }
 })
 
 const kvToObject = (kv) => {
@@ -51,7 +58,7 @@ class Logger {
             level: "ERROR",
             source: getSource(),
             msg,
-            errorMsg:err?.message,
+            errorMsg: err?.message,
             error: err,
             stack: err?.stack,
             ...ctx,
@@ -67,7 +74,7 @@ class Logger {
             ...kvToObject(kv)
         })
     }
-    
+
     warn(msg, ...kv) {
         baseLogger.warn({
             level: "WARN",
