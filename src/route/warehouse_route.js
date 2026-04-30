@@ -15,7 +15,7 @@ warehouseRouter.get(
     getWarehouseByIdController
 )
 
-warehouseRouter.get(
+warehouseRouter.post(
     "/search",
     authMiddleware,
     validateSearchWarehouses,

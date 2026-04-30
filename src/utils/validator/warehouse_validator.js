@@ -52,7 +52,7 @@ export const validateGetWarehouseById = [
 ]
 
 export const validateSearchWarehouses = [
-    body("id_warehouse")
+    body("id")
         .optional()
         .trim()
         .escape()

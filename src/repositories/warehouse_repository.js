@@ -151,3 +151,16 @@ export const search = repositoryHandler(
         }
     }
 )
+
+export const update = repositoryHandler(
+    warehouseRepository,
+    async (id = "", warehouseData = {}, ctx) => {
+        const result = await db.Warehouse.update(warehouseData, {
+            where: {
+                id: id
+            },
+            returning: true
+        })
+        return result[1]
+    }
+)
