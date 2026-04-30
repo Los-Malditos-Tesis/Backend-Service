@@ -7,7 +7,8 @@ import {
     findByCode,
     findByCategory,
     deleteById,
-    search
+    search,
+    update
 } from "../repositories/product_repository.js";
 import { AppError } from "../errors/app_error.js";
 import { Log } from "../libs/logger/logger.js";
@@ -45,10 +46,10 @@ export const createProduct = serviceHandler(
 export const searchProducts = serviceHandler(
     productService,
     CODES.PRODUCT.NOT_FOUND,
-    async (query = "", warehouseId, limit = 10, page = 1, ctx) => {
+    async (query = "", warehouse_id, limit = 10, page = 1, ctx) => {
         Log.infoCtx(ctx, productService + consoleKeys.StartKey, consoleKeys.RequestKey, query)
 
-        const products = await search(query, warehouseId, limit, page, ctx);
+        const products = await search(query, warehouse_id, limit, page, ctx);
         Log.infoCtx(ctx, productService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, products)
         return products
     }
@@ -90,13 +91,14 @@ export const updateProduct = serviceHandler(
         if (existCode && existCode.length > 1)
             throw new AppError('El producto ya con codigo existe', 400, CODES.PRODUCT.ALREADY_EXISTS);
 
-        const existSupplier = await findSupplierById(productData.supplier_id, ctx)
-        if (!existSupplier)
-            throw new AppError('El proveedor no existe', 404, supplierCodes.NOT_FOUND);
-        console.log(productData.supplier_id + "KIAJ")
+        if (productData.supplier_id) {
+            const existSupplier = await findSupplierById(productData.supplier_id, ctx)
+            if (!existSupplier)
+                throw new AppError('El proveedor no existe', 404, supplierCodes.NOT_FOUND);
+        } else productData.supplier_id = product.supplier_id;
 
-        await save(productData, ctx);
-        Log.infoCtx(ctx, productService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, productData)
-
+        const updatedProduct = await update(productData.id, productData, ctx);
+        Log.infoCtx(ctx, productService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, updatedProduct)
+        return updatedProduct;
     }
 )
