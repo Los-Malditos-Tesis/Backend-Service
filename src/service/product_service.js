@@ -34,7 +34,7 @@ export const createProduct = serviceHandler(
 
         const existSupplier = await findSupplierById(productData.supplier_id, ctx)
         if (!existSupplier)
-            throw new AppError('El proveedor no existe', 404, supplierCodes.NOT_FOUND);
+            throw new AppError('El proveedor no existe', 404, CODES.SUPPLIER.NOT_FOUND);
 
         const product = await save(productData, ctx);
         Log.infoCtx(ctx, productService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, product)
