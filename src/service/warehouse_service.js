@@ -138,3 +138,18 @@ export const findLocationByQr = serviceHandler(
         return location;
     }
 );
+
+export const getWarehouseById = serviceHandler(
+    warehouseService,
+    CODES.WAREHOUSE.NOT_FOUND,
+    async (id, ctx) => {
+        Log.infoCtx(ctx, warehouseService + consoleKeys.StartKey, consoleKeys.RequestKey, id);
+
+        const warehouse = await findById(id, ctx);
+        if (!warehouse)
+            throw new AppError('El almacen no existe', 404, CODES.WAREHOUSE.NOT_FOUND);
+
+        Log.infoCtx(ctx, warehouseService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, warehouse);
+        return warehouse;
+    }
+);

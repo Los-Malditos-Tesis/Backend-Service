@@ -1,11 +1,19 @@
 import { Router } from "express";
-import { createProductController, deleteProductController, searchProductsController, updateProductController } from "../controller/product_controller.js";
+import { createProductController, deleteProductController, getProductByIdController, searchProductsController, updateProductController } from "../controller/product_controller.js";
 import { authMiddleware } from "../middlewares/auth_middleware.js";
 import { authorizeMiddleware } from "../middlewares/authorize_middleware.js";
 import { validateMiddleware } from "../middlewares/validator_moddleware.js";
-import { validateCreateProduct, validateDeleteProduct, validateSearchProducts, validateUpdateProduct } from "../utils/validator/product_validator.js";
+import { validateCreateProduct, validateDeleteProduct, validateGetProductById, validateSearchProducts, validateUpdateProduct } from "../utils/validator/product_validator.js";
 
 const productRouter = Router();
+
+productRouter.get(
+    "/:id",
+    authMiddleware,
+    validateGetProductById,
+    validateMiddleware,
+    getProductByIdController
+)
 
 productRouter.post(
     "/create",
