@@ -113,7 +113,7 @@ export const deleteLocation = serviceHandler(
       ctx,
       locationService + consoleKeys.StartKey,
       consoleKeys.RequestKey,
-      id,
+      { id },
     );
 
     const location = await findLocationById(id, ctx);
@@ -124,16 +124,18 @@ export const deleteLocation = serviceHandler(
       throw new AppError(
         "La zona no puede ser eliminada porque tiene stock o camaras en uso",
         400,
-        locationCodes.HAS_STOCK,
+        CODES.LOCATION.HAS_STOCK,
       );
+
+    const deleted = await deleteById(id, ctx);
 
     Log.infoCtx(
       ctx,
-      locationService + consoleKeys.SuccessKey,
+      locationService + consoleKeys.SuccessKey + "deleted",
       consoleKeys.ResponseKey,
-      location,
+      deleted,
     );
-    return await deleteById(id, ctx);
+    return deleted;
   },
 );
 
@@ -148,9 +150,9 @@ export const findLocationById = serviceHandler(
       id,
     );
 
-    const location = await findById(id);
+    const location = await findById(id, ctx);
     if (!location)
-      throw new AppError("La zona no existe", 404, locationCodes.NOT_FOUND);
+      throw new AppError("La zona no existe", 404, CODES.LOCATION.NOT_FOUND);
 
     Log.infoCtx(
       ctx,

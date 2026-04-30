@@ -1,6 +1,6 @@
 import { body, param } from "express-validator";
 
-export const locationValidator = [
+export const locationUpdateValidator = [
   param("id").isUUID().withMessage("Invalid location"),
 
   body("zone")
@@ -17,4 +17,8 @@ export const locationValidator = [
     .withMessage("Zone format is invalid (only letters, numbers, ., _, -)")
     .customSanitizer((value) => value.toUpperCase())
     .bail(),
+];
+
+export const locationDeleteValidator = [
+  param("id").isUUID().withMessage("Invalid location"),
 ];
