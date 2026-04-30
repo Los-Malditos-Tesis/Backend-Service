@@ -17,8 +17,10 @@ export default (sequelize) => {
         code: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true,
-            comment: 'Código interno único de la tienda'
+            unique: {
+                args: true,
+                msg: 'Code already in store!'
+            }
         },
         address: {
             type: DataTypes.STRING,

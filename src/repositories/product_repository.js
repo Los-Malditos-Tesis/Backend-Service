@@ -137,3 +137,14 @@ export const search = repositoryHandler(
         };
     }
 )
+
+export const update = repositoryHandler(
+    productRepository,
+    async (id, product = {}, ctx) => {
+        return await db.Product.update(product, {
+            where: {
+                id: id
+            }
+        })
+    }
+)
