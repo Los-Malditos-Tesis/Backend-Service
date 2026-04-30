@@ -1,20 +1,28 @@
 import db from '../../models/index.js';
-import {Log} from '../logger/logger.js'
+import { Log } from '../logger/logger.js'
 import { consoleKeys } from '../logger/console/constant.js';
+import { config } from '../../config/config.js';
 
 const syncSequelizeKey = "syncSequelize";
 
 const syncDatabase = async () => {
-    try{
+    try {
         await db.sequelize.authenticate();
-        Log.info( "Database connection has been established successfully");
+        Log.info("Database connection has been established successfully");
+
+        const { sqSyncAlter, sqSyncForce } = config;
+
         await db.sequelize.sync({
-            alter: true, // Esto actualizará las tablas para que coincidan con los modelos
-            force: false, // No eliminará las tablas existentes
+            alter: sqSyncAlter,
+            force: sqSyncForce,
         });
-        Log.info("Database synchronized successfully");
-    }catch(error){
-        Log.error("Error syncing database", consoleKeys.ErrorKey, error);
+
+        if (sqSyncAlter) {
+            Log.info("Database schema synchronized (ALTER applied)");
+        }
+
+    } catch (error) {
+        Log.error("Error syncing database", error);
         throw error;
     }
 }
