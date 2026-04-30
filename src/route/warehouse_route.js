@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth_middleware.js";
 import { authorizeMiddleware } from "../middlewares/authorize_middleware.js";
-import { validateCreateWarehouse, validateDeleteWarehouse, validateGetWarehouseById, validateSearchWarehouses, validateUpdateWarehouse } from "../utils/validator/warehouse_validator.js";
+import { validateCreateWarehouse, validateDeleteWarehouse, validateGetWarehouseById, validateGetWarehouseInventory, validateSearchWarehouses, validateUpdateWarehouse } from "../utils/validator/warehouse_validator.js";
 import { validateMiddleware } from "../middlewares/validator_moddleware.js";
-import { createWarehouseController, deleteWarehouseController, getWarehouseByIdController, searchWarehousesController, updateWarehouseController } from "../controller/warehouse_controller.js";
+import { createWarehouseController, deleteWarehouseController, getWarehouseByIdController, getWarehouseInventoryController, getWarehouseStructureController, searchWarehousesController, updateWarehouseController } from "../controller/warehouse_controller.js";
 
 const warehouseRouter = Router();
 
@@ -13,6 +13,22 @@ warehouseRouter.get(
     validateGetWarehouseById,
     validateMiddleware,
     getWarehouseByIdController
+)
+
+warehouseRouter.get(
+    "/inventory/:locationId/in/:id",
+    authMiddleware,
+    validateGetWarehouseInventory,
+    validateMiddleware,
+    getWarehouseInventoryController
+)
+
+warehouseRouter.get(
+    "/structure/:id",
+    authMiddleware,
+    validateGetWarehouseById,
+    validateMiddleware,
+    getWarehouseStructureController
 )
 
 warehouseRouter.post(
