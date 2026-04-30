@@ -34,5 +34,7 @@ export const env = {
     DEFAULT_ROLE: require("DEFAULT_ROLE"),
     BASE_PATH: require("BASE_PATH"),
     JWT_SECRET_KEY_CAM: require("JWT_SECRET_KEY_CAM"),
-    JWT_EXPIRATION_CAM: require("JWT_EXPIRATION_CAM")
+    JWT_EXPIRATION_CAM: require("JWT_EXPIRATION_CAM"),
+    SQ_SYNC_ALTER: require("SQ_SYNC_ALTER"),
+    SQ_SYNC_FORCE:require("SQ_SYNC_FORCE")
 }

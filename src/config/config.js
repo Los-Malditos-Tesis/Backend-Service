@@ -1,5 +1,7 @@
 import { env } from "./env.js";
 
+const toBoolean = (value) => value === "true"
+
 export const config = Object.freeze({
     env: env.NODE_ENV,
     port: env.PORT,
@@ -21,5 +23,7 @@ export const config = Object.freeze({
     defaultRole: env.DEFAULT_ROLE,
     basePath: env.BASE_PATH,
     jwtSecretKeyCam: env.JWT_SECRET_KEY_CAM,
-    jwtExpirationCam: env.JWT_EXPIRATION_CAM
+    jwtExpirationCam: env.JWT_EXPIRATION_CAM,
+    sqSyncAlter: toBoolean(env.SQ_SYNC_ALTER),
+    sqSyncForce: toBoolean(env.SQ_SYNC_FORCE)
 })
