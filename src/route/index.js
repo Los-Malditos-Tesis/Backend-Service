@@ -5,6 +5,6 @@ import supplierRouter from "./supplier_route.js";
 const router = Router();
 
 router.use("/auth", authRouter);
-router.use("/supplier", supplierRouter);
+router.use("/suppliers", supplierRouter);
 
 export default router;
