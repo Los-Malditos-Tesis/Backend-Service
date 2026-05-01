@@ -86,7 +86,7 @@ export const deleteById = repositoryHandler(
 
 export const search = repositoryHandler(
     productRepository,
-    async (query = "", warehouseId, limit = 10, page = 1, ctx) => {
+    async (query = {}, warehouseId, limit = 10, page = 1, ctx) => {
 
         const offset = (page - 1) * limit;
         const { name, sku, code, category } = query;
