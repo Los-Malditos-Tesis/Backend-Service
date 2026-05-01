@@ -1,4 +1,4 @@
-import { body, query } from "express-validator";
+import { body, query, param } from "express-validator";
 
 export const createSupplierValidator = [
   body("name")
@@ -85,7 +85,7 @@ export const createSupplierValidator = [
 ];
 
 export const searchSuppliersValidator = [
-  query("id").optional().isUUID().withMessage("Id invalido").bail().trim(),
+  param("id").optional().isUUID().withMessage("Id invalido").bail().trim(),
 
   query("name")
     .optional()
@@ -166,4 +166,44 @@ export const searchSuppliersValidator = [
     .isInt({ min: 1 })
     .withMessage("La pagina debe ser mayor o igual a 1")
     .toInt(),
+];
+
+export const updateSupplierValidator = [
+  param("id").isUUID().withMessage("Id invalido"),
+
+  body("name")
+    .optional()
+    .isString()
+    .notEmpty()
+    .withMessage("El nombre del proveedor no puede estar vacio"),
+
+  body("code")
+    .optional()
+    .isString()
+    .notEmpty()
+    .withMessage("El codigo del proveedor no puede estar vacio"),
+
+  body("email")
+    .optional()
+    .isEmail()
+    .withMessage("El correo electronico no es valido"),
+
+  body("phone")
+    .optional()
+    .isString()
+    .withMessage("El telefono debe ser una cadena de caracteres"),
+
+  body("contactName")
+    .optional()
+    .isString()
+    .withMessage("El nombre de contacto debe ser una cadena de caracteres"),
+
+  body("location")
+    .optional()
+    .isString()
+    .withMessage("La ubicacion debe ser una cadena de caracteres"),
+];
+
+export const deleteSupplierValidator = [
+  param("id").isUUID().withMessage("Id invalido"),
 ];

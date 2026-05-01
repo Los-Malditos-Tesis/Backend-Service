@@ -11,6 +11,8 @@ import {
   search,
   update,
 } from "../repositories/supplier_repository.js";
+import { filterAllowedFields } from "../utils/helper/filter_allowed_fields.js";
+import { countActiveProducts } from "../repositories/product_repository.js";
 
 const supplierService = "supplier service: ";
 
@@ -93,20 +95,37 @@ export const updateSupplier = serviceHandler(
         CODES.SUPPLIER.ALREADY_EXISTS,
       );
 
-    await update(supplierData.id, supplierData, ctx);
+    const filterData = filterAllowedFields(supplierData, [
+      "name",
+      "code",
+      "contactName",
+      "phone",
+      "email",
+      "location",
+    ]);
+
+    Log.infoCtx(
+      ctx,
+      supplierService + "filterData",
+      consoleKeys.InformationKey,
+      filterData,
+    );
+
+    const resp = await update(supplierData.id, filterData, ctx);
     Log.infoCtx(
       ctx,
       supplierService + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
-      supplierData,
+      resp,
     );
+    return resp;
   },
 );
 
 export const deleteSupplier = serviceHandler(
   supplierService,
   CODES.SUPPLIER.NOT_FOUND,
-  async (id, ctx) => {
+  async (id = "", ctx) => {
     Log.infoCtx(
       ctx,
       supplierService + consoleKeys.StartKey,
@@ -120,6 +139,14 @@ export const deleteSupplier = serviceHandler(
         "El proveedor no existe",
         404,
         CODES.SUPPLIER.NOT_FOUND,
+      );
+
+    const countProducts = await countActiveProducts(supplier.id, ctx);
+    if (countProducts > 0)
+      throw new AppError(
+        "No se puede eliminar el proveedor porque tiene productos asociados",
+        400,
+        CODES.SUPPLIER.ALREADY_EXISTS,
       );
 
     Log.infoCtx(
