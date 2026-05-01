@@ -64,7 +64,7 @@ export const searchWarehousesController = async (req, res, next) => {
 
 export const getWarehouseByIdController = async (req, res, next) => {
     try {
-        Log.infoCtx(req.ctx, warehouseController + consoleKeys.StartKey, consoleKeys.RequestKey, req.body);
+        Log.infoCtx(req.ctx, warehouseController + consoleKeys.StartKey, consoleKeys.RequestKey, req.params);
         const response = await getWarehouseById(req.params.id, req.ctx);
         Log.infoCtx(req.ctx, warehouseController + consoleKeys.SuccessKey, consoleKeys.ResponseKey, response);
         return generalResponse(res, 200, CODES.SUCCESS.OK, 'Warehouse get successfully', response);
@@ -78,7 +78,7 @@ export const getWarehouseByIdController = async (req, res, next) => {
 
 export const getWarehouseInventoryController = async (req, res, next) => {
     try {
-        Log.infoCtx(req.ctx, warehouseController + consoleKeys.StartKey, consoleKeys.RequestKey, req.body);
+        Log.infoCtx(req.ctx, warehouseController + consoleKeys.StartKey, consoleKeys.RequestKey, req.params);
         const response = await getInventoryByLocation(req.params.id, req.params.locationId, req.ctx);
         Log.infoCtx(req.ctx, warehouseController + consoleKeys.SuccessKey, consoleKeys.ResponseKey, response);
         return generalResponse(res, 200, CODES.SUCCESS.OK, 'Warehouse inventory get successfully', response);
@@ -92,7 +92,7 @@ export const getWarehouseInventoryController = async (req, res, next) => {
 
 export const getWarehouseStructureController = async (req, res, next) => {
     try {
-        Log.infoCtx(req.ctx, warehouseController + consoleKeys.StartKey, consoleKeys.RequestKey, req.body);
+        Log.infoCtx(req.ctx, warehouseController + consoleKeys.StartKey, consoleKeys.RequestKey, req.params);
         const response = await getStructureWithCameras(req.params.id, req.ctx);
         Log.infoCtx(req.ctx, warehouseController + consoleKeys.SuccessKey, consoleKeys.ResponseKey, response);
         return generalResponse(res, 200, CODES.SUCCESS.OK, 'Warehouse structure get successfully', response);
