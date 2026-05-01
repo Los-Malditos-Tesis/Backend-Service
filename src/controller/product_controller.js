@@ -1,6 +1,6 @@
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { Log } from "../libs/logger/logger.js";
-import { createProduct, deleteProduct, searchProducts, updateProduct } from "../service/product_service.js"
+import { createProduct, deleteProduct, getProductById, searchProducts, updateProduct } from "../service/product_service.js"
 import { CODES } from "../utils/const/codes.js";
 import { generalResponse } from "../utils/handler/response_handler.js";
 
@@ -62,6 +62,22 @@ export const deleteProductController = async (req, res, next) => {
         Log.infoCtx(req.ctx, productController + consoleKeys.SuccessKey, consoleKeys.ResponseKey, response)
 
         return generalResponse(res, 200, CODES.SUCCESS.OK, 'Product deleted successfully', response)
+    } catch (e) {
+        Log.errorCtx(req.ctx, productController + consoleKeys.FailKey, e);
+        next(e);
+    } finally {
+        Log.infoCtx(req.ctx, productController + consoleKeys.FinishKey)
+    }
+}
+
+export const getProductByIdController = async (req, res, next) => {
+    try {
+        Log.infoCtx(req.ctx, productController + consoleKeys.StartKey, consoleKeys.RequestKey, req.body)
+        const response = await getProductById(req.params.id, req.ctx);
+
+        Log.infoCtx(req.ctx, productController + consoleKeys.SuccessKey, consoleKeys.ResponseKey, response)
+
+        return generalResponse(res, 200, CODES.SUCCESS.OK, 'Product get successfully', response)
     } catch (e) {
         Log.errorCtx(req.ctx, productController + consoleKeys.FailKey, e);
         next(e);

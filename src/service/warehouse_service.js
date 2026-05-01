@@ -2,7 +2,7 @@ import { AppError } from "../errors/app_error.js";
 import { Log } from "../libs/logger/logger.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { serviceHandler } from "../utils/handler/service_handler.js";
-import { findById, getWarehouseInventory, save, deleteById, search, getWarehouseInventoryByLocation, getWarehouseStructure, findLocationByQrInWarehouse } from "../repositories/warehouse_repository.js";
+import { findById, getWarehouseInventory, save, deleteById, search, getWarehouseInventoryByLocation, getWarehouseStructure, findLocationByQrInWarehouse, update } from "../repositories/warehouse_repository.js";
 import { findById as findUserById } from "../repositories/user_repository.js";
 import { findById as findLocationById } from "../repositories/location_repository.js";
 import { CODES } from "../utils/const/codes.js";
@@ -40,7 +40,7 @@ export const updateWarehouse = serviceHandler(
         }
 
 
-        await save(warehouseData, ctx);
+        await update(warehouseData.id, warehouseData, ctx);
         Log.infoCtx(ctx, warehouseService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, warehouseData)
     }
 );
@@ -136,5 +136,20 @@ export const findLocationByQr = serviceHandler(
 
         Log.infoCtx(ctx, warehouseService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, location);
         return location;
+    }
+);
+
+export const getWarehouseById = serviceHandler(
+    warehouseService,
+    CODES.WAREHOUSE.NOT_FOUND,
+    async (id, ctx) => {
+        Log.infoCtx(ctx, warehouseService + consoleKeys.StartKey, consoleKeys.RequestKey, id);
+
+        const warehouse = await findById(id, ctx);
+        if (!warehouse)
+            throw new AppError('El almacen no existe', 404, CODES.WAREHOUSE.NOT_FOUND);
+
+        Log.infoCtx(ctx, warehouseService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, warehouse);
+        return warehouse;
     }
 );

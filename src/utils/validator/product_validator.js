@@ -123,3 +123,11 @@ export const validateDeleteProduct = [
         .notEmpty().withMessage("El id es requerido")
         .isUUID().withMessage("El id no es valido")
 ]
+
+export const validateGetProductById = [
+    param("id")
+        .trim()
+        .escape()
+        .notEmpty().withMessage("El id es requerido")
+        .isUUID().withMessage("El id no es valido")
+]

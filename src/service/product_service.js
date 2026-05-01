@@ -102,3 +102,15 @@ export const updateProduct = serviceHandler(
         return updatedProduct;
     }
 )
+
+export const getProductById = serviceHandler(
+    productService,
+    CODES.PRODUCT.NOT_FOUND,
+    async (id, ctx) => {
+        Log.infoCtx(ctx, productService + consoleKeys.StartKey, consoleKeys.RequestKey, id)
+        const product = await findById(id, ctx);
+        if (!product) throw new AppError('El producto no existe', 404, CODES.PRODUCT.NOT_FOUND);
+        Log.infoCtx(ctx, productService + consoleKeys.SuccessKey, consoleKeys.ResponseKey, product)
+        return product;
+    }
+)
