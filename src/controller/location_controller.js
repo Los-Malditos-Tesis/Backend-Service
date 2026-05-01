@@ -48,7 +48,7 @@ export const searchLocationController = async (req, res, next) => {
       { body: req.body },
     );
 
-    const resp = await searchLocations(req.body, req.ctx);
+    const resp = await searchLocations(req.body, req.body.limit, req.body.page, req.ctx);
 
     Log.infoCtx(
       req.ctx,

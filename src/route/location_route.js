@@ -5,12 +5,14 @@ import { validateMiddleware } from "../middlewares/validator_moddleware.js";
 import {
   createLocationController,
   deleteLocationController,
+  searchLocationController,
   updateLocationController,
 } from "../controller/location_controller.js";
 import {
   locationUpdateValidator,
   locationDeleteValidator,
   locationCreateValidator,
+  locationSearchValidator,
 } from "../utils/validator/location_validator.js";
 
 const locationRouter = Router();
@@ -23,6 +25,15 @@ locationRouter.post(
   validateMiddleware,
   createLocationController,
 );
+
+locationRouter.post(
+  "/search",
+  authMiddleware,
+  authorizeMiddleware(["ADMIN", "USER"]),
+  locationSearchValidator,
+  validateMiddleware,
+  searchLocationController,
+)
 
 locationRouter.put(
   "/:id",

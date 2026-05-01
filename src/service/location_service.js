@@ -47,7 +47,7 @@ export const createLocation = serviceHandler(
 export const searchLocations = serviceHandler(
   locationService,
   CODES.LOCATION.NOT_FOUND,
-  async (query = "", limit = 10, page = 1, ctx) => {
+  async (query = {}, limit = 10, page = 1, ctx) => {
     Log.infoCtx(
       ctx,
       locationService + consoleKeys.StartKey,
