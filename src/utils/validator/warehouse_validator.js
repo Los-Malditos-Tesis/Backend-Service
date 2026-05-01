@@ -52,6 +52,16 @@ export const validateGetWarehouseById = [
 ]
 
 export const validateSearchWarehouses = [
+    body("limit")
+        .optional()
+        .trim()
+        .escape()
+        .isInt({ min: 1 }).withMessage("El limite debe ser un numero mayor o igual a 1"),
+    body("page")
+        .optional()
+        .trim()
+        .escape()
+        .isInt({ min: 1 }).withMessage("La pagina debe ser un numero mayor o igual a 1"),
     body("id")
         .optional()
         .trim()
