@@ -82,8 +82,7 @@ export const deleteById = repositoryHandler(
 );
 
 export const search = repositoryHandler(
-  productRepository,
-  async (query = "", warehouseId, limit = 10, page = 1, ctx) => {
+  async (query = {}, warehouseId, limit = 10, page = 1, ctx) => {
     const offset = (page - 1) * limit;
     const { name, sku, code, category } = query;
     const whereClouse = {
@@ -142,5 +141,16 @@ export const countActiveProducts = repositoryHandler(
       },
     });
     return count;
+  },
+);
+
+export const update = repositoryHandler(
+  productRepository,
+  async (id, product = {}, ctx) => {
+    return await db.Product.update(product, {
+      where: {
+        id: id,
+      },
+    });
   },
 );

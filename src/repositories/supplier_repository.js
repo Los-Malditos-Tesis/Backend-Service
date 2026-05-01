@@ -87,7 +87,7 @@ export const search = repositoryHandler(
     const offset = (page - 1) * limit;
     const { id, name, code, phone, email, contactName, location } = query;
     const whereClouse = {
-      // deleted_at: null,
+      deleted_at: null,
     };
 
     if (id) whereClouse.id = { [Op.iLike]: `%${id}%` };

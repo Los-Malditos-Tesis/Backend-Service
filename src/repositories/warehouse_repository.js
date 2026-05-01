@@ -121,7 +121,7 @@ export const deleteById = repositoryHandler(
 
 export const search = repositoryHandler(
     warehouseRepository,
-    async (query = "", limit = 10, page = 1, ctx) => {
+    async (query = {}, limit = 10, page = 1, ctx) => {
         const { name, address, user_id } = query;
 
         const offset = (page - 1) * limit;
@@ -149,5 +149,18 @@ export const search = repositoryHandler(
             totalPages: Math.ceil(count / limit),
             currentPage: page
         }
+    }
+)
+
+export const update = repositoryHandler(
+    warehouseRepository,
+    async (id = "", warehouseData = {}, ctx) => {
+        const result = await db.Warehouse.update(warehouseData, {
+            where: {
+                id: id
+            },
+            returning: true
+        })
+        return result[1]
     }
 )

@@ -1,34 +1,39 @@
 import { body, param } from "express-validator";
+import { VALIDATION_MESSAGES as MSG } from "../const/messages.js";
 
 export const validateRegister = [
-    body("name")
-        .trim()
-        .escape()
-        .notEmpty().withMessage("Name is required")
-        .isLength({ min: 3, max: 30 }).withMessage("Name must be between 3 and 30 characters")
-        .matches(/^[a-zA-Z0-9._-]+$/).withMessage("Name can only contain letters, numbers, dots, underscores, and hyphens"),
+  body("name")
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage(MSG.REQUIRED.es("El nombre"))
+    .isLength({ min: 3, max: 30 })
+    .withMessage(MSG.LENGTH.es("El nombre", 3, 30))
+    .matches(/^[a-zA-Z0-9._-]+$/)
+    .withMessage(),
 
-    body("email")
-        .trim()
-        .escape()
-        .isEmail().withMessage("Must be a valid email address")
-        .normalizeEmail(),
-    
-    body("password")
-        .notEmpty()
-        .isLength({ min: 8 }).withMessage("Min 8 characters")
-        .matches(/[A-Z]/).withMessage("Must contain uppercase")
-        .matches(/[a-z]/).withMessage("Must contain lowercase")
-        .matches(/[0-9]/).withMessage("Must contain number")
+  body("email")
+    .trim()
+    .escape()
+    .isEmail()
+    .withMessage(MSG.EMAIL.es())
+    .normalizeEmail(),
+
+  body("password")
+    .notEmpty()
+    .isLength({ min: 8, max: 30 })
+    .withMessage(MSG.LENGTH.es("La contraseña", 8, 30))
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]$/)
+    .withMessage(MSG.PASSWORD.es("La contraseña")),
 ];
-
+``;
 export const validateLogin = [
-    body("email")
-        .trim()
-        .escape()
-        .isEmail().withMessage("Must be a valid email address")
-        .normalizeEmail(),
-    
-    body("password")
-        .notEmpty()
+  body("email")
+    .trim()
+    .escape()
+    .isEmail()
+    .withMessage(MSG.EMAIL.es())
+    .normalizeEmail(),
+
+  body("password").notEmpty().withMessage(MSG.REQUIRED.es("La contraseña")),
 ];

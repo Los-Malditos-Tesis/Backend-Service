@@ -1,209 +1,198 @@
 import { body, query, param } from "express-validator";
+import { VALIDATION_MESSAGES as MSG } from "../const/messages.js";
 
 export const createSupplierValidator = [
   body("name")
     .exists()
-    .withMessage("name is required")
+    .withMessage(MSG.REQUIRED.es("El nombre"))
     .bail()
     .isString()
-    .withMessage("name must be a string")
+    .withMessage(MSG.STRING.es("El nombre"))
     .bail()
     .trim()
     .isLength({ min: 3, max: 100 })
-    .withMessage("name must be between 3 and 100 characters")
+    .withMessage(MSG.LENGTH.es("El nombre", 3, 100))
     .bail()
     .matches(/^[a-zA-Z0-9 ._-]+$/)
-    .withMessage("name contains invalid characters"),
+    .withMessage(MSG.INVALID_FORMAT.es("El nombre")),
 
   body("code")
     .exists()
-    .withMessage("code is required")
+    .withMessage(MSG.REQUIRED.es("El código"))
     .bail()
     .isString()
-    .withMessage("code must be a string")
+    .withMessage(MSG.STRING.es("El código"))
     .bail()
     .trim()
     .isLength({ min: 3, max: 30 })
-    .withMessage("code must be between 3 and 30 characters")
+    .withMessage(MSG.LENGTH.es("El código", 3, 30))
     .bail()
     .matches(/^[a-zA-Z0-9._-]+$/)
-    .withMessage("code contains invalid characters")
+    .withMessage(MSG.INVALID_FORMAT.es("El código"))
     .bail(),
 
   body("contactName")
     .exists()
-    .withMessage("contactName is required")
+    .withMessage(MSG.REQUIRED.es("El nombre de contacto"))
     .bail()
     .isString()
-    .withMessage("contactName must be a string")
+    .withMessage(MSG.STRING.es("El nombre de contacto"))
     .bail()
     .trim()
     .isLength({ min: 3, max: 80 })
-    .withMessage("contactName must be between 3 and 80 characters")
+    .withMessage(MSG.LENGTH.es("El nombre de contacto", 3, 80))
     .bail()
     .matches(/^[a-zA-Z0-9 ._-]+$/)
-    .withMessage("contactName contains invalid characters"),
+    .withMessage(MSG.INVALID_FORMAT.es("El nombre de contacto"))
+    .bail(),
 
   body("phone")
     .exists()
-    .withMessage("phone is required")
+    .withMessage(MSG.REQUIRED.es("El teléfono"))
     .bail()
     .isString()
-    .withMessage("phone must be a string")
+    .withMessage(MSG.STRING.es("El teléfono"))
     .bail()
     .trim()
     .isLength({ min: 3, max: 30 })
-    .withMessage("phone must be between 3 and 30 characters")
+    .withMessage(MSG.LENGTH.es("El teléfono", 3, 30))
     .bail()
     .matches(/^[0-9+() \-]+$/)
-    .withMessage("phone format is invalid"),
+    .withMessage(MSG.INVALID_FORMAT.es("El teléfono"))
+    .bail(),
 
   body("email")
     .exists()
-    .withMessage("email is required")
+    .withMessage(MSG.REQUIRED.es("El correo electrónico"))
     .bail()
     .isString()
-    .withMessage("email must be a string")
+    .withMessage(MSG.STRING.es("El correo electrónico"))
     .bail()
     .trim()
     .isEmail()
-    .withMessage("email format is invalid"),
+    .withMessage(MSG.INVALID_FORMAT.es("El correo electrónico")),
 
   body("location")
     .exists()
-    .withMessage("location is required")
+    .withMessage(MSG.REQUIRED.es("La ubicación"))
     .bail()
     .isString()
-    .withMessage("location must be a string")
+    .withMessage(MSG.STRING.es("La ubicación"))
     .bail()
     .trim()
     .isLength({ min: 3, max: 80 })
-    .withMessage("location must be between 3 and 80 characters")
+    .withMessage(MSG.LENGTH.es("La ubicación", 3, 80))
     .bail()
     .matches(/^[a-zA-Z0-9 ._-]+$/)
-    .withMessage("location contains invalid characters"),
+    .withMessage(MSG.INVALID_FORMAT.es("La ubicación")),
 ];
 
 export const searchSuppliersValidator = [
-  param("id").optional().isUUID().withMessage("Id invalido").bail().trim(),
+  param("id").optional().isUUID().withMessage(MSG.UUID.es()).bail().trim(),
 
   query("name")
     .optional()
     .isString()
     .bail()
     .trim()
-    .withMessage("Nombre invalido")
+    .withMessage(MSG.STRING.es("El nombre"))
     .isLength({ min: 1, max: 100 })
-    .withMessage("Nombre debe tener entre 1 y 100 caracteres")
+    .withMessage(MSG.LENGTH.es("El nombre", 1, 100))
     .bail()
-    .matches(/^[a-zA-Z0-9 ._-]+$/),
+    .matches(/^[a-zA-Z0-9 ._-]+$/)
+    .withMessage(MSG.INVALID_FORMAT.es("El nombre"))
+    .bail(),
 
   query("code")
     .optional()
     .isString()
-    .withMessage("code must be a string")
+    .withMessage(MSG.STRING.es("El código"))
     .bail()
     .trim()
     .isLength({ min: 1, max: 30 })
-    .withMessage("code max 30 characters")
+    .withMessage(MSG.LENGTH.es("El código", 1, 30))
     .bail()
     .matches(/^[a-zA-Z0-9._-]+$/)
-    .withMessage("code contains invalid characters"),
+    .withMessage(MSG.INVALID_FORMAT.es("El código"))
+    .bail(),
 
   query("phone")
     .optional()
     .isString()
-    .withMessage("El telefono debe ser una cadena de caracteres")
+    .withMessage(MSG.STRING.es("El telefono"))
     .bail()
     .trim()
     .isLength({ min: 1, max: 30 })
-    .withMessage("El telefono debe tener entre 1 y 30 caracteres")
+    .withMessage(MSG.LENGTH.es("El telefono", 1, 30))
     .bail()
     .matches(/^[0-9+() \-]+$/)
-    .withMessage("El telefono contiene caracteres invalidos"),
+    .withMessage(MSG.PHONE.es())
+    .bail(),
 
   query("email")
     .optional()
     .isString()
-    .withMessage("El email debe ser una cadena de caracteres")
+    .withMessage(MSG.STRING.es("El email"))
     .bail()
     .trim()
     .isEmail()
-    .withMessage("El email contiene caracteres invalidos"),
+    .withMessage(MSG.EMAIL.es()),
 
   query("contactName")
     .optional()
     .isString()
-    .withMessage("El nombre de contacto debe ser una cadena de caracteres")
+    .withMessage(MSG.STRING.es("El nombre de contacto"))
     .bail()
     .trim()
     .isLength({ min: 1, max: 80 })
-    .withMessage("El nombre de contacto debe tener entre 1 y 80 caracteres")
+    .withMessage(MSG.LENGTH.es("El nombre de contacto", 1, 80))
     .bail()
     .matches(/^[a-zA-Z0-9 ._-]+$/)
-    .withMessage("El nombre de contacto contiene caracteres invalidos"),
+    .withMessage(MSG.INVALID_FORMAT.es("El nombre de contacto")),
 
   query("location")
     .optional()
     .isString()
-    .withMessage("La ubicacion debe ser una cadena de caracteres")
+    .withMessage(MSG.STRING.es("La ubicacion"))
     .bail()
     .trim()
     .isLength({ min: 1, max: 80 })
-    .withMessage("La ubicacion debe tener entre 1 y 80 caracteres")
+    .withMessage(MSG.LENGTH.es("La ubicacion", 1, 80))
     .bail()
     .matches(/^[a-zA-Z0-9 ._-]+$/)
-    .withMessage("location contains invalid characters"),
-
-  query("limit")
-    .optional()
-    .isInt({ min: 1, max: 100 })
-    .withMessage("El limite debe estar entre 1 y 100")
-    .toInt(),
-
-  query("page")
-    .optional()
-    .isInt({ min: 1 })
-    .withMessage("La pagina debe ser mayor o igual a 1")
-    .toInt(),
+    .withMessage(MSG.INVALID_FORMAT.es("La ubicacion")),
 ];
 
 export const updateSupplierValidator = [
-  param("id").isUUID().withMessage("Id invalido"),
+  param("id").isUUID().withMessage(MSG.UUID.es()),
 
   body("name")
     .optional()
     .isString()
     .notEmpty()
-    .withMessage("El nombre del proveedor no puede estar vacio"),
+    .withMessage(MSG.EMPTY.es("El nombre del proveedor")),
 
   body("code")
     .optional()
     .isString()
     .notEmpty()
-    .withMessage("El codigo del proveedor no puede estar vacio"),
+    .withMessage(MSG.EMPTY.es("El codigo del proveedor")),
 
-  body("email")
-    .optional()
-    .isEmail()
-    .withMessage("El correo electronico no es valido"),
+  body("email").optional().isEmail().withMessage(MSG.EMAIL.es()),
 
-  body("phone")
-    .optional()
-    .isString()
-    .withMessage("El telefono debe ser una cadena de caracteres"),
+  body("phone").optional().isString().withMessage(MSG.STRING.es("El telefono")),
 
   body("contactName")
     .optional()
     .isString()
-    .withMessage("El nombre de contacto debe ser una cadena de caracteres"),
+    .withMessage(MSG.STRING.es("El nombre de contacto")),
 
   body("location")
     .optional()
     .isString()
-    .withMessage("La ubicacion debe ser una cadena de caracteres"),
+    .withMessage(MSG.STRING.es("La ubicacion")),
 ];
 
 export const deleteSupplierValidator = [
-  param("id").isUUID().withMessage("Id invalido"),
+  param("id").isUUID().withMessage(MSG.UUID.es()),
 ];
