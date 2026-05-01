@@ -85,7 +85,7 @@ export const searchByName = repositoryHandler(
 
 export const search = repositoryHandler(
     supplierRepository,
-    async (query = "", limit = 10, page = 1, ctx) => {
+    async (query = {}, limit = 10, page = 1, ctx) => {
 
         const offset = (page - 1) * limit;
         const { id, name, code, phone, email, contactName, location } = query;

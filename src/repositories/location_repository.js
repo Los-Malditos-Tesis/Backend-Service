@@ -86,7 +86,7 @@ export const deleteById = repositoryHandler(
 
 export const search = repositoryHandler(
     locationRepository,
-    async (query = "", limit = 10, page = 1, ctx) => {
+    async (query = {}, limit = 10, page = 1, ctx) => {
 
         const offset = (page - 1) * limit;
         const { id, zone } = query;

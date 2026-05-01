@@ -3,15 +3,26 @@ import { authMiddleware } from "../middlewares/auth_middleware.js";
 import { authorizeMiddleware } from "../middlewares/authorize_middleware.js";
 import { validateMiddleware } from "../middlewares/validator_moddleware.js";
 import {
+  createLocationController,
   deleteLocationController,
   updateLocationController,
 } from "../controller/location_controller.js";
 import {
   locationUpdateValidator,
   locationDeleteValidator,
+  locationCreateValidator,
 } from "../utils/validator/location_validator.js";
 
 const locationRouter = Router();
+
+locationRouter.post(
+  "/create",
+  authMiddleware,
+  authorizeMiddleware(["ADMIN", "USER"]),
+  locationCreateValidator,
+  validateMiddleware,
+  createLocationController,
+);
 
 locationRouter.put(
   "/:id",
