@@ -2,94 +2,108 @@ import { DataTypes } from "sequelize";
 import { encryptPassword, comparePassword } from "../libs/encrypt/encrypt.js";
 
 export default (sequelize) => {
-    const User = sequelize.define("User", {
-        id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
-            primaryKey: true
+  const User = sequelize.define(
+    "User",
+    {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          len: [3, 30],
+          is: /^[a-zA-Z0-9._-]+$/,
         },
-        name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true,
-                len: [3, 30],
-                is: /^[a-zA-Z0-9._-]+$/
-            }
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: {
+          args: true,
+          msg: "Email already in user!",
         },
-        email: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: {
-                args: true,
-                msg: 'Email already in user!'
-            },
-            set(value) {
-                this.setDataValue('email', value.trim().toLowerCase());
-            },
-            validate: {
-                isEmail: {
-                    msg: 'Must be a valid email address'
-                },
-                notEmpty: true
-            }
+        set(value) {
+          this.setDataValue("email", value.trim().toLowerCase());
         },
-        password: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
+        validate: {
+          isEmail: {
+            msg: "Must be a valid email address",
+          },
+          notEmpty: true,
         },
-        status: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: true
-        }
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      status: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+      },
+    },
+    {
+      tableName: "users",
+      underscored: true,
+      timestamps: true,
+      paranoid: true,
+      hooks: {
+        beforeCreate: async (user) => {
+          if (user.password) {
+            user.password = await encryptPassword(user.password);
+          }
+        },
 
-    }, {
-        tableName: "users",
-        underscored: true,
-        timestamps: true,
-        paranoid: true,
+        beforeUpdate: async (user) => {
+          if (user.changed("password")) {
+            user.password = await encryptPassword(user.password);
+          }
+        },
+      },
+      defaultScope: {
+        attributes: {
+          exclude: ["password"],
+        },
+      },
+      scopes: {
+        withPassword: {
+          attributes: {
+            include: ["password"],
+          },
+        },
+      },
+    },
+  );
 
-        hooks: {
-            beforeCreate: async (user) => {
-                if (user.password) {
-                    user.password = await encryptPassword(user.password)
-                }
-            },
+  User.prototype.validatePassword = async function (password) {
+    if (!this.password) return false;
+    return comparePassword(password, this.password);
+  };
 
-            beforeUpdate: async (user) => {
-                if (user.changed("password")) {
-                    user.password = await encryptPassword(user.password)
-                }
-            }
-        }
-    })
+  User.associate = (models) => {
+    User.belongsToMany(models.Role, {
+      through: "user_role",
+      foreignKey: "user_id",
+      otherKey: "role_id",
+      as: "roles",
+    });
 
-    User.prototype.validatePassword = async function (password) {
-        if (!this.password) return false;
-        return comparePassword(password, this.password)
-    }
+    User.belongsTo(models.Warehouse, {
+      foreignKey: "warehouse_id",
+    });
 
-    User.associate = (models) => {
-        User.belongsToMany(models.Role, {
-            through: "user_role",
-            foreignKey: "user_id",
-            otherKey: "role_id",
-            as: "roles"
-        });
+    User.hasMany(models.Token, {
+      foreignKey: "user_id",
+    });
 
-        User.belongsTo(models.Warehouse, {
-            foreignKey: "warehouse_id"
-        });
+    User.hasMany(models.Audit, { foreignKey: "user_id" });
+  };
 
-        User.hasMany(models.Token, {
-            foreignKey: "user_id"
-        });
-
-        User.hasMany(models.Audit, { foreignKey: "user_id" })
-    };
-
-    return User;
-}
+  return User;
+};

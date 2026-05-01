@@ -21,10 +21,9 @@ export const validateRegister = [
 
   body("password")
     .notEmpty()
-    .isLength({ min: 8, max: 30 })
-    .withMessage(MSG.LENGTH.es("La contraseña", 8, 30))
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]$/)
-    .withMessage(MSG.PASSWORD.es("La contraseña")),
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,30}$/)
+    .withMessage(MSG.PASSWORD.es("La contraseña"))
+    .bail(),
 ];
 ``;
 export const validateLogin = [
