@@ -41,4 +41,7 @@ export const VALIDATION_MESSAGES = {
   EMPTY: {
     es: (field) => `${field} no puede estar vacío`,
   },
+  MIN: {
+    es: (field, min) => `${field} debe ser mayor o igual a ${min}`,
+  }
 };
