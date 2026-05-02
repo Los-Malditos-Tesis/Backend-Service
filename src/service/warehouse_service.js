@@ -177,7 +177,7 @@ export const getInventoryByLocation = serviceHandler(
       throw new AppError(
         "No se encontró inventario para esta ubicación",
         404,
-        warehouseCodes.NOT_FOUND,
+        CODES.WAREHOUSE.NOT_FOUND,
       );
 
     Log.infoCtx(

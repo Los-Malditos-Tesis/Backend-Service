@@ -12,6 +12,16 @@ export const obfuscatePass = (data = {}) => {
   return clone;
 };
 
+export const obfuscateRoles = (data = {}) => {
+  if (!data || typeof data !== "object") return data;
+  const clone = { ...data };
+
+  if ("roles" in clone) {
+    clone.roles = "[ROLES]";
+  }
+  return clone;
+};
+
 export const obfuscateToken = (data = {}) => {
   if (!data || typeof data !== "object") return data;
   const clone = { ...data };

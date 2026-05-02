@@ -72,9 +72,30 @@ export default (sequelize) => {
         },
       },
       scopes: {
+        withRoles: {
+          include: [
+            {
+              model: sequelize.models.Role,
+              attributes: ["id", "name"],
+              through: { attributes: [] },
+              as: "roles",
+            },
+          ],
+        },
         withPassword: {
           attributes: {
             include: ["password"],
+          },
+        },
+        cleanData: {
+          attributes: {
+            exclude: [
+              "password",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "warehouse_id",
+            ],
           },
         },
       },
