@@ -1,9 +1,9 @@
-import { AppError } from "../errors/app_error";
-import { consoleKeys } from "../libs/logger/console/constant";
-import { Log } from "../libs/logger/logger";
-import { findAll, findByCode, remove, update } from "../repositories/store_repository";
-import { CODES } from "../utils/const/codes";
-import { serviceHandler } from "../utils/handler/service_handler";
+import { AppError } from "../errors/app_error.js";
+import { consoleKeys } from "../libs/logger/console/constant.js";
+import { Log } from "../libs/logger/logger.js";
+import { create, findAll, findByCode, findById, remove, update } from "../repositories/store_repository.js";
+import { CODES } from "../utils/const/codes.js";
+import { serviceHandler } from "../utils/handler/service_handler.js";
 
 const storeService = "store service: ";
 
@@ -18,7 +18,7 @@ export const findStoreByCode = serviceHandler(
             code,
         );
 
-        const store = await findByCode(code, ctx);
+        const store = await findByCode(ctx, code, {});
         if (!store)
             throw new AppError("La tienda no existe", 404, CODES.STORE.NOT_FOUND);
 
@@ -47,7 +47,8 @@ export const createStore = serviceHandler(
         if (existStore)
             throw new AppError("La tienda ya existe", 400, CODES.STORE.ALREADY_EXISTS);
 
-        const resp = await create(storeData, ctx);
+        const resp = await create(ctx, storeData, {});
+
         Log.infoCtx(
             ctx,
             storeService + consoleKeys.SuccessKey,
@@ -69,9 +70,17 @@ export const updateStore = serviceHandler(
             storeData,
         );
 
-        const existStore = await findStoreByCode(storeData.code, ctx);
+        const existStore = await findById(ctx, storeData.id, {});
+        if (!existStore)
+            throw new AppError("La tienda no existe", 404, CODES.STORE.NOT_FOUND);
 
-        const resp = await update(ctx, existStore.id, storeData);
+        if (storeData.code && storeData.code !== existStore.code) {
+            const existStoreByCode = await findByCode(ctx, storeData.code, {});
+            if (existStoreByCode && existStoreByCode.id !== storeData.id)
+                throw new AppError("El codigo ya existe", 400, CODES.STORE.ALREADY_EXISTS);
+        }
+
+        const resp = await update(ctx, storeData.id, storeData, {});
         Log.infoCtx(
             ctx,
             storeService + consoleKeys.SuccessKey,
@@ -93,7 +102,7 @@ export const searchStores = serviceHandler(
             query,
         );
 
-        const stores = await findAll(ctx, query);
+        const stores = await findAll(ctx, query, {});
         Log.infoCtx(
             ctx,
             storeService + consoleKeys.SuccessKey,
@@ -115,7 +124,7 @@ export const removeStore = serviceHandler(
             { id },
         );
 
-        const deleted = await remove(ctx, id);
+        const deleted = await remove(ctx, id, {});
 
         Log.infoCtx(
             ctx,

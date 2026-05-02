@@ -6,7 +6,7 @@ export const validateCreateStore = [
         .escape()
         .notEmpty().withMessage("El nombre es requerido")
         .isLength({ min: 3, max: 100 }).withMessage("El nombre debe tener entre 3 y 100 caracteres")
-        .matches(/^[a-zA-Z0-9._-]+$/).withMessage("El nombre solo puede contener letras, números, puntos, guiones bajos y guiones"),
+        .matches(/^[a-zA-Z0-9._\-\s]+$/).withMessage("El nombre solo puede contener letras, números, puntos, guiones bajos y espacios"),
     body("code")
         .trim()
         .escape()
@@ -18,7 +18,7 @@ export const validateCreateStore = [
         .escape()
         .notEmpty().withMessage("La dirección es requerida")
         .isLength({ min: 3, max: 100 }).withMessage("La dirección debe tener entre 3 y 100 caracteres")
-        .matches(/^[a-zA-Z0-9._-]+$/).withMessage("La dirección solo puede contener letras, números, puntos, guiones bajos y guiones"),
+        .matches(/^[a-zA-Z0-9.,#_\-\s]+$/).withMessage("La dirección solo puede contener letras, números, puntos, comas, almohadillas, guiones bajos y espacios"),
 ];
 
 export const validateUpdateStore = [
@@ -32,7 +32,7 @@ export const validateUpdateStore = [
         .trim()
         .escape()
         .isLength({ min: 3, max: 100 }).withMessage("El nombre debe tener entre 3 y 100 caracteres")
-        .matches(/^[a-zA-Z0-9._-]+$/).withMessage("El nombre solo puede contener letras, números, puntos, guiones bajos y guiones"),
+        .matches(/^[a-zA-Z0-9._\-\s]+$/).withMessage("El nombre solo puede contener letras, números, puntos, guiones bajos y guiones"),
     body("code")
         .optional()
         .trim()
@@ -44,7 +44,7 @@ export const validateUpdateStore = [
         .trim()
         .escape()
         .isLength({ min: 3, max: 100 }).withMessage("La dirección debe tener entre 3 y 100 caracteres")
-        .matches(/^[a-zA-Z0-9._-]+$/).withMessage("La dirección solo puede contener letras, números, puntos, guiones bajos y guiones"),
+        .matches(/^[a-zA-Z0-9.,#_\-\s]+$/).withMessage("La dirección solo puede contener letras, números, puntos, comas, almohadillas, guiones bajos y espacios"),
 ];
 
 export const validateIdParamStore = [
