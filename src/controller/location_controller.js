@@ -1,4 +1,9 @@
-import { updateLocation, deleteLocation, searchLocations, createLocation } from "../service/location_service.js";
+import {
+  updateLocation,
+  deleteLocation,
+  searchLocations,
+  createLocation,
+} from "../service/location_service.js";
 import { Log } from "../libs/logger/logger.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { CODES } from "../utils/const/codes.js";
@@ -24,20 +29,14 @@ export const createLocationController = async (req, res, next) => {
       resp,
     );
 
-    return generalResponse(
-      res,
-      201,
-      CODES.SUCCESS.OK,
-      "zona creada",
-      resp,
-    );
+    return generalResponse(res, 201, CODES.SUCCESS.OK, "zona creada", resp);
   } catch (e) {
     Log.errorCtx(req.ctx, locationController + consoleKeys.FailKey, e);
     next(e);
   } finally {
     Log.infoCtx(req.ctx, locationController + consoleKeys.FinishKey);
   }
-}
+};
 
 export const searchLocationController = async (req, res, next) => {
   try {
@@ -48,7 +47,12 @@ export const searchLocationController = async (req, res, next) => {
       { body: req.body },
     );
 
-    const resp = await searchLocations(req.body, req.body.limit, req.body.page, req.ctx);
+    const resp = await searchLocations(
+      req.body,
+      req.body.limit,
+      req.body.page,
+      req.ctx,
+    );
 
     Log.infoCtx(
       req.ctx,
@@ -57,20 +61,14 @@ export const searchLocationController = async (req, res, next) => {
       resp,
     );
 
-    return generalResponse(
-      res,
-      201,
-      CODES.SUCCESS.OK,
-      "zona encontrada",
-      resp,
-    );
+    return generalResponse(res, 201, CODES.SUCCESS.OK, "zona encontrada", resp);
   } catch (e) {
     Log.errorCtx(req.ctx, locationController + consoleKeys.FailKey, e);
     next(e);
   } finally {
     Log.infoCtx(req.ctx, locationController + consoleKeys.FinishKey);
   }
-}
+};
 
 export const updateLocationController = async (req, res, next) => {
   try {

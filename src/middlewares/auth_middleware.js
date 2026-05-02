@@ -5,6 +5,7 @@ import { CODES } from "../utils/const/codes.js";
 import { Log } from "../libs/logger/logger.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { obfuscatePass } from "../utils/obfuscate/obfucates.js";
+import { findByEmailWithRoles } from "../repositories/user_repository.js";
 
 const authMiddlewareKey = "auth middleware: ";
 
@@ -28,7 +29,7 @@ export const authMiddleware = async (req, res, next) => {
     if (!decoded.valid)
       throw new AppError("Invalid token", 401, CODES.AUTH.INAUTHORIZED);
 
-    const user = await getUserByEmail(req.ctx, decoded.payload?.email);
+    const user = await findByEmailWithRoles(decoded.payload?.email, req.ctx);
     if (!user)
       throw new AppError("Invalid token", 404, CODES.RESOURCE.NOT_FOUND);
 

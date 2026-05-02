@@ -33,7 +33,7 @@ locationRouter.post(
   locationSearchValidator,
   validateMiddleware,
   searchLocationController,
-)
+);
 
 locationRouter.put(
   "/:id",

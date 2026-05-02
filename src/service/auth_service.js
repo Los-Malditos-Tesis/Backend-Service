@@ -12,6 +12,7 @@ import {
   findByContent,
   updateToken,
 } from "../repositories/token_repository.js";
+import { findByEmailWithPassword } from "../repositories/user_repository.js";
 
 const authService = "auth service: ";
 
@@ -60,7 +61,7 @@ export const loginUser = async (ctx, authData = {}) => {
       consoleKeys.RequestKey,
       obfuscatePass(authData),
     );
-    const user = await getUserByEmail(ctx, authData.email);
+    const user = await findByEmailWithPassword(authData.email, ctx);
 
     const validPassword = user
       ? await user.validatePassword(authData.password)
