@@ -6,11 +6,13 @@ import {
   createDeviceValidator,
   searchCamerasValidator,
   deleteCameraValidator,
+  updateCameraValidator,
 } from "../utils/validator/device_validator.js";
 import {
   registerCameraController,
   searchCamerasController,
   deleteCameraController,
+  updateCameraController,
 } from "../controller/device_controller.js";
 
 const deviceRouter = Router();
@@ -40,5 +42,14 @@ deviceRouter.delete(
   deleteCameraValidator,
   validateMiddleware,
   deleteCameraController,
+);
+
+deviceRouter.put(
+  "/:id",
+  authMiddleware,
+  authorizeMiddleware(["ADMIN"]),
+  updateCameraValidator,
+  validateMiddleware,
+  updateCameraController,
 );
 export default deviceRouter;
