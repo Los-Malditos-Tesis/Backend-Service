@@ -46,8 +46,12 @@ export const CODES = {
         ALREADY_EXISTS: 9001,
         NOT_PERMISSIONS: 9002,
     },
+    STORE: {
+        NOT_FOUND: 10000,
+        ALREADY_EXISTS: 10001,
+    },
     SERVER: {
-        INTERNAL_ERROR: 10000,
+        INTERNAL_ERROR: 11000,
     },
 
 }

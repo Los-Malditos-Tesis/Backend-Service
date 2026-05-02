@@ -1,12 +1,14 @@
 import { Op } from "sequelize";
 import db from "../models/index.js";
 import { repositoryHandler } from "../utils/handler/repository_handler.js";
+import { Log } from "../libs/logger/logger.js";
 
 const storeRepository = "store repository: ";
 
 export const create = repositoryHandler(
     storeRepository,
     async (ctx, store = {}, options = {}) => {
+        Log.infoCtx(ctx, storeRepository, "data en repo", store)
         return await db.Store.create(store, options)
     }
 )
@@ -65,7 +67,7 @@ export const findAll = repositoryHandler(
 
 export const update = repositoryHandler(
     storeRepository,
-    async (ctx, id = "", data = {}) => {
+    async (ctx, id = "", data = {}, options = {}) => {
         return await db.Store.update(data, {
             where: { id },
             returning: true,
