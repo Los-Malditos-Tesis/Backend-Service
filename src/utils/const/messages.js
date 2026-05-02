@@ -43,5 +43,14 @@ export const VALIDATION_MESSAGES = {
   },
   MIN: {
     es: (field, min) => `${field} debe ser mayor o igual a ${min}`,
-  }
+  },
+  ORDER_TYPE: {
+    es: (field) => `Debe ser un tipo de orden válido`,
+  },
+  UNIT_TYPE: {
+    es: (field) => `Debe ser un tipo de unidad válido`,
+  },
+  STATUS: {
+    es: (field) => `Debe ser un estado válido`,
+  },
 };

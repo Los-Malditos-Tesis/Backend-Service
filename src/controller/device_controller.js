@@ -1,4 +1,4 @@
-import { registerCamera, searchCameras } from "../service/camera_service.js";
+import { registerCamera, searchAllCameras } from "../service/camera_service.js";
 import { Log } from "../libs/logger/logger.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { CODES } from "../utils/const/codes.js";
@@ -55,7 +55,7 @@ export const searchCamerasController = async (req, res, next) => {
     const parsedLimit = parseInt(limit, 10);
     const parsedPage = parseInt(page, 10);
 
-    const resp = await searchCameras(
+    const resp = await searchAllCameras(
       { location_id, code, limit: parsedLimit, page: parsedPage },
       req.ctx,
     );
