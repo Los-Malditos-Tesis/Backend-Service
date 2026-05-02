@@ -46,18 +46,10 @@ export const findByEmailWithPassword = repositoryHandler(
 export const findByEmailWithRoles = repositoryHandler(
   authRepository,
   async (email = "", ctx) => {
-    return await db.User.findOne({
+    return await db.User.scope("withRoles", "cleanData").findOne({
       where: {
         email: email,
       },
-      include: [
-        {
-          model: db.Role,
-          attributes: ["id", "name"],
-          through: { attributes: [] },
-          as: "roles",
-        },
-      ],
     });
   },
 );

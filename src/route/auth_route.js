@@ -10,6 +10,7 @@ import {
   registerController,
   loginController,
   loginCameraController,
+  getMeController,
 } from "../controller/auth_controller.js";
 
 const authRouter = Router();
@@ -30,6 +31,8 @@ authRouter.post(
   loginController,
   loginController,
 );
+
+authRouter.get("/get-me", authMiddleware, getMeController);
 
 authRouter.post("/login/camera", loginCameraController);
 export default authRouter;

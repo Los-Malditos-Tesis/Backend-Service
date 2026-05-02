@@ -4,6 +4,7 @@ import { Log } from "../libs/logger/logger.js";
 import {
   obfuscateApiKey,
   obfuscatePass,
+  obfuscateRoles,
   obfuscateToken,
 } from "../utils/obfuscate/obfucates.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
@@ -107,5 +108,29 @@ export const loginCameraController = async (req, res, next) => {
     next(e);
   } finally {
     Log.infoCtx(req.ctx, authController + consoleKeys.FinishKey);
+  }
+};
+
+export const getMeController = async (req, res, next) => {
+  try {
+    Log.infoCtx(
+      req.ctx,
+      authController + consoleKeys.StartKey,
+      consoleKeys.InformationKey,
+      obfuscateRoles(req.user.toJSON()),
+    );
+
+    return generalResponse(
+      res,
+      200,
+      CODES.SUCCESS.OK,
+      "User retrieved successfully",
+      req.user,
+    );
+  } catch (e) {
+    Log.errorCtx(req.ctx, orderController + consoleKeys.FailKey, e);
+    next(e);
+  } finally {
+    Log.infoCtx(req.ctx, orderController + consoleKeys.FinishKey);
   }
 };

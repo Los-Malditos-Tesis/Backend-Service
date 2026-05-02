@@ -4,7 +4,7 @@ import { consoleKeys } from "../libs/logger/console/constant.js";
 import { CODES } from "../utils/const/codes.js";
 import { serviceHandler } from "../utils/handler/service_handler.js";
 import {
-  findAll,
+  searchCameras,
   findByLocationId,
   save,
   findById,
@@ -91,11 +91,16 @@ export const findCameraById = serviceHandler(
   },
 );
 
-export const searchCameras = serviceHandler(
+export const searchAllCameras = serviceHandler(
   cameraService,
   CODES.CAMERA.NOT_FOUND,
   async (query = "", ctx) => {
-    Log.infoCtx(ctx, cameraService + consoleKeys.StartKey);
+    Log.infoCtx(
+      ctx,
+      cameraService + consoleKeys.StartKey,
+      consoleKeys.ParamKey,
+      query,
+    );
     const { page = 1, limit = 1, location_id, code } = query;
 
     if (page < 1 || limit < 1)
@@ -105,7 +110,7 @@ export const searchCameras = serviceHandler(
         CODES.RESOURCE.INVALID_OPERATION,
       );
 
-    const cameras = await findAll(query, ctx);
+    const cameras = await searchCameras(query, ctx);
 
     Log.infoCtx(
       ctx,

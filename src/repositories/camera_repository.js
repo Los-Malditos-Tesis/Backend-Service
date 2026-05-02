@@ -11,7 +11,7 @@ export const save = repositoryHandler(
   },
 );
 
-export const findAll = repositoryHandler(
+export const searchCameras = repositoryHandler(
   cameraRepository,
   async (
     { page = 1, limit = 10, locationId, code, includeLocation = true },
@@ -45,9 +45,6 @@ export const findAll = repositoryHandler(
             },
           ]
         : undefined,
-      attributes: {
-        exclude: ["api_key"],
-      },
     });
   },
 );
