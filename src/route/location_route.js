@@ -20,7 +20,7 @@ const locationRouter = Router();
 locationRouter.post(
   "/create",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["LOCATION_CREATE"]),
   locationCreateValidator,
   validateMiddleware,
   createLocationController,
@@ -29,7 +29,7 @@ locationRouter.post(
 locationRouter.post(
   "/search",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["LOCATION_SEARCH"]),
   locationSearchValidator,
   validateMiddleware,
   searchLocationController,
@@ -38,7 +38,7 @@ locationRouter.post(
 locationRouter.put(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["LOCATION_UPDATE"]),
   locationUpdateValidator,
   validateMiddleware,
   updateLocationController,
@@ -47,7 +47,7 @@ locationRouter.put(
 locationRouter.delete(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["LOCATION_DELETE"]),
   locationDeleteValidator,
   validateMiddleware,
   deleteLocationController,

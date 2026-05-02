@@ -19,6 +19,10 @@ export const obfuscateRoles = (data = {}) => {
   if ("roles" in clone) {
     clone.roles = "[ROLES]";
   }
+
+  if ("permissions" in clone) {
+    clone.permissions = "[PERMISSIONS]";
+  }
   return clone;
 };
 

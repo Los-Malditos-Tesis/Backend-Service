@@ -20,7 +20,7 @@ const deviceRouter = Router();
 deviceRouter.post(
   "/register",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["CAMERA_CREATE"]),
   createDeviceValidator,
   validateMiddleware,
   registerCameraController,
@@ -29,7 +29,7 @@ deviceRouter.post(
 deviceRouter.get(
   "/",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["CAMERA_SEARCH"]),
   searchCamerasValidator,
   validateMiddleware,
   searchCamerasController,
@@ -38,7 +38,7 @@ deviceRouter.get(
 deviceRouter.delete(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["CAMERA_DELETE"]),
   deleteCameraValidator,
   validateMiddleware,
   deleteCameraController,
@@ -47,7 +47,7 @@ deviceRouter.delete(
 deviceRouter.put(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["CAMERA_UPDATE"]),
   updateCameraValidator,
   validateMiddleware,
   updateCameraController,

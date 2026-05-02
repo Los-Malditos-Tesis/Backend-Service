@@ -57,7 +57,7 @@ warehouseRouter.post(
 warehouseRouter.post(
   "/create",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
+  authorizeMiddleware(["WAREHOUSE_CREATE"]),
   validateCreateWarehouse,
   validateMiddleware,
   createWarehouseController,
@@ -66,7 +66,7 @@ warehouseRouter.post(
 warehouseRouter.put(
   "/update",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
+  authorizeMiddleware(["WAREHOUSE_UPDATE"]),
   validateUpdateWarehouse,
   validateMiddleware,
   updateWarehouseController,
@@ -75,7 +75,7 @@ warehouseRouter.put(
 warehouseRouter.delete(
   "/delete/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
+  authorizeMiddleware(["WAREHOUSE_DELETE"]),
   validateDeleteWarehouse,
   validateMiddleware,
   deleteWarehouseController,

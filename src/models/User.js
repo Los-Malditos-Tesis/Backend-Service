@@ -79,6 +79,14 @@ export default (sequelize) => {
               attributes: ["id", "name"],
               through: { attributes: [] },
               as: "roles",
+              include: [
+                {
+                  model: sequelize.models.Permission,
+                  attributes: ["id"],
+                  through: { attributes: [] },
+                  as: "permissions",
+                },
+              ],
             },
           ],
         },

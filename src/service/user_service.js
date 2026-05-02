@@ -1,11 +1,16 @@
-import { save, findByEmail } from "../repositories/user_repository.js";
+import {
+  save,
+  findByEmail,
+  findByEmailWithRoles,
+} from "../repositories/user_repository.js";
 import { AppError } from "../errors/app_error.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { getRoleById } from "./role_service.js";
 import { Log } from "../libs/logger/logger.js";
 import { config } from "../config/config.js";
 import { CODES } from "../utils/const/codes.js";
-import { obfuscatePass } from "../utils/obfuscate/obfucates.js";
+import { obfuscatePass, obfuscateRoles } from "../utils/obfuscate/obfucates.js";
+import { mapUserResponse } from "../utils/helper/map_user.js";
 
 const userService = "user service: ";
 
@@ -35,7 +40,7 @@ export const saveUser = async (ctx, user = {}) => {
       ctx,
       userService + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
-      newUser.toJSON(),
+      obfuscatePass(newUser.toJSON()),
     );
     return newUser;
   } catch (e) {
@@ -82,6 +87,52 @@ export const getUserByEmail = async (ctx, email = "") => {
       user.toJSON(),
     );
     return user;
+  } catch (e) {
+    let error = e;
+
+    if (!(e instanceof AppError)) {
+      error = new AppError(
+        e.message || "Internal error",
+        500,
+        CODES.RESOURCE.NOT_FOUND,
+        e?.errors,
+      );
+    }
+
+    Log.errorCtx(ctx, userService + consoleKeys.FailKey, error);
+
+    throw error;
+  } finally {
+    Log.infoCtx(ctx, userService + consoleKeys.FinishKey);
+  }
+};
+
+export const getUserByEmailWithRoles = async (email = "", ctx) => {
+  try {
+    Log.infoCtx(
+      ctx,
+      userService + consoleKeys.StartKey,
+      consoleKeys.RequestKey,
+      { email },
+    );
+    const user = await findByEmailWithRoles(email, ctx);
+
+    if (!user)
+      throw new AppError(
+        "Usuario no encontrado",
+        404,
+        CODES.RESOURCE.NOT_FOUND,
+      );
+
+    const resp = mapUserResponse(user.toJSON());
+
+    Log.infoCtx(
+      ctx,
+      userService + consoleKeys.SuccessKey,
+      consoleKeys.ResponseKey,
+      obfuscateRoles(resp),
+    );
+    return resp;
   } catch (e) {
     let error = e;
 

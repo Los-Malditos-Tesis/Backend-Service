@@ -20,7 +20,7 @@ const supplierRouter = Router();
 supplierRouter.post(
   "/",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["SUPPLIER_CREATE"]),
   createSupplierValidator,
   validateMiddleware,
   createSupplierController,
@@ -29,7 +29,7 @@ supplierRouter.post(
 supplierRouter.get(
   "/",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["SUPPLIER_SEARCH"]),
   searchSuppliersValidator,
   validateMiddleware,
   searchSuppliersController,
@@ -38,7 +38,7 @@ supplierRouter.get(
 supplierRouter.put(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["SUPPLIER_UPDATE"]),
   updateSupplierValidator,
   validateMiddleware,
   updateSupplierController,
@@ -47,7 +47,7 @@ supplierRouter.put(
 supplierRouter.delete(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["SUPPLIER_DELETE"]),
   deleteSupplierValidator,
   validateMiddleware,
   deleteSupplierController,

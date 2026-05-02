@@ -18,7 +18,7 @@ const authRouter = Router();
 authRouter.post(
   "/register",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["USER_CREATE"]),
   validateRegister,
   validateMiddleware,
   registerController,

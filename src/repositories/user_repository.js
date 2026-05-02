@@ -1,6 +1,6 @@
 import db from "../models/index.js";
 import { repositoryHandler } from "../utils/handler/repository_handler.js";
-import { obfuscatePass } from "../utils/obfuscate/obfucates.js";
+import { obfuscatePass, obfuscateRoles } from "../utils/obfuscate/obfucates.js";
 
 const authRepository = "auth repository: ";
 
@@ -52,4 +52,5 @@ export const findByEmailWithRoles = repositoryHandler(
       },
     });
   },
+  obfuscateRoles,
 );
