@@ -40,7 +40,7 @@ orderRouter.get(
 orderRouter.put(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["ADMIN", "USER"]),
   updateOrderValidator,
   validateMiddleware,
   updateOrderController,
@@ -49,7 +49,7 @@ orderRouter.put(
 orderRouter.patch(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["ADMIN", "USER"]),
   changeOrderStatusValidator,
   validateMiddleware,
   changeOrderStatusController,
@@ -58,7 +58,7 @@ orderRouter.patch(
 orderRouter.delete(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["ADMIN", "USER"]),
   deleteOrderValidator,
   validateMiddleware,
   deleteOrderController,

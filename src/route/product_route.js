@@ -30,7 +30,7 @@ productRouter.get(
 productRouter.post(
   "/create",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
   validateCreateProduct,
   validateMiddleware,
   createProductController,
@@ -47,7 +47,7 @@ productRouter.post(
 productRouter.put(
   "/update",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
   validateUpdateProduct,
   validateMiddleware,
   updateProductController,
@@ -56,7 +56,7 @@ productRouter.put(
 productRouter.delete(
   "/delete/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
   validateDeleteProduct,
   validateMiddleware,
   deleteProductController,

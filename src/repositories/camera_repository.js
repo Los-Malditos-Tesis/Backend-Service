@@ -15,6 +15,7 @@ export const searchCameras = repositoryHandler(
   cameraRepository,
   async (
     { page = 1, limit = 10, locationId, code, includeLocation = true },
+    options = {},
     ctx,
   ) => {
     const offset = (page - 1) * limit;
@@ -31,7 +32,7 @@ export const searchCameras = repositoryHandler(
       };
     }
 
-    return await db.Camera.findAndCountAll({
+    const { rows, count } = await db.Camera.findAndCountAll({
       where,
       limit,
       offset,
@@ -45,7 +46,15 @@ export const searchCameras = repositoryHandler(
             },
           ]
         : undefined,
+      ...options,
     });
+
+    return {
+      items: rows,
+      total: count,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+    };
   },
 );
 
