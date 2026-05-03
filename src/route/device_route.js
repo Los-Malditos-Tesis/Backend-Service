@@ -29,7 +29,7 @@ deviceRouter.post(
 deviceRouter.get(
   "/",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["ADMIN", "USER"]),
   searchCamerasValidator,
   validateMiddleware,
   searchCamerasController,
@@ -38,7 +38,7 @@ deviceRouter.get(
 deviceRouter.delete(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["ADMIN", "USER"]),
   deleteCameraValidator,
   validateMiddleware,
   deleteCameraController,
@@ -47,7 +47,7 @@ deviceRouter.delete(
 deviceRouter.put(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["ADMIN", "USER"]),
   updateCameraValidator,
   validateMiddleware,
   updateCameraController,
