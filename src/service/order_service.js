@@ -124,18 +124,18 @@ export const searchCameras = serviceHandler(
       query,
     );
 
-    if (page < 1 || limit < 1)
+    if (query.page < 1 || query.limit < 1)
       throw new AppError(
         "Numero de paginacion invalido",
         400,
         CODES.RESOURCE.INVALID_OPERATION,
       );
 
-    const orders = await searchOrders(query, limit, page, ctx);
+    const orders = await searchOrders(query, query.limit, query.page, ctx);
 
     Log.infoCtx(
       ctx,
-      cameraService + consoleKeys.SuccessKey,
+      orderService + consoleKeys.SuccessKey,
       consoleKeys.InformationKey,
       orders,
     );
@@ -144,12 +144,12 @@ export const searchCameras = serviceHandler(
 );
 
 export const updateOrder = serviceHandler(
-  cameraService,
-  CODES.CAMERA.NOT_FOUND,
+  orderService,
+  CODES.ORDER.NOT_FOUND,
   async (data = {}, ctx) => {
     Log.infoCtx(
       ctx,
-      cameraService + consoleKeys.StartKey,
+      orderService + consoleKeys.StartKey,
       consoleKeys.RequestKey,
       data,
     );
