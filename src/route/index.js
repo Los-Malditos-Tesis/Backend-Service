@@ -5,12 +5,16 @@ import locationRouter from "./location_route.js";
 import productRouter from "./product_route.js";
 import warehouseRouter from "./warehouse_route.js";
 import storeRouter from "./store_route.js";
+import deviceRouter from "./device_route.js";
+import orderRouter from "./order_route.js";
 
 const router = Router();
 
 router.use("/auth", authRouter);
+router.use("device", deviceRouter);
 router.use("/suppliers", supplierRouter);
 router.use("/location", locationRouter);
+router.use("/order", orderRouter);
 router.use("/product", productRouter);
 router.use("/warehouse", warehouseRouter);
 router.use("/store", storeRouter);
