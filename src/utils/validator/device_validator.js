@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body, param, query } from "express-validator";
 import { VALIDATION_MESSAGES as MSG } from "../const/messages.js";
 
 export const createDeviceValidator = [
