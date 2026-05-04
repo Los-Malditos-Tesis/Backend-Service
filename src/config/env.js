@@ -37,4 +37,6 @@ export const env = {
   JWT_EXPIRATION_CAM: require("JWT_EXPIRATION_CAM"),
   SQ_SYNC_ALTER: require("SQ_SYNC_ALTER"),
   SQ_SYNC_FORCE: require("SQ_SYNC_FORCE"),
+  DB_SSL_REQUIRE: require("DB_SSL_REQUIRE"),
+  DB_SSL_UNAUTHIRIZED: require("DB_SSL_UNAUTHIRIZED"),
 };

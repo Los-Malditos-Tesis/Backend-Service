@@ -1,61 +1,61 @@
 export const CODES = {
-    SUCCESS: {
-        OK: 0o0,
-        CREATED: 0o1,
-    },
-    AUTH: {
-        NOT_FOUND: 1000,
-        ALREADI_ALREADY_EXISTS: 1001,
-        INVALID_CREDENTIALS: 1002,
-        INAUTHORIZED: 1003,
-        FORBIDDEN: 1004
-    },
-    VALIDATION: {
-        INVALID_INPUT: 2000,
-        MISSING_FIELDS: 2001,
-    },
-    RESOURCE: {
-        NOT_FOUND: 3000,
-        ALREADY_EXISTS: 3001,
-        INVALID_OPERATION: 3002,
-    },
-    USER: {
-        ALREADY_EXISTS: 4000,
+  SUCCESS: {
+    OK: 0o0,
+    CREATED: 0o1,
+  },
+  AUTH: {
+    NOT_FOUND: 1000,
+    ALREADI_ALREADY_EXISTS: 1001,
+    INVALID_CREDENTIALS: 1002,
+    INAUTHORIZED: 1003,
+    FORBIDDEN: 1004,
+  },
+  VALIDATION: {
+    INVALID_INPUT: 2000,
+    MISSING_FIELDS: 2001,
+  },
+  RESOURCE: {
+    NOT_FOUND: 3000,
+    ALREADY_EXISTS: 3001,
+    INVALID_OPERATION: 3002,
+  },
+  USER: {
+    ALREADY_EXISTS: 4000,
+  },
+  PRODUCT: {
+    NOT_FOUND: 5000,
+    ALREADY_EXISTS: 5001,
+    HAS_STOCK: 5002,
+  },
+  SUPPLIER: {
+    NOT_FOUND: 6000,
+    ALREADY_EXISTS: 6001,
+  },
+  LOCATION: {
+    NOT_FOUND: 7000,
+    ALREADY_EXISTS: 7001,
+    HAS_STOCK: 7002,
+  },
+  CAMERA: {
+    NOT_FOUND: 8000,
+    ALREADY_EXISTS: 8001,
+  },
+  WAREHOUSE: {
+    NOT_FOUND: 9000,
+    ALREADY_EXISTS: 9001,
+    NOT_PERMISSIONS: 9002,
+  },
+  STORE: {
+    NOT_FOUND: 10000,
+    ALREADY_EXISTS: 10001,
+  },
+  ORDER: {
+    NOT_FOUND: 10000,
+    ALREADY_EXISTS: 10001,
+  },
+  SERVER: {
+    INTERNAL_ERROR: 11000,
+  },
+};
 
-    },
-    PRODUCT: {
-        NOT_FOUND: 5000,
-        ALREADY_EXISTS: 5001,
-        HAS_STOCK: 5002,
-    },
-    SUPPLIER: {
-        NOT_FOUND: 6000,
-        ALREADY_EXISTS: 6001,
-    },
-    LOCATION: {
-        NOT_FOUND: 7000,
-        ALREADY_EXISTS: 7001,
-        HAS_STOCK: 7002,
-    },
-    CAMERA: {
-        NOT_FOUND: 8000,
-        ALREADY_EXISTS: 8001,
-    },
-    WAREHOUSE: {
-        NOT_FOUND: 9000,
-        ALREADY_EXISTS: 9001,
-        NOT_PERMISSIONS: 9002,
-    },
-    STORE: {
-        NOT_FOUND: 10000,
-        ALREADY_EXISTS: 10001,
-    },
-    SERVER: {
-        INTERNAL_ERROR: 11000,
-    },
-
-}
-
-export const locationCodes = {
-
-}
+export const locationCodes = {};

@@ -7,6 +7,7 @@ import warehouseRouter from "./warehouse_route.js";
 import storeRouter from "./store_route.js";
 import deviceRouter from "./device_route.js";
 import orderRouter from "./order_route.js";
+import scanRouter from "./scan_event_route.js";
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use("/order", orderRouter);
 router.use("/product", productRouter);
 router.use("/warehouse", warehouseRouter);
 router.use("/store", storeRouter);
+router.use("/scan", scanRouter);
 
 export default router;

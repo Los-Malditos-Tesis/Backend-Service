@@ -1,5 +1,9 @@
 import { body, param, query } from "express-validator";
-import { ORDER_TYPES, ORDER_UNIT_TYPES } from "../const/codes.js";
+import {
+  ORDER_TYPES,
+  ORDER_UNIT_TYPES,
+  ORDER_STATUS,
+} from "../const/status.js";
 import { VALIDATION_MESSAGES as MSG } from "../const/messages.js";
 
 export const createOrderValidator = [
@@ -53,7 +57,7 @@ export const searchOrdersValidator = [
 ];
 
 export const updateOrderValidator = [
-  param("id").isUUID().withMessage(MSG.ID_UUID.es()),
+  param("id").isUUID().withMessage(MSG.UUID.es()),
 
   body("type")
     .optional()
@@ -67,7 +71,7 @@ export const updateOrderValidator = [
 ];
 
 export const changeOrderStatusValidator = [
-  param("id").isUUID().withMessage(MSG.ID_UUID.es()),
+  param("id").isUUID().withMessage(MSG.UUID.es()),
 
   body("status")
     .exists()
@@ -78,5 +82,5 @@ export const changeOrderStatusValidator = [
 ];
 
 export const deleteOrderValidator = [
-  param("id").isUUID().withMessage(MSG.ID_UUID.es()),
+  param("id").isUUID().withMessage(MSG.UUID.es()),
 ];

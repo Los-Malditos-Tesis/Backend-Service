@@ -5,7 +5,9 @@ import { CODES } from "../utils/const/codes.js";
 import { generalResponse } from "../utils/handler/response_handler.js";
 import { obfuscateApiKey } from "../utils/obfuscate/obfucates.js";
 
-export const registerCameraController = async (req, res) => {
+const deviceController = "device controller: ";
+
+export const registerCameraController = async (req, res, next) => {
   try {
     Log.infoCtx(
       req.ctx,
@@ -46,7 +48,7 @@ export const searchCamerasController = async (req, res, next) => {
   try {
     Log.infoCtx(
       req.ctx,
-      cameraController + consoleKeys.StartKey,
+      deviceController + consoleKeys.StartKey,
       consoleKeys.RequestKey,
       req.query,
     );
@@ -62,7 +64,7 @@ export const searchCamerasController = async (req, res, next) => {
 
     Log.infoCtx(
       req.ctx,
-      cameraController + consoleKeys.SuccessKey,
+      deviceController + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
       resp,
     );
@@ -75,10 +77,10 @@ export const searchCamerasController = async (req, res, next) => {
       resp,
     );
   } catch (e) {
-    Log.errorCtx(req.ctx, cameraController + consoleKeys.FailKey, e);
+    Log.errorCtx(req.ctx, deviceController + consoleKeys.FailKey, e);
     return next(e);
   } finally {
-    Log.infoCtx(req.ctx, cameraController + consoleKeys.FinishKey);
+    Log.infoCtx(req.ctx, deviceController + consoleKeys.FinishKey);
   }
 };
 
@@ -86,7 +88,7 @@ export const updateCameraController = async (req, res, next) => {
   try {
     Log.infoCtx(
       req.ctx,
-      cameraController + consoleKeys.StartKey,
+      deviceController + consoleKeys.StartKey,
       consoleKeys.RequestKey,
       req.body,
       consoleKeys.ParamKey,
@@ -99,7 +101,7 @@ export const updateCameraController = async (req, res, next) => {
 
     Log.infoCtx(
       req.ctx,
-      cameraController + consoleKeys.SuccessKey,
+      deviceController + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
       resp,
     );
@@ -112,10 +114,10 @@ export const updateCameraController = async (req, res, next) => {
       resp,
     );
   } catch (e) {
-    Log.errorCtx(req.ctx, cameraController + consoleKeys.FailKey, e);
+    Log.errorCtx(req.ctx, deviceController + consoleKeys.FailKey, e);
     return next(e);
   } finally {
-    Log.infoCtx(req.ctx, cameraController + consoleKeys.FinishKey);
+    Log.infoCtx(req.ctx, deviceController + consoleKeys.FinishKey);
   }
 };
 
@@ -123,7 +125,7 @@ export const deleteCameraController = async (req, res, next) => {
   try {
     Log.infoCtx(
       req.ctx,
-      cameraController + consoleKeys.StartKey,
+      deviceController + consoleKeys.StartKey,
       consoleKeys.ParamKey,
       req.params,
     );
@@ -134,7 +136,7 @@ export const deleteCameraController = async (req, res, next) => {
 
     Log.infoCtx(
       req.ctx,
-      cameraController + consoleKeys.SuccessKey,
+      deviceController + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
       resp,
     );
@@ -147,9 +149,9 @@ export const deleteCameraController = async (req, res, next) => {
       resp,
     );
   } catch (e) {
-    Log.errorCtx(req.ctx, cameraController + consoleKeys.FailKey, e);
+    Log.errorCtx(req.ctx, deviceController + consoleKeys.FailKey, e);
     return next(e);
   } finally {
-    Log.infoCtx(req.ctx, cameraController + consoleKeys.FinishKey);
+    Log.infoCtx(req.ctx, deviceController + consoleKeys.FinishKey);
   }
 };

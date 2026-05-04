@@ -16,7 +16,7 @@ const orderService = "order service: ";
 
 export const createOrder = serviceHandler(
   orderService,
-  CODES.ORDER.CREATE_ERROR,
+  CODES.ORDER.NOT_FOUND,
   async (data = {}, ctx) => {
     Log.infoCtx(
       ctx,
@@ -114,12 +114,12 @@ export const getOrderById = serviceHandler(
 );
 
 export const searchCameras = serviceHandler(
-  cameraService,
+  orderService,
   CODES.CAMERA.NOT_FOUND,
   async (query = "", ctx) => {
     Log.infoCtx(
       ctx,
-      cameraService + consoleKeys.StartKey,
+      orderService + consoleKeys.StartKey,
       consoleKeys.ParamKey,
       query,
     );
@@ -178,7 +178,7 @@ export const updateOrder = serviceHandler(
 
     Log.infoCtx(
       ctx,
-      cameraService + consoleKeys.SuccessKey,
+      orderService + consoleKeys.SuccessKey,
       consoleKeys.InformationKey,
       updatedOrder,
     );
@@ -187,12 +187,12 @@ export const updateOrder = serviceHandler(
 );
 
 export const changeOrderStatus = serviceHandler(
-  cameraService,
+  orderService,
   CODES.CAMERA.NOT_FOUND,
   async (id = "", status = "", ctx) => {
     Log.infoCtx(
       ctx,
-      cameraService + consoleKeys.StartKey,
+      orderService + consoleKeys.StartKey,
       consoleKeys.RequestKey,
       { id, status },
     );
@@ -226,7 +226,7 @@ export const changeOrderStatus = serviceHandler(
 
     Log.infoCtx(
       ctx,
-      cameraService + consoleKeys.SuccessKey,
+      orderService + consoleKeys.SuccessKey,
       consoleKeys.InformationKey,
       updatedOrder,
     );
@@ -235,12 +235,12 @@ export const changeOrderStatus = serviceHandler(
 );
 
 export const deleteOrder = serviceHandler(
-  cameraService,
+  orderService,
   CODES.CAMERA.NOT_FOUND,
   async (id = "", ctx) => {
     Log.infoCtx(
       ctx,
-      cameraService + consoleKeys.StartKey,
+      orderService + consoleKeys.StartKey,
       consoleKeys.RequestKey,
       { id },
     );
@@ -270,7 +270,7 @@ export const deleteOrder = serviceHandler(
 
     Log.infoCtx(
       ctx,
-      cameraService + consoleKeys.SuccessKey,
+      orderService + consoleKeys.SuccessKey,
       consoleKeys.InformationKey,
       deleted,
     );
