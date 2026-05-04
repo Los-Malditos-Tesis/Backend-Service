@@ -26,4 +26,6 @@ export const config = Object.freeze({
   jwtExpirationCam: env.JWT_EXPIRATION_CAM,
   sqSyncAlter: toBoolean(env.SQ_SYNC_ALTER),
   sqSyncForce: toBoolean(env.SQ_SYNC_FORCE),
+  dbSslRequire: toBoolean(env.DB_SSL_REQUIRE),
+  dbSslUnauthorized: toBoolean(env.DB_SSL_UNAUTHIRIZED),
 });
