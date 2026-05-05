@@ -17,6 +17,15 @@ export default (sequelize) => {
                 is: /^[a-zA-Z0-9._-]+$/
             }
         },
+        code: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            validate: {
+                notEmpty: true,
+                len: [3, 30],
+                is: /^[a-zA-Z0-9._-]+$/
+            }
+        },
         quantity: {
             type: DataTypes.INTEGER,
             allowNull: false,

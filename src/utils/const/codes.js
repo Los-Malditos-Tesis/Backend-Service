@@ -63,6 +63,7 @@ export const CODES = {
   },
   SCAN_EVENT: {
     NOT_FOUND: 13000,
+    ALREADY_EXISTS: 13001,
   },
   GS1: {
     INVALID: 14000,

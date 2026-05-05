@@ -98,3 +98,14 @@ export const update = repositoryHandler(
     return updated;
   },
 );
+
+export const findByCode = repositoryHandler(
+  boxRepository,
+  async (code = "", ctx) => {
+    return await db.Box.findOne({
+      where: {
+        code: code,
+      },
+    });
+  },
+);

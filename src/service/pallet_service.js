@@ -1,6 +1,6 @@
 import { consoleKeys } from "../libs/logger/console/constant";
 import { Log } from "../libs/logger/logger";
-import { update, findById, save } from "../repositories/pallet_repository";
+import { update, findById, save, findByCode } from "../repositories/pallet_repository";
 import { CODES } from "../utils/const/codes";
 import { serviceHandler } from "../utils/handler/service_handler";
 
@@ -29,6 +29,31 @@ export const findByIdPallet = serviceHandler(
         );
         return pallet;
     },
+);
+
+export const findPalletByCode = serviceHandler(
+    palletService,
+    CODES.PALLET.NOT_FOUND,
+    async (code = "", ctx) => {
+        Log.infoCtx(
+            ctx, 
+            palletService + consoleKeys.StartKey,
+            consoleKeys.RequestKey,
+            code    
+        );
+        const pallet = await findByCode(code, ctx);
+
+        if (!pallet)
+            throw new AppError("No se encontro ningun pallet con el codigo: " + code, 404, CODES.PALLET.NOT_FOUND);
+
+        Log.infoCtx(
+            ctx,
+            palletService + consoleKeys.SuccessKey,
+            consoleKeys.ResponseKey,
+            pallet
+        );
+        return pallet;
+    }
 );
 
 export const updatePallet = serviceHandler(
