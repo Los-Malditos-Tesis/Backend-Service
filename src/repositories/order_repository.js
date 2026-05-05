@@ -88,17 +88,17 @@ export const findByStatus = repositoryHandler(
 
 export const findPendingByWarehouse = repositoryHandler(
   orderRepository,
-  async (warehouse_id = "", orderUnitType = "", merchandise_id = "", ctx) => {
+  async (warehouse_id = "", orderUnitType = "", merchandise_code = "", ctx) => {
     const isPallet = orderUnitType == ORDER_UNIT_TYPES.PALLET
 
     return await db.Order.findAll({
-      where: { warehouse_id, merchandise_id, status: ORDER_STATUS.PENDING, deleted_at: null },
+      where: { warehouse_id, status: ORDER_STATUS.PENDING, deleted_at: null },
       include: [
         {
           model: isPallet ? db.Pallet : db.Box,
           as: isPallet ? "pallets" : "boxes",
           attributes: ["id", "qr_code "],
-          where: { code: merchandise_id },
+          where: { code: merchandise_code },
           required: true
         }
       ],

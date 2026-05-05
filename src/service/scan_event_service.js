@@ -1,0 +1,25 @@
+import { CODES } from "../utils/const/codes";
+import { serviceHandler } from "../utils/handler/service_handler";
+
+const scan_event_service = "scan event service";
+
+export const createScanEvent = serviceHandler(
+    scan_event_service,
+    CODES.SCAN_EVENT.NOT_FOUND,
+    async (scanEventData = {}, ctx) => {
+        Log.infoCtx(
+            ctx,
+            scan_event_service + consoleKeys.StartKey,
+            consoleKeys.RequestKey,
+            scanEventData,
+        );
+
+        const resp = await save(scanEventData, ctx);
+        Log.infoCtx(
+            ctx,
+            scan_event_service + consoleKeys.SuccessKey,
+            consoleKeys.ResponseKey,
+            resp,
+        );
+    }
+)

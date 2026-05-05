@@ -282,15 +282,15 @@ export const deleteOrder = serviceHandler(
 export const findPendingOrdersByWarehouse = serviceHandler(
   orderService,
   CODES.CAMERA.NOT_FOUND,
-  async (warehouse_id = "", orderUnitType = "", merchandise_id = "", ctx) => {
+  async (warehouse_id = "", orderUnitType = "", merchandise_code = "", ctx) => {
     Log.infoCtx(
       ctx,
       orderService + consoleKeys.StartKey,
       consoleKeys.RequestKey,
-      { warehouse_id, orderUnitType, merchandise_id },
+      { warehouse_id, orderUnitType, merchandise_code },
     );
 
-    const orders = await findPendingByWarehouse(warehouse_id, orderUnitType, merchandise_id, ctx);
+    const orders = await findPendingByWarehouse(warehouse_id, orderUnitType, merchandise_code, ctx);
 
     Log.infoCtx(
       ctx,

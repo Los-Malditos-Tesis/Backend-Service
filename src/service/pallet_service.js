@@ -1,6 +1,6 @@
 import { consoleKeys } from "../libs/logger/console/constant";
 import { Log } from "../libs/logger/logger";
-import { update } from "../repositories/pallet_repository";
+import { update, findById, save } from "../repositories/pallet_repository";
 import { CODES } from "../utils/const/codes";
 import { serviceHandler } from "../utils/handler/service_handler";
 
@@ -53,5 +53,32 @@ export const updatePallet = serviceHandler(
             updated
         );
         return updated;
+    },
+);
+
+export const createPallet = serviceHandler(
+    palletService,
+    CODES.PALLET.NOT_FOUND,
+    async (data = {}, ctx) => {
+        Log.infoCtx(
+            ctx,
+            palletService + consoleKeys.StartKey,
+            consoleKeys.RequestKey,
+            data
+        );
+
+        const pallet = await findByIdPallet(data.id, ctx);
+        if (pallet)
+            throw new AppError("Ya existe un pallet con el id: " + data.id, 400, CODES.PALLET.ALREADY_EXISTS);
+
+        const response = await save(data, ctx);
+
+        Log.infoCtx(
+            ctx,
+            palletService + consoleKeys.SuccessKey,
+            consoleKeys.ResponseKey,
+            response
+        );
+        return response;
     },
 );

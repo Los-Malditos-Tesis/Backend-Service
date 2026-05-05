@@ -61,8 +61,14 @@ export const CODES = {
     NOT_FOUND: 12000,
     ALREADY_EXISTS: 12001,
   },
+  SCAN_EVENT: {
+    NOT_FOUND: 13000,
+  },
+  GS1: {
+    INVALID: 14000,
+  },
   SERVER: {
-    INTERNAL_ERROR: 13000,
+    INTERNAL_ERROR: 15000,
   },
 
 };
