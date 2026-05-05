@@ -86,3 +86,15 @@ export const deleteById = repositoryHandler(
     });
   },
 );
+
+export const update = repositoryHandler(
+  boxRepository,
+  async (id = "", data = {}, ctx) => {
+    const [updated] = await db.Box.update(data, {
+      where: {
+        id: id,
+      },
+    });
+    return updated;
+  },
+);

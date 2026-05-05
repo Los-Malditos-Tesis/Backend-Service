@@ -53,9 +53,18 @@ export const CODES = {
     NOT_FOUND: 10000,
     ALREADY_EXISTS: 10001,
   },
-  SERVER: {
-    INTERNAL_ERROR: 11000,
+  PALLET: {
+    NOT_FOUND: 11000,
+    ALREADY_EXISTS: 11001,
   },
+  BOX: {
+    NOT_FOUND: 12000,
+    ALREADY_EXISTS: 12001,
+  },
+  SERVER: {
+    INTERNAL_ERROR: 13000,
+  },
+
 };
 
 export const locationCodes = {};

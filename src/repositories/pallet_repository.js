@@ -95,3 +95,15 @@ export const deleteById = repositoryHandler(
         })
     }
 )
+
+export const update = repositoryHandler(
+    palletRepository,
+    async (id = "", data = {}, ctx) => {
+        const updated = await db.Pallet.update(data, {
+            where: {
+                id: id
+            }
+        });
+        return updated;
+    },
+);

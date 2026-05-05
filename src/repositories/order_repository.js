@@ -1,6 +1,7 @@
 import db from "../models/index.js";
 import { Op } from "sequelize";
 import { repositoryHandler } from "../utils/handler/repository_handler.js";
+import { ORDER_STATUS, ORDER_TYPES, ORDER_UNIT_TYPES } from "../utils/const/status.js";
 
 const orderRepository = "order repository: ";
 
@@ -80,6 +81,27 @@ export const findByStatus = repositoryHandler(
   async (status = "PENDING", ctx) => {
     return await db.Order.findAll({
       where: { status, deleted_at: null },
+      order: [["created_at", "DESC"]],
+    });
+  },
+);
+
+export const findPendingByWarehouse = repositoryHandler(
+  orderRepository,
+  async (warehouse_id = "", orderUnitType = "", merchandise_id = "", ctx) => {
+    const isPallet = orderUnitType == ORDER_UNIT_TYPES.PALLET
+
+    return await db.Order.findAll({
+      where: { warehouse_id, merchandise_id, status: ORDER_STATUS.PENDING, deleted_at: null },
+      include: [
+        {
+          model: isPallet ? db.Pallet : db.Box,
+          as: isPallet ? "pallets" : "boxes",
+          attributes: ["id", "qr_code "],
+          where: { code: merchandise_id },
+          required: true
+        }
+      ],
       order: [["created_at", "DESC"]],
     });
   },

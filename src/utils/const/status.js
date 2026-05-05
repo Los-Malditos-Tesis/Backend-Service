@@ -56,3 +56,9 @@ export const ORDER_STATUS = {
   DELIVERED: "DELIVERED",
   CANCELLED: "CANCELLED",
 };
+
+export const DEVICE_STATUS = {
+  OK: "OK",
+  WARN: "WAR",
+  ERROR: "ERR",
+};

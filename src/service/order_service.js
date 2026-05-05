@@ -8,6 +8,7 @@ import { ORDER_TYPES, ORDER_STATUS } from "../utils/const/status.js";
 import {
   create,
   findById,
+  findPendingByWarehouse,
   remove,
   searchOrders,
 } from "../repositories/order_repository.js";
@@ -275,5 +276,28 @@ export const deleteOrder = serviceHandler(
       deleted,
     );
     return deleted;
+  },
+);
+
+export const findPendingOrdersByWarehouse = serviceHandler(
+  orderService,
+  CODES.CAMERA.NOT_FOUND,
+  async (warehouse_id = "", orderUnitType = "", merchandise_id = "", ctx) => {
+    Log.infoCtx(
+      ctx,
+      orderService + consoleKeys.StartKey,
+      consoleKeys.RequestKey,
+      { warehouse_id, orderUnitType, merchandise_id },
+    );
+
+    const orders = await findPendingByWarehouse(warehouse_id, orderUnitType, merchandise_id, ctx);
+
+    Log.infoCtx(
+      ctx,
+      orderService + consoleKeys.SuccessKey,
+      consoleKeys.InformationKey,
+      orders,
+    );
+    return orders;
   },
 );
