@@ -68,8 +68,11 @@ export const CODES = {
   GS1: {
     INVALID: 14000,
   },
+  INVENTORY_MOVEMENT: {
+    NOT_FOUND: 15000,
+  },
   SERVER: {
-    INTERNAL_ERROR: 15000,
+    INTERNAL_ERROR: 16000,
   },
 
 };

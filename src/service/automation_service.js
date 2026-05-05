@@ -1,7 +1,8 @@
 import { AppError } from "../errors/app_error.js";
 import { CODES } from "../utils/const/codes";
-import { DEVICE_STATUS, ORDER_STATUS, ORDER_TYPES, ORDER_UNIT_TYPES, PALLETS_STATUS } from "../utils/const/status";
+import { DEVICE_STATUS, ITEM_TYPES, ORDER_STATUS, ORDER_TYPES, ORDER_UNIT_TYPES, PALLETS_STATUS } from "../utils/const/status";
 import { findBoxByCode, updateBox } from "./box_service.js";
+import { createInventoryMovement } from "./inventory_movement_service.js";
 import { findPendingOrdersByWarehouse, updateOrder } from "./order_service";
 import { createPallet, findPalletByCode, updatePallet } from "./pallet_service";
 import { findProductByCode, getProductById } from "./product_service.js"
@@ -44,6 +45,12 @@ export const registerMerchandiseService = serviceHandler(
         if (orders && orders.length > 0) {
             const order = orders[0];
             await processOrder(order, item.id, decodedGS1, ctx);
+
+            const inventoryMovement = order.unit_type == ORDER_UNIT_TYPES.PALLET
+                ? { type: ITEM_TYPES.PALLET, pallet_id: item.id, state: PALLETS_STATUS.DELIVERED}
+                : { type: ITEM_TYPES.BOX, box_id: item.id, state: PALLETS_STATUS.DELIVERED}
+
+            await createInventoryMovement(inventoryMovement, ctx)
         }
         else {
             if(item) {
@@ -57,7 +64,13 @@ export const registerMerchandiseService = serviceHandler(
                 throw new AppError("Unidad con existencia", 409, CODES.SCAN_EVENT.ALREADY_EXISTS);
             }
 
-            processNewMerchandise(decodedGS1, ctx);
+            await processNewMerchandise(decodedGS1, ctx);
+
+             const inventoryMovement = order.unit_type == ORDER_UNIT_TYPES.PALLET
+                ? { type: ITEM_TYPES.PALLET, pallet_id: item.id, state: PALLETS_STATUS.CREATED}
+                : { type: ITEM_TYPES.BOX, box_id: item.id, state: PALLETS_STATUS.CREATED}
+
+            await createInventoryMovement(inventoryMovement, ctx)
         }
 
         return await createScanEvent({
@@ -102,3 +115,7 @@ async function processNewMerchandise(decodedGS1, ctx) {
             product_id: product.id,
         }, ctx);
 }
+
+//Missing take shoot to update all zones in warehosue 
+
+//Missing order taken automation 

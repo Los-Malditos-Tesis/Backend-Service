@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { ITEM_TYPES } from "../utils/const/status.js";
+import { ITEM_TYPES, PALLETS_STATUS } from "../utils/const/status.js";
 
 export default (sequelize) => {
   const InventoryMovement = sequelize.define(
@@ -9,16 +9,6 @@ export default (sequelize) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-      },
-      toLocation: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-          len: [3, 250],
-          is: /^[a-zA-Z0-9._-]+$/,
-        },
-        comment: "Location where the item is being moved to",
       },
       type: {
         type: DataTypes.STRING,
@@ -30,6 +20,17 @@ export default (sequelize) => {
           },
         },
         comment: "Type of item being moved (BOX or PALLET)",
+      },
+      state: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          isIn: {
+            args: [Object.values(PALLETS_STATUS)],
+            msg: "Invalid item type",
+          },
+        },
+        comment: "Type of item state",
       },
     },
     {
