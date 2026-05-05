@@ -97,7 +97,7 @@ export const findPendingByWarehouse = repositoryHandler(
         {
           model: isPallet ? db.Pallet : db.Box,
           as: isPallet ? "pallets" : "boxes",
-          attributes: ["id", "qr_code "],
+          attributes: ["id", "qr_code ", "code"],
           where: { code: merchandise_code },
           required: true
         }
