@@ -79,6 +79,9 @@ export default (sequelize) => {
             {
               model: sequelize.models.Box,
               as: "boxes",
+              through: {
+                attributes: []
+              }
             },
           ],
         },
@@ -87,6 +90,9 @@ export default (sequelize) => {
             {
               model: sequelize.models.Pallet,
               as: "pallets",
+              through: {
+                attributes: []
+              }
             },
           ],
         },
@@ -113,13 +119,17 @@ export default (sequelize) => {
       foreignKey: "store_id",
     });
 
-    Order.hasMany(models.Box, {
+    Order.belongsToMany(models.Box, {
+      through: "order_items",
       foreignKey: "order_id",
+      otherKey: "box_id",
       as: "boxes",
     });
 
-    Order.hasMany(models.Pallet, {
+    Order.belongsToMany(models.Pallet, {
+      through: "order_items",
       foreignKey: "order_id",
+      otherKey: "pallet_id",
       as: "pallets",
     });
 

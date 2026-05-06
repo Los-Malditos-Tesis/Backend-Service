@@ -157,19 +157,23 @@ export const dispatchMerchandiseService = serviceHandler(
             throw new AppError("No pending orders found for this product", 404, CODES.ORDER.NOT_FOUND);
         }
 
-        await processDispatchedItem(decodedGS1, ctx);
+        const item = await processDispatchedItem(decodedGS1, ctx);
 
         const isOrderCompleted = decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
             ? orders[0].pallets.length == orders[0].total_quantity - 1
             : orders[0].boxes.length == orders[0].total_quantity - 1;
 
-        await updateOrder({ id: orders[0].id, status: isOrderCompleted ? ORDER_STATUS.DISPATCHED : ORDER_STATUS.PENDING, total_delivered: orders[0].total_delivered + 1 }, ctx);
+        decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
+            ? await orders[0].addPallet({ id: item.id }, ctx)
+            : await orders[0].addBox({ id: item.id }, ctx);
+
+        const result = await updateOrder({ id: orders[0].id, status: isOrderCompleted ? ORDER_STATUS.DISPATCHED : ORDER_STATUS.PENDING }, ctx);
 
         Log.infoCtx(
             ctx,
             automationService + consoleKeys.SuccessKey,
             consoleKeys.ResponseKey,
-            {},
+            result,
         );
 
         return await createScanEvent({
@@ -213,4 +217,5 @@ async function processDispatchedItem(decodedGS1 = {}, ctx) {
 
     await createInventoryMovement(inventoryMovement, ctx)
 
+    return item;
 }

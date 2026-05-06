@@ -73,6 +73,13 @@ export default (sequelize) => {
         Pallet.hasMany(models.Box, { foreignKey: "pallet_id" });
         Pallet.belongsTo(models.Location, { foreignKey: "location_id" });
         Pallet.belongsTo(models.Product, { foreignKey: "product_id" });
+
+        Pallet.belongsToMany(models.Order, {
+            through: "order_items",
+            foreignKey: "pallet_id",
+            otherKey: "order_id",
+            as: "orders"
+        });
     }
 
     return Pallet;
