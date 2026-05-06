@@ -1,5 +1,6 @@
 import { consoleKeys } from "../libs/logger/console/constant";
 import { Log } from "../libs/logger/logger";
+import { dispatchMerchandiseService, registerMerchandiseService } from "../service/automation_service";
 import { getWarehouseById } from "../service/warehouse_service";
 import { CODES } from "../utils/const/codes";
 
@@ -14,7 +15,7 @@ export const registerMerchandiseController = async (req, res, next) => {
             consoleKeys.RequestKey,
             req.body,
         );
-        const response = await registerMerchandise(req.body, req.camera, req.ctx);
+        const response = await registerMerchandiseService(req.body, req.camera, req.ctx);
         Log.infoCtx(
             req.ctx,
             automationController + consoleKeys.SuccessKey,
@@ -44,7 +45,7 @@ export const dispatchMerchandiseController = async (req, res, next) => {
             consoleKeys.RequestKey,
             req.body,
         );
-        const response = await dispatchMerchandise(req.body, req.camera, req.ctx);
+        const response = await dispatchMerchandiseService(req.body, req.camera, req.ctx);
         Log.infoCtx(
             req.ctx,
             automationController + consoleKeys.SuccessKey,

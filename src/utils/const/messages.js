@@ -53,4 +53,8 @@ export const VALIDATION_MESSAGES = {
   STATUS: {
     es: (field) => `Debe ser un estado válido`,
   },
+  LENGTH: {
+    es: (field, min, max) =>
+      `${field} debe tener entre ${min} y ${max} caracteres`,
+  }
 };
