@@ -210,7 +210,7 @@ export const searchProductInZones = async (productData = {}, ctx) => {
 
   return {
     product,
-    zones: location.zone,
+    zones: result.qrZone,
   };
 };
 
