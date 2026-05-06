@@ -8,7 +8,8 @@ import { ORDER_TYPES, ORDER_STATUS } from "../utils/const/status.js";
 import {
   create,
   findById,
-  findPendingByWarehouse,
+  findByWarehouseAndStatus,
+  findByWarehouseAndStatusWithProduct,
   remove,
   searchOrders,
 } from "../repositories/order_repository.js";
@@ -279,10 +280,10 @@ export const deleteOrder = serviceHandler(
   },
 );
 
-export const findPendingOrdersByWarehouse = serviceHandler(
+export const findOrdersByWarehouseAndStatus = serviceHandler(
   orderService,
   CODES.CAMERA.NOT_FOUND,
-  async (warehouse_id = "", orderUnitType = "", merchandise_code = "", ctx) => {
+  async (warehouse_id = "", orderUnitType = "", merchandise_code = "", status = "", ctx) => {
     Log.infoCtx(
       ctx,
       orderService + consoleKeys.StartKey,
@@ -290,7 +291,30 @@ export const findPendingOrdersByWarehouse = serviceHandler(
       { warehouse_id, orderUnitType, merchandise_code },
     );
 
-    const orders = await findPendingByWarehouse(warehouse_id, orderUnitType, merchandise_code, ctx);
+    const orders = await findByWarehouseAndStatus(warehouse_id, orderUnitType, merchandise_code, status, ctx);
+
+    Log.infoCtx(
+      ctx,
+      orderService + consoleKeys.SuccessKey,
+      consoleKeys.InformationKey,
+      orders,
+    );
+    return orders;
+  },
+);
+
+export const findOrdersByWarehouseAndStatusWithProduct = serviceHandler(
+  orderService,
+  CODES.CAMERA.NOT_FOUND,
+  async (warehouse_id = "", product_id = "", status = "", ctx) => {
+    Log.infoCtx(
+      ctx,
+      orderService + consoleKeys.StartKey,
+      consoleKeys.RequestKey,
+      { warehouse_id, product_id, status },
+    );
+
+    const orders = await findByWarehouseAndStatusWithProduct(warehouse_id, product_id, status, ctx);
 
     Log.infoCtx(
       ctx,

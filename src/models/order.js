@@ -35,6 +35,11 @@ export default (sequelize) => {
         allowNull: false,
         defaultValue: 0,
       },
+      total_delivered: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
       status: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -90,6 +95,10 @@ export default (sequelize) => {
   );
 
   Order.associate = (models) => {
+    Order.belongsTo(models.Product, {
+      foreignKey: "product_id"
+    });
+
     Order.belongsTo(models.Warehouse, {
       as: "Origin",
       foreignKey: "origin_warehouse_id",
