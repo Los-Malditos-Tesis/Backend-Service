@@ -32,7 +32,7 @@ export const registerMerchandiseService = serviceHandler(
         }
 
         //check if item exists in warehosue 
-        const item = decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET 
+        const item = decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
             ? await findPalletByCode(decodedGS1.code, ctx)
             : await findBoxByCode(decodedGS1.code, ctx);
 
@@ -49,13 +49,13 @@ export const registerMerchandiseService = serviceHandler(
             await processOrder(order, item.id, ctx);
 
             const inventoryMovement = order.unit_type == ORDER_UNIT_TYPES.PALLET
-                ? { type: ITEM_TYPES.PALLET, pallet_id: item.id, state: PALLETS_STATUS.DELIVERED}
-                : { type: ITEM_TYPES.BOX, box_id: item.id, state: PALLETS_STATUS.DELIVERED}
+                ? { type: ITEM_TYPES.PALLET, pallet_id: item.id, state: PALLETS_STATUS.DELIVERED }
+                : { type: ITEM_TYPES.BOX, box_id: item.id, state: PALLETS_STATUS.DELIVERED }
 
             await createInventoryMovement(inventoryMovement, ctx)
         }
         else {
-            if(item) {
+            if (item) {
                 await createScanEvent({
                     qrCode: gs1Code,
                     detectedType: merchandiseData.unit_type,
@@ -68,9 +68,9 @@ export const registerMerchandiseService = serviceHandler(
 
             await processNewMerchandise(decodedGS1, ctx);
 
-             const inventoryMovement = order.unit_type == ORDER_UNIT_TYPES.PALLET
-                ? { type: ITEM_TYPES.PALLET, pallet_id: item.id, state: PALLETS_STATUS.CREATED}
-                : { type: ITEM_TYPES.BOX, box_id: item.id, state: PALLETS_STATUS.CREATED}
+            const inventoryMovement = order.unit_type == ORDER_UNIT_TYPES.PALLET
+                ? { type: ITEM_TYPES.PALLET, pallet_id: item.id, state: PALLETS_STATUS.CREATED }
+                : { type: ITEM_TYPES.BOX, box_id: item.id, state: PALLETS_STATUS.CREATED }
 
             await createInventoryMovement(inventoryMovement, ctx)
         }
@@ -98,7 +98,7 @@ async function processOrder(order, item_id, ctx) {
 }
 
 // new merchandise logic
-async function processNewMerchandise(decodedGS1={}, ctx) {
+async function processNewMerchandise(decodedGS1 = {}, ctx) {
     const product = await findProductByCode(decodedGS1.gtin, ctx);
 
     return decodedGS1.unit_type === ORDER_UNIT_TYPES.PALLET
@@ -119,6 +119,6 @@ async function processNewMerchandise(decodedGS1={}, ctx) {
         }, ctx);
 }
 
-//Missing take shoot to update all zones in warehosue 
+//Missing take shoot to update all zones in warehosue
 
 //Missing order taken automation 

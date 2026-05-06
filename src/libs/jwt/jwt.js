@@ -23,7 +23,8 @@ export const generateCameraToken = (camera) => {
         {
             sub: camera.id,
             type: "camera",
-            location_id: camera.location_id
+            location_id: camera.location_id,
+            warehouse_id: camera.warehouse_id
         },
         {
             secret: config.jwtSecretKeyCam,
