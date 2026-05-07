@@ -28,4 +28,5 @@ export const config = Object.freeze({
   sqSyncForce: toBoolean(env.SQ_SYNC_FORCE),
   dbSslRequire: toBoolean(env.DB_SSL_REQUIRE),
   dbSslUnauthorized: toBoolean(env.DB_SSL_UNAUTHIRIZED),
+  mqttUrl: env.MQTT_URL,
 });

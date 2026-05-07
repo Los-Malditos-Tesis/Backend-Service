@@ -1,5 +1,6 @@
 import { AppError } from "../errors/app_error.js";
-import { CODES } from "../utils/const/codes";
+import crypto from "crypto";
+import { CODES } from "../utils/const/codes.js";
 import {
   DEVICE_STATUS,
   ITEM_TYPES,
@@ -7,16 +8,24 @@ import {
   ORDER_TYPES,
   ORDER_UNIT_TYPES,
   PALLETS_STATUS,
-} from "../utils/const/status";
+} from "../utils/const/status.js";
 import { parseGS1 } from "../utils/gs1_util.js";
 import { findBoxByCode, updateBox } from "./box_service.js";
 import { createInventoryMovement } from "./inventory_movement_service.js";
-import { findPendingOrdersByWarehouse, updateOrder } from "./order_service";
-import { createPallet, findPalletByCode, updatePallet } from "./pallet_service";
+import { findPendingOrdersByWarehouse, updateOrder } from "./order_service.js";
+import {
+  createPallet,
+  findPalletByCode,
+  updatePallet,
+} from "./pallet_service.js";
 import { findByProductId } from "../repositories/pallet_repository.js";
 import { findProductByCode, getProductById } from "./product_service.js";
 import { createScanEvent } from "./scan_event_service.js";
 import { findById as findLocationById } from "../repositories/location_repository.js";
+import { publishScanRequest } from "../libs/mqtt/mqtt_publisher.js";
+import { serviceHandler } from "../utils/handler/service_handler.js";
+import { waitForScanResult } from "../libs/mqtt/wait_for_scan_result.js";
+import { log } from "console";
 
 const automationService = "automation service";
 
@@ -181,16 +190,15 @@ export const searchProductInZones = async (productData = {}, ctx) => {
     );
   }
 
-  var result = {
-    qrProd: "PROD-123",
-    qrZone: "ZONE-123",
-  };
-  //Aca se llamara al cliente mqtt
-  // mqtt.publish(`warehouse/${location.warehouse_id}/scan`, {
-  //     productId,
-  //     correlationId: crypto.randomUUID()
-  // });
-  // const result = await waitForScanResult(correlationId, 5000);
+  const correlationId = crypto.randomUUID();
+  // Aca publica los datos
+  await publishScanRequest({
+    warehouseId: location.warehouse_id,
+    productCode: product.code,
+    correlationId: "123",
+  });
+
+  const result = await waitForScanResult(correlationId, 50000);
 
   if (!result) {
     throw new AppError(
@@ -210,7 +218,8 @@ export const searchProductInZones = async (productData = {}, ctx) => {
 
   return {
     product,
-    zones: result.qrZone,
+    zone: result.location,
+    correlationId,
   };
 };
 

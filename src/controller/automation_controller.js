@@ -15,9 +15,6 @@ export const searchProductInZonesController = async (req, res, next) => {
       req.body,
     );
 
-    //esta es la informacion de la camara, viene del findById
-    req.camera;
-
     const resp = await searchProductInZones(req.body, req.ctx);
 
     Log.infoCtx(
@@ -31,7 +28,7 @@ export const searchProductInZonesController = async (req, res, next) => {
       res,
       201,
       CODES.SUCCESS.OK,
-      "Producto encontrado",
+      "Producto encontrado con exito",
       resp,
     );
   } catch (e) {
