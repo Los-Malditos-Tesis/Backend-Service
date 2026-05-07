@@ -14,7 +14,7 @@ export default (sequelize) => {
             validate: {
                 notEmpty: true,
                 len: [3, 100],
-                is: /^[a-zA-Z0-9._-]+$/
+                is: /^[a-zA-Z0-9\-+*()#&.,:]+$/,
             }
         },
         code: {
@@ -59,7 +59,7 @@ export default (sequelize) => {
         Box.belongsTo(models.Product, { foreignKey: "product_id" });
         Box.belongsTo(models.Pallet, { foreignKey: "pallet_id" });
         Box.belongsToMany(models.Order, {
-            through: "order_items",
+            through: "order_boxes",
             foreignKey: "box_id",
             otherKey: "order_id",
             as: "orders"

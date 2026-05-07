@@ -27,7 +27,7 @@ export default (sequelize) => {
             validate: {
                 notEmpty: true,
                 len: [3, 100],
-                is: /^[a-zA-Z0-9._-]+$/
+                is: /^[a-zA-Z0-9\-+*()#&.,:]+$/,
             }
         },
         quantityBox: {
@@ -75,7 +75,7 @@ export default (sequelize) => {
         Pallet.belongsTo(models.Product, { foreignKey: "product_id" });
 
         Pallet.belongsToMany(models.Order, {
-            through: "order_items",
+            through: "order_pallets",
             foreignKey: "pallet_id",
             otherKey: "order_id",
             as: "orders"

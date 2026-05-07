@@ -86,7 +86,7 @@ export const findCameraById = serviceHandler(
       ctx,
       cameraService + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
-      camera,
+      camera.toJSON(),
     );
     return camera;
   },
@@ -201,6 +201,7 @@ export const authCamera = serviceHandler(
     if (!camera || camera.api_key != authData.api_key)
       throw new AppError("Credenciales invalidas", 400, CODES.CAMERA.NOT_FOUND);
 
+    Log.infoCtx(ctx, cameraService + consoleKeys.InformationKey + "camera: ", consoleKeys.InformationKey, { camera })
     const token = generateCameraToken(camera);
 
     Log.info(

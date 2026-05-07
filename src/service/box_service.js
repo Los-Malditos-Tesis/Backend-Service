@@ -3,7 +3,7 @@ import { consoleKeys } from "../libs/logger/console/constant.js";
 import { Log } from "../libs/logger/logger.js";
 import { CODES } from "../utils/const/codes.js";
 import { serviceHandler } from "../utils/handler/service_handler.js";
-import { findByCode, findById, findByQrCode, update } from "../repositories/box_repository.js"
+import { findByCode, findById, findByQrCode, save, update } from "../repositories/box_repository.js"
 
 const boxService = "box service";
 
@@ -67,9 +67,9 @@ export const createBox = serviceHandler(
             data
         );
 
-        const box = await findById(data.id, ctx)
+        const box = await findByCode(data.code, ctx)
         if (box)
-            throw new AppError("Ya existe un pallet con el id: " + data.id, 400, CODES.BOX.ALREADY_EXISTS);
+            throw new AppError("Ya existe una caja con el codigo: " + data.code, 400, CODES.BOX.ALREADY_EXISTS);
 
         const response = await save(data, ctx);
 
@@ -95,7 +95,7 @@ export const findBoxByCode = serviceHandler(
         const box = await findByCode(code, ctx);
 
         if (!box)
-            throw new AppError("No se encontro ningun pallet con el codigo: " + code, 404, CODES.BOX.NOT_FOUND);
+            throw new AppError("No se encontro ninguna caja con el codigo: " + code, 404, CODES.BOX.NOT_FOUND);
 
         Log.infoCtx(
             ctx,

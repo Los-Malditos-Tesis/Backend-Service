@@ -23,7 +23,6 @@ export default (sequelize) => {
       },
       state: {
         type: DataTypes.STRING,
-        allowNull: false,
         validate: {
           isIn: {
             args: [Object.values(PALLETS_STATUS)],

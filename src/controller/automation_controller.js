@@ -1,9 +1,8 @@
-import { consoleKeys } from "../libs/logger/console/constant";
-import { Log } from "../libs/logger/logger";
-import { dispatchMerchandiseService, registerMerchandiseService } from "../service/automation_service";
-import { getWarehouseById } from "../service/warehouse_service";
-import { CODES } from "../utils/const/codes";
-
+import { consoleKeys } from "../libs/logger/console/constant.js";
+import { Log } from "../libs/logger/logger.js";
+import { dispatchMerchandiseService, registerMerchandiseService } from "../service/automation_service.js"
+import { CODES } from "../utils/const/codes.js";
+import { generalResponse } from "../utils/handler/response_handler.js";
 
 const automationController = "automation controller: ";
 
@@ -15,7 +14,7 @@ export const registerMerchandiseController = async (req, res, next) => {
             consoleKeys.RequestKey,
             req.body,
         );
-        const response = await registerMerchandiseService(req.body, req.camera, req.ctx);
+        const response = await registerMerchandiseService(req.body.gs1Code, req.camera, req.ctx);
         Log.infoCtx(
             req.ctx,
             automationController + consoleKeys.SuccessKey,

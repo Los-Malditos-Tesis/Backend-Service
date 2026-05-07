@@ -1,3 +1,4 @@
+import { Log } from "../libs/logger/logger.js";
 import { ORDER_UNIT_TYPES } from "../utils/const/status.js"
 
 const AI_CODES = {
@@ -7,7 +8,7 @@ const AI_CODES = {
     COUNT37: '37'
 }
 
-export const parseGS1 = (gs1Code) => {
+export const parseGS1 = (gs1Code = "") => {
     if (!gs1Code || typeof gs1Code !== 'string') return null;
 
     const decodedGs1 = {
@@ -37,12 +38,12 @@ export const parseGS1 = (gs1Code) => {
             decodedGs1.unit_type = ORDER_UNIT_TYPES.PALLET;
             decodedGs1.productCode = gtinMatch ? gtinMatch[1] : null;
         } else if (gtinMatch) {
-            decodedGs1.productCode = gtinMatch[1]; 
+            decodedGs1.productCode = gtinMatch[1];
             decodedGs1.gtin = gtinMatch[1];
             decodedGs1.unit_type = ORDER_UNIT_TYPES.BOX;
 
             if (serialMatch) {
-                data.code = serialMatch[1];
+                decodedGs1.code = serialMatch[1];
             }
         }
         // Extraer cantidades dinámicamente
@@ -56,7 +57,7 @@ export const parseGS1 = (gs1Code) => {
 
         return decodedGs1;
     } catch (error) {
-        console.error("Error parsing GS1:", error);
+        Log.errorCtx(null, "Error parsing GS1:", error);
         return null;
     }
 };

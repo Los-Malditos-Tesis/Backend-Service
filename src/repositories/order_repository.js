@@ -2,6 +2,7 @@ import db from "../models/index.js";
 import { Op } from "sequelize";
 import { repositoryHandler } from "../utils/handler/repository_handler.js";
 import { ORDER_STATUS, ORDER_TYPES, ORDER_UNIT_TYPES } from "../utils/const/status.js";
+import { Log } from "../libs/logger/logger.js";
 
 const orderRepository = "order repository: ";
 
@@ -91,15 +92,21 @@ export const findByWarehouseAndStatus = repositoryHandler(
   async (warehouse_id = "", orderUnitType = "", merchandise_code = "", status = "", ctx) => {
     const isPallet = orderUnitType == ORDER_UNIT_TYPES.PALLET
 
+    const where = { status, deleted_at: null }
+    if (warehouse_id) where.origin_warehouse_id = warehouse_id;
+
     return await db.Order.findAll({
-      where: { warehouse_id, status, deleted_at: null },
+      where,
       include: [
         {
           model: isPallet ? db.Pallet : db.Box,
           as: isPallet ? "pallets" : "boxes",
-          attributes: ["id", "qr_code ", "code"],
+          attributes: ["id", "qrCode", "code"],
           where: { code: merchandise_code },
-          required: true
+          required: true,
+          through: {
+            attributes: []
+          }
         }
       ],
       order: [["created_at", "DESC"]],

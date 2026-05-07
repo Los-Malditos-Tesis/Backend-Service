@@ -3,16 +3,20 @@ import { AppError } from "../errors/app_error.js";
 import { CODES } from "../utils/const/codes.js";
 import { DEVICE_STATUS, ITEM_TYPES, ORDER_STATUS, ORDER_TYPES, ORDER_UNIT_TYPES, PALLETS_STATUS } from "../utils/const/status.js";
 import { parseGS1 } from "../utils/gs1_util.js";
-import { findBoxByCode, updateBox } from "./box_service.js";
+import { createBox, updateBox } from "./box_service.js";
 import { createInventoryMovement } from "./inventory_movement_service.js";
 import { findOrdersByWarehouseAndStatus, findOrdersByWarehouseAndStatusWithProduct, updateOrder } from "./order_service.js";
-import { createPallet, findPalletByCode, updatePallet } from "./pallet_service.js";
+import { createPallet, updatePallet } from "./pallet_service.js";
 import { findProductByCode, getProductById } from "./product_service.js"
 import { createScanEvent } from "./scan_event_service.js"
 import { serviceHandler } from "../utils/handler/service_handler.js";
+import { Log } from "../libs/logger/logger.js";
+import { consoleKeys } from "../libs/logger/console/constant.js";
+import { findByCode as findBoxByCode } from "../repositories/box_repository.js"
+import { findByCode as findPalletByCode } from "../repositories/pallet_repository.js"
+
 
 const automationService = "automation service";
-
 
 //validate scan events error missing
 export const registerMerchandiseService = serviceHandler(
@@ -39,7 +43,7 @@ export const registerMerchandiseService = serviceHandler(
 
 
         const orders = await findOrdersByWarehouseAndStatus(
-            cameraData.warehouse_id,
+            cameraData.location.warehouse_id,
             decodedGS1.unit_type,
             decodedGS1.code,
             ORDER_STATUS.DISPATCHED,
@@ -59,10 +63,11 @@ export const registerMerchandiseService = serviceHandler(
         else {
             if (item) {
                 await createScanEvent({
-                    qrCode: gs1Code,
-                    detectedType: merchandiseData.unit_type,
+                    camera_id: cameraData.id,
+                    qrCode: decodedGS1.raw,
+                    detectedType: decodedGS1.unit_type,
                     status: DEVICE_STATUS.ERROR,
-                    confidence: merchandiseData.confidence
+                    confidence: decodedGS1.confidence
                 }, ctx);
 
                 throw new AppError("Unidad con existencia", 409, CODES.SCAN_EVENT.ALREADY_EXISTS);
@@ -70,18 +75,25 @@ export const registerMerchandiseService = serviceHandler(
 
             await processNewMerchandise(decodedGS1, ctx);
 
-            const inventoryMovement = order.unit_type == ORDER_UNIT_TYPES.PALLET
-                ? { type: ITEM_TYPES.PALLET, pallet_id: item.id, state: PALLETS_STATUS.CREATED }
-                : { type: ITEM_TYPES.BOX, box_id: item.id, state: PALLETS_STATUS.CREATED }
+            const newItem = decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
+                ? await findPalletByCode(decodedGS1.code, ctx)
+                : await findBoxByCode(decodedGS1.code, ctx);
+
+
+            const inventoryMovement = decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
+                ? { type: ITEM_TYPES.PALLET, pallet_id: newItem.id, state: PALLETS_STATUS.CREATED }
+                : { type: ITEM_TYPES.BOX, box_id: newItem.id, state: PALLETS_STATUS.CREATED }
+
 
             await createInventoryMovement(inventoryMovement, ctx)
         }
 
         return await createScanEvent({
+            camera_id: cameraData.id,
             qrCode: gs1Code,
-            detectedType: merchandiseData.unit_type,
+            detectedType: decodedGS1.unit_type,
             status: DEVICE_STATUS.OK,
-            confidence: merchandiseData.confidence
+            confidence: decodedGS1.confidence
         }, ctx);
     },
 
