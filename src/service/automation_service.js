@@ -152,10 +152,21 @@ export const dispatchMerchandiseService = serviceHandler(
             throw new AppError("Invalid GS1 code", 400, CODES.GS1.INVALID);
         }
 
+        const productExistance = await findProductByCode(decodedGS1.gtin, ctx);
+        if (!productExistance) {
+            await createScanEvent({
+                qrCode: decodedGS1.raw,
+                detectedType: decodedGS1.unit_type,
+                status: DEVICE_STATUS.ERROR,
+                confidence: decodedGS1.confidence
+            }, ctx);
+            throw new AppError("Product not found", 404, CODES.PRODUCT.NOT_FOUND);
+        }
+
         //find orders with current product 
         const orders = await findOrdersByWarehouseAndStatusWithProduct(
-            cameraData.warehouse_id,
-            decodedGS1.gtin, //product id
+            cameraData.location.warehouse_id,
+            productExistance.id,
             ORDER_STATUS.PENDING,
             ctx
         );

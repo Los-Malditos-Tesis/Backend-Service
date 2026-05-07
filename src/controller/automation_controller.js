@@ -44,7 +44,7 @@ export const dispatchMerchandiseController = async (req, res, next) => {
             consoleKeys.RequestKey,
             req.body,
         );
-        const response = await dispatchMerchandiseService(req.body, req.camera, req.ctx);
+        const response = await dispatchMerchandiseService(req.body.gs1Code, req.camera, req.ctx);
         Log.infoCtx(
             req.ctx,
             automationController + consoleKeys.SuccessKey,

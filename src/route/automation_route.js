@@ -3,7 +3,7 @@ import { authCameraMiddleware } from "../middlewares/auth_camera_middleware.js";
 import { validateMiddleware } from "../middlewares/validator_moddleware.js"
 import { dispatchMerchandiseService, registerMerchandiseService } from "../service/automation_service.js"
 import { merchandiseValidator } from "../utils/validator/automation_validator.js"
-import { registerMerchandiseController } from "../controller/automation_controller.js";
+import { dispatchMerchandiseController, registerMerchandiseController } from "../controller/automation_controller.js";
 
 const automationRoute = Router();
 
@@ -20,7 +20,7 @@ automationRoute.post(
     authCameraMiddleware,
     merchandiseValidator,
     validateMiddleware,
-    dispatchMerchandiseService
+    dispatchMerchandiseController
 );
 
 export default automationRoute;

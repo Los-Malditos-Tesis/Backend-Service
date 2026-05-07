@@ -118,7 +118,7 @@ export const findByWarehouseAndStatusWithProduct = repositoryHandler(
   orderRepository,
   async (warehouse_id = "", product_id = "", status = "", ctx) => {
     return await db.Order.findAll({
-      where: { warehouse_id, status, product_id, deleted_at: null },
+      where: { origin_warehouse_id: warehouse_id, status, product_id, deleted_at: null },
       include: [
         {
           model: db.Pallet,
