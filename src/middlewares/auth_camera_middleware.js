@@ -3,7 +3,7 @@ import { AppError } from "../errors/app_error.js";
 import { CODES } from "../utils/const/codes.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { obfuscateApiKey } from "../utils/obfuscate/obfucates.js";
-import { verifyCameraToken } from "../libs/jwt/jwt";
+import { verifyCameraToken } from "../libs/jwt/jwt.js";
 
 const authCameraMiddlewareKey = "auth camera middelware: "
 

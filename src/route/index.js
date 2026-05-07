@@ -13,7 +13,7 @@ import automationRouter from "./automation_route.js";
 const router = Router();
 
 router.use("/auth", authRouter);
-router.use("device", deviceRouter);
+router.use("/device", deviceRouter);
 router.use("/suppliers", supplierRouter);
 router.use("/location", locationRouter);
 router.use("/order", orderRouter);

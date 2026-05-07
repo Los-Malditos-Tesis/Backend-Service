@@ -1,6 +1,6 @@
 import db from "../models/index.js";
 import { repositoryHandler } from "../utils/handler/repository_handler.js";
-import { PALLETS_STATUS } from "../../pkg/utils/const/status.js";
+import { PALLETS_STATUS } from "../utils/const/status.js";
 
 const boxRepository = "box repository: ";
 

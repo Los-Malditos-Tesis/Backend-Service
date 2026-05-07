@@ -1,8 +1,8 @@
-import { consoleKeys } from "../libs/logger/console/constant";
-import { Log } from "../libs/logger/logger";
-import { update, findById, save, findByCode } from "../repositories/pallet_repository";
-import { CODES } from "../utils/const/codes";
-import { serviceHandler } from "../utils/handler/service_handler";
+import { consoleKeys } from "../libs/logger/console/constant.js";
+import { Log } from "../libs/logger/logger.js";
+import { update, findById, save, findByCode } from "../repositories/pallet_repository.js";
+import { CODES } from "../utils/const/codes.js";
+import { serviceHandler } from "../utils/handler/service_handler.js";
 
 const palletService = "pallet service";
 
@@ -36,10 +36,10 @@ export const findPalletByCode = serviceHandler(
     CODES.PALLET.NOT_FOUND,
     async (code = "", ctx) => {
         Log.infoCtx(
-            ctx, 
+            ctx,
             palletService + consoleKeys.StartKey,
             consoleKeys.RequestKey,
-            code    
+            code
         );
         const pallet = await findByCode(code, ctx);
 

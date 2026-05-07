@@ -18,6 +18,7 @@ import {
   obfuscateToken,
 } from "../utils/obfuscate/obfucates.js";
 import { generateCameraToken } from "../libs/jwt/jwt.js";
+import * as crypto from 'crypto';
 
 const cameraService = "camera service: ";
 
@@ -206,7 +207,7 @@ export const authCamera = serviceHandler(
       ctx,
       cameraService + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
-      obfuscateToken({ token }),
+      obfuscateToken(token),
     );
     return { token };
   },

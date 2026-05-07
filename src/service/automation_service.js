@@ -1,14 +1,15 @@
 import { decode } from "jsonwebtoken";
 import { AppError } from "../errors/app_error.js";
-import { CODES } from "../utils/const/codes";
-import { DEVICE_STATUS, ITEM_TYPES, ORDER_STATUS, ORDER_TYPES, ORDER_UNIT_TYPES, PALLETS_STATUS } from "../utils/const/status";
+import { CODES } from "../utils/const/codes.js";
+import { DEVICE_STATUS, ITEM_TYPES, ORDER_STATUS, ORDER_TYPES, ORDER_UNIT_TYPES, PALLETS_STATUS } from "../utils/const/status.js";
 import { parseGS1 } from "../utils/gs1_util.js";
 import { findBoxByCode, updateBox } from "./box_service.js";
 import { createInventoryMovement } from "./inventory_movement_service.js";
-import { findOrdersByWarehouseAndStatus, findOrdersByWarehouseAndStatusWithProduct, updateOrder } from "./order_service";
-import { createPallet, findPalletByCode, updatePallet } from "./pallet_service";
+import { findOrdersByWarehouseAndStatus, findOrdersByWarehouseAndStatusWithProduct, updateOrder } from "./order_service.js";
+import { createPallet, findPalletByCode, updatePallet } from "./pallet_service.js";
 import { findProductByCode, getProductById } from "./product_service.js"
 import { createScanEvent } from "./scan_event_service.js"
+import { serviceHandler } from "../utils/handler/service_handler.js";
 
 const automationService = "automation service";
 

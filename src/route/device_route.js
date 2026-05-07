@@ -20,7 +20,7 @@ const deviceRouter = Router();
 deviceRouter.post(
   "/register",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["ADMIN", "USER"]),
   createDeviceValidator,
   validateMiddleware,
   registerCameraController,

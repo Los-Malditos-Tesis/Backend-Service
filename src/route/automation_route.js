@@ -6,7 +6,7 @@ import { merchandiseValidator } from "../utils/validator/automation_validator.js
 
 const automationRoute = Router();
 
-deviceRouter.post(
+automationRoute.post(
     "/register/merchandise",
     authCameraMiddleware,
     merchandiseValidator,
@@ -14,7 +14,7 @@ deviceRouter.post(
     registerMerchandiseService
 );
 
-deviceRouter.post(
+automationRoute.post(
     "/dispatch/merchandise",
     authCameraMiddleware,
     merchandiseValidator,
