@@ -26,6 +26,7 @@ export const CODES = {
     NOT_FOUND: 5000,
     ALREADY_EXISTS: 5001,
     HAS_STOCK: 5002,
+    NOT_MATCH: 5003,
   },
   SUPPLIER: {
     NOT_FOUND: 6000,
@@ -53,8 +54,26 @@ export const CODES = {
     NOT_FOUND: 10000,
     ALREADY_EXISTS: 10001,
   },
+  PALLET: {
+    NOT_FOUND: 11000,
+    ALREADY_EXISTS: 11001,
+  },
+  BOX: {
+    NOT_FOUND: 12000,
+    ALREADY_EXISTS: 12001,
+  },
+  SCAN_EVENT: {
+    NOT_FOUND: 13000,
+    ALREADY_EXISTS: 13001,
+  },
+  GS1: {
+    INVALID: 14000,
+  },
+  INVENTORY_MOVEMENT: {
+    NOT_FOUND: 15000,
+  },
   SERVER: {
-    INTERNAL_ERROR: 11000,
+    INTERNAL_ERROR: 16000,
   },
 };
 

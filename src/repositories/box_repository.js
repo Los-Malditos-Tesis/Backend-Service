@@ -1,6 +1,6 @@
 import db from "../models/index.js";
 import { repositoryHandler } from "../utils/handler/repository_handler.js";
-import { PALLETS_STATUS } from "../../pkg/utils/const/status.js";
+import { PALLETS_STATUS } from "../utils/const/status.js";
 
 const boxRepository = "box repository: ";
 
@@ -82,6 +82,29 @@ export const deleteById = repositoryHandler(
     return await db.Box.destroy({
       where: {
         id: id,
+      },
+    });
+  },
+);
+
+export const update = repositoryHandler(
+  boxRepository,
+  async (id = "", data = {}, ctx) => {
+    const [updated] = await db.Box.update(data, {
+      where: {
+        id: id,
+      },
+    });
+    return updated;
+  },
+);
+
+export const findByCode = repositoryHandler(
+  boxRepository,
+  async (code = "", ctx) => {
+    return await db.Box.findOne({
+      where: {
+        code: code,
       },
     });
   },

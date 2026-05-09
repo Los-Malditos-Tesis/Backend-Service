@@ -1,6 +1,8 @@
 import db from "../models/index.js";
 import { Op } from "sequelize";
 import { repositoryHandler } from "../utils/handler/repository_handler.js";
+import { ORDER_STATUS, ORDER_TYPES, ORDER_UNIT_TYPES } from "../utils/const/status.js";
+import { Log } from "../libs/logger/logger.js";
 
 const orderRepository = "order repository: ";
 
@@ -83,4 +85,53 @@ export const findByStatus = repositoryHandler(
       order: [["created_at", "DESC"]],
     });
   },
+);
+
+export const findByWarehouseAndStatus = repositoryHandler(
+  orderRepository,
+  async (warehouse_id = "", orderUnitType = "", merchandise_code = "", status = "", ctx) => {
+    const isPallet = orderUnitType == ORDER_UNIT_TYPES.PALLET
+
+    const where = { status, deleted_at: null }
+    if (warehouse_id) where.origin_warehouse_id = warehouse_id;
+
+    return await db.Order.findAll({
+      where,
+      include: [
+        {
+          model: isPallet ? db.Pallet : db.Box,
+          as: isPallet ? "pallets" : "boxes",
+          attributes: ["id", "qrCode", "code"],
+          where: { code: merchandise_code },
+          required: true,
+          through: {
+            attributes: []
+          }
+        }
+      ],
+      order: [["created_at", "DESC"]],
+    });
+  },
+);
+
+export const findByWarehouseAndStatusWithProduct = repositoryHandler(
+  orderRepository,
+  async (warehouse_id = "", product_id = "", status = "", ctx) => {
+    return await db.Order.findAll({
+      where: { origin_warehouse_id: warehouse_id, status, product_id, deleted_at: null },
+      include: [
+        {
+          model: db.Pallet,
+          as: "pallets",
+          attributes: ["id"]
+        },
+        {
+          model: db.Box,
+          as: "boxes",
+          attributes: ["id"]
+        }
+      ],
+      order: [["created_at", "DESC"]],
+    });
+  }
 );

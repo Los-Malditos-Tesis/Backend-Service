@@ -8,6 +8,8 @@ import { ORDER_TYPES, ORDER_STATUS } from "../utils/const/status.js";
 import {
   create,
   findById,
+  findByWarehouseAndStatus,
+  findByWarehouseAndStatusWithProduct,
   remove,
   searchOrders,
 } from "../repositories/order_repository.js";
@@ -275,5 +277,51 @@ export const deleteOrder = serviceHandler(
       deleted,
     );
     return deleted;
+  },
+);
+
+export const findOrdersByWarehouseAndStatus = serviceHandler(
+  orderService,
+  CODES.CAMERA.NOT_FOUND,
+  async (warehouse_id = "", orderUnitType = "", merchandise_code = "", status = "", ctx) => {
+    Log.infoCtx(
+      ctx,
+      orderService + consoleKeys.StartKey,
+      consoleKeys.RequestKey,
+      { warehouse_id, orderUnitType, merchandise_code },
+    );
+
+    const orders = await findByWarehouseAndStatus(warehouse_id, orderUnitType, merchandise_code, status, ctx);
+
+    Log.infoCtx(
+      ctx,
+      orderService + consoleKeys.SuccessKey,
+      consoleKeys.InformationKey,
+      orders,
+    );
+    return orders;
+  },
+);
+
+export const findOrdersByWarehouseAndStatusWithProduct = serviceHandler(
+  orderService,
+  CODES.CAMERA.NOT_FOUND,
+  async (warehouse_id = "", product_id = "", status = "", ctx) => {
+    Log.infoCtx(
+      ctx,
+      orderService + consoleKeys.StartKey,
+      consoleKeys.RequestKey,
+      { warehouse_id, product_id, status },
+    );
+
+    const orders = await findByWarehouseAndStatusWithProduct(warehouse_id, product_id, status, ctx);
+
+    Log.infoCtx(
+      ctx,
+      orderService + consoleKeys.SuccessKey,
+      consoleKeys.InformationKey,
+      orders,
+    );
+    return orders;
   },
 );

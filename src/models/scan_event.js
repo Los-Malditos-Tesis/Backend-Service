@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { ITEM_TYPES } from "../utils/const/status.js";
+import { DEVICE_STATUS, ITEM_TYPES } from "../utils/const/status.js";
 
 export default (sequelize) => {
   const ScanEvent = sequelize.define(
@@ -16,7 +16,7 @@ export default (sequelize) => {
         validate: {
           notEmpty: true,
           len: [3, 100],
-          is: /^[a-zA-Z0-9._-]+$/,
+          is: /^[a-zA-Z0-9\-+*()#&.,:]+$/,
         },
       },
       detectedType: {
@@ -24,6 +24,13 @@ export default (sequelize) => {
         allowNull: false,
         validate: {
           isIn: [Object.values(ITEM_TYPES)],
+        },
+      },
+      status: {
+        type: DataTypes.ENUM(...Object.values(DEVICE_STATUS)),
+        allowNull: false,
+        validate: {
+          isIn: [Object.values(DEVICE_STATUS)],
         },
       },
       confidense: {

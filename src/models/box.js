@@ -14,6 +14,15 @@ export default (sequelize) => {
             validate: {
                 notEmpty: true,
                 len: [3, 100],
+                is: /^[a-zA-Z0-9\-+*()#&.,:]+$/,
+            }
+        },
+        code: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            validate: {
+                notEmpty: true,
+                len: [3, 30],
                 is: /^[a-zA-Z0-9._-]+$/
             }
         },
@@ -49,6 +58,12 @@ export default (sequelize) => {
         Box.hasMany(models.InventoryMovement, { foreignKey: "box_id" });
         Box.belongsTo(models.Product, { foreignKey: "product_id" });
         Box.belongsTo(models.Pallet, { foreignKey: "pallet_id" });
+        Box.belongsToMany(models.Order, {
+            through: "order_boxes",
+            foreignKey: "box_id",
+            otherKey: "order_id",
+            as: "orders"
+        });
     }
 
     return Box;

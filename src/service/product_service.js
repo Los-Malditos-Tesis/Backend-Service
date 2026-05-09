@@ -192,3 +192,27 @@ export const getProductById = serviceHandler(
     return product;
   },
 );
+
+export const findProductByCode = serviceHandler(
+  productService,
+  CODES.PRODUCT.NOT_FOUND,
+  async (code, ctx) => {
+    Log.infoCtx(
+      ctx,
+      productService + consoleKeys.StartKey,
+      consoleKeys.RequestKey,
+      code,
+    );
+    const product = await findByCode(code, ctx);
+    if (!product)
+      throw new AppError("El producto no existe", 404, CODES.PRODUCT.NOT_FOUND);
+    Log.infoCtx(
+      ctx,
+      productService + consoleKeys.SuccessKey,
+      consoleKeys.ResponseKey,
+      product
+    );
+
+    return product
+  }
+);
