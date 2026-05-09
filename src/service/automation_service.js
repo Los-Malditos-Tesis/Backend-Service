@@ -25,7 +25,8 @@ import { findById as findLocationById } from "../repositories/location_repositor
 import { publishScanRequest } from "../libs/mqtt/mqtt_publisher.js";
 import { serviceHandler } from "../utils/handler/service_handler.js";
 import { waitForScanResult } from "../libs/mqtt/wait_for_scan_result.js";
-import { log } from "console";
+import { Log } from "../libs/logger/logger.js";
+import { consoleKeys } from "../libs/logger/console/constant.js";
 
 const automationService = "automation service";
 
@@ -171,44 +172,42 @@ async function processNewMerchandise(decodedGS1 = {}, ctx) {
 }
 
 export const searchProductInZones = async (productData = {}, ctx) => {
+  Log.infoCtx(ctx, "START", "REQUEST", productData);
+
   const product = await getProductById(productData.id, ctx);
+
   if (!product) {
     throw new AppError("El producto no existe", 404, CODES.PRODUCT.NOT_FOUND);
   }
 
-  const pallet = await findByProductId(productData.id, ctx);
-  if (!pallet) {
-    throw new AppError("El producto no existe", 404, CODES.PALLET.NOT_FOUND);
-  }
-
-  const location = await findLocationById(pallet.location_id, ctx);
-  if (!location) {
-    throw new AppError(
-      "No se encontraron zonas para este producto",
-      404,
-      CODES.LOCATION.NOT_FOUND,
-    );
-  }
-
   const correlationId = crypto.randomUUID();
-  // Aca publica los datos
-  await publishScanRequest({
-    warehouseId: location.warehouse_id,
+
+  const publishData = {
+    warehouseId: "1",
     productCode: product.code,
-    correlationId: "123",
-  });
+    correlationId,
+  };
+
+  Log.infoCtx(ctx, "MQTT", "PUBLISH", publishData);
+
+  await publishScanRequest(publishData);
 
   const result = await waitForScanResult(correlationId, 50000);
 
   if (!result) {
     throw new AppError(
-      "No se pudo obtener el resultado del escaneo",
-      500,
-      CODES.SERVER.INTERNAL_ERROR,
+      "Timeout esperando resultado del escaneo",
+      504,
+      CODES.SERVER.TIMEOUT,
     );
   }
 
-  if (result.qrProd !== product.code) {
+  const matches = (result.results || [])
+    .map(parseGS1)
+    .filter(Boolean)
+    .some((p) => p["01"] === product.gtin);
+
+  if (!matches) {
     throw new AppError(
       "El producto no coincide con el escaneado",
       400,
@@ -218,7 +217,7 @@ export const searchProductInZones = async (productData = {}, ctx) => {
 
   return {
     product,
-    zone: result.location,
+    zone: result.zoneId || result.location,
     correlationId,
   };
 };
