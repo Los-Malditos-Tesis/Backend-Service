@@ -62,6 +62,12 @@ export const registerMerchandiseService = serviceHandler(
         }
         else {
             if (item) {
+                Log.infoCtx(
+                    ctx,
+                    automationService + consoleKeys.StartKey,
+                    consoleKeys.RequestKey + "create scan event",
+                    decodedGS1,
+                );
                 await createScanEvent({
                     camera_id: cameraData.id,
                     qrCode: decodedGS1.raw,
@@ -72,8 +78,21 @@ export const registerMerchandiseService = serviceHandler(
 
                 throw new AppError("Unidad con existencia", 409, CODES.SCAN_EVENT.ALREADY_EXISTS);
             }
+            Log.infoCtx(
+                ctx,
+                automationService + consoleKeys.StartKey,
+                consoleKeys.RequestKey + "create scan event",
+                decodedGS1,
+            );
 
             await processNewMerchandise(decodedGS1, ctx);
+
+            Log.infoCtx(
+                ctx,
+                automationService + consoleKeys.StartKey,
+                consoleKeys.RequestKey + "process new merchandise",
+                decodedGS1,
+            );
 
             const newItem = decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
                 ? await findPalletByCode(decodedGS1.code, ctx)
@@ -84,9 +103,22 @@ export const registerMerchandiseService = serviceHandler(
                 ? { type: ITEM_TYPES.PALLET, pallet_id: newItem.id, state: PALLETS_STATUS.CREATED }
                 : { type: ITEM_TYPES.BOX, box_id: newItem.id, state: PALLETS_STATUS.CREATED }
 
+            Log.infoCtx(
+                ctx,
+                automationService + consoleKeys.StartKey,
+                consoleKeys.RequestKey + "create scan event",
+                decodedGS1,
+            );
 
             await createInventoryMovement(inventoryMovement, ctx)
         }
+
+        Log.infoCtx(
+            ctx,
+            automationService + consoleKeys.StartKey,
+            consoleKeys.RequestKey + "create scan event",
+            decodedGS1,
+        );
 
         return await createScanEvent({
             camera_id: cameraData.id,
@@ -127,7 +159,7 @@ async function processNewMerchandise(decodedGS1 = {}, ctx) {
         : await createBox({
             code: decodedGS1.code,
             qrCode: decodedGS1.raw,
-            quantity: decodedGS1.count37,
+            quantity: decodedGS1.count30,
             status: PALLETS_STATUS.CREATED,
             product_id: product.id,
         }, ctx);
@@ -184,20 +216,21 @@ export const dispatchMerchandiseService = serviceHandler(
         const item = await processDispatchedItem(decodedGS1, ctx);
 
         const isOrderCompleted = decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
-            ? orders[0].pallets.length == orders[0].total_quantity - 1
-            : orders[0].boxes.length == orders[0].total_quantity - 1;
+            ? orders[0].pallets.length > orders[0].total_quantity - 1
+            : orders[0].boxes.length > orders[0].total_quantity - 1;
 
         decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
-            ? await orders[0].addPallet({ id: item.id }, ctx)
-            : await orders[0].addBox({ id: item.id }, ctx);
+            ? await orders[0].addPallet(item.id, { logging: false })
+            : await orders[0].addBox(item.id), { logging: false };
 
-        const result = await updateOrder({ id: orders[0].id, status: isOrderCompleted ? ORDER_STATUS.DISPATCHED : ORDER_STATUS.PENDING }, ctx);
+
+        await updateOrder({ id: orders[0].id, status: isOrderCompleted ? ORDER_STATUS.DISPATCHED : ORDER_STATUS.PENDING }, ctx);
 
         Log.infoCtx(
             ctx,
             automationService + consoleKeys.SuccessKey,
             consoleKeys.ResponseKey,
-            result,
+            { id: orders[0].id, status: isOrderCompleted ? ORDER_STATUS.DISPATCHED : ORDER_STATUS.PENDING },
         );
 
         return await createScanEvent({

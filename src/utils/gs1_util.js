@@ -1,5 +1,5 @@
 import { Log } from "../libs/logger/logger.js";
-import { ORDER_UNIT_TYPES } from "../utils/const/status.js"
+import { ITEM_TYPES, ORDER_UNIT_TYPES } from "../utils/const/status.js"
 
 const AI_CODES = {
     SSCC: '(00)',
@@ -35,12 +35,11 @@ export const parseGS1 = (gs1Code = "") => {
         if (ssccMatch) {
             decodedGs1.sscc = ssccMatch[1];
             decodedGs1.code = ssccMatch[1];
-            decodedGs1.unit_type = ORDER_UNIT_TYPES.PALLET;
-            decodedGs1.productCode = gtinMatch ? gtinMatch[1] : null;
+            decodedGs1.unit_type = ITEM_TYPES.PALLET;
+            decodedGs1.gtin = gtinMatch ? gtinMatch[1] : null;
         } else if (gtinMatch) {
-            decodedGs1.productCode = gtinMatch[1];
             decodedGs1.gtin = gtinMatch[1];
-            decodedGs1.unit_type = ORDER_UNIT_TYPES.BOX;
+            decodedGs1.unit_type = ITEM_TYPES.BOX;
 
             if (serialMatch) {
                 decodedGs1.code = serialMatch[1];
