@@ -1,11 +1,31 @@
 import { Router } from "express";
-import { authMiddleware } from "../middlewares/auth_middleware.js";
-import { authorizeMiddleware } from "../middlewares/authorize_middleware.js";
+import { authCameraMiddleware } from "../middlewares/auth_camera_middleware.js";
 import { validateMiddleware } from "../middlewares/validator_moddleware.js";
-import { searchProductInZonesController } from "../controller/automation_controller.js";
+import { merchandiseValidator } from "../utils/validator/automation_validator.js";
+import {
+  dispatchMerchandiseController,
+  registerMerchandiseController,
+  searchProductInZonesController,
+} from "../controller/automation_controller.js";
 
-const automationRouter = Router();
+const automationRoute = Router();
 
-automationRouter.post("/", searchProductInZonesController);
+automationRoute.post("/", searchProductInZonesController);
 
-export default automationRouter;
+automationRoute.post(
+  "/register/merchandise",
+  authCameraMiddleware,
+  merchandiseValidator,
+  validateMiddleware,
+  registerMerchandiseController,
+);
+
+automationRoute.post(
+  "/dispatch/merchandise",
+  authCameraMiddleware,
+  merchandiseValidator,
+  validateMiddleware,
+  dispatchMerchandiseController,
+);
+
+export default automationRoute;

@@ -18,6 +18,7 @@ import {
   obfuscateToken,
 } from "../utils/obfuscate/obfucates.js";
 import { generateCameraToken } from "../libs/jwt/jwt.js";
+import * as crypto from 'crypto';
 
 const cameraService = "camera service: ";
 
@@ -85,7 +86,7 @@ export const findCameraById = serviceHandler(
       ctx,
       cameraService + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
-      camera,
+      camera.toJSON(),
     );
     return camera;
   },
@@ -200,13 +201,14 @@ export const authCamera = serviceHandler(
     if (!camera || camera.api_key != authData.api_key)
       throw new AppError("Credenciales invalidas", 400, CODES.CAMERA.NOT_FOUND);
 
+    Log.infoCtx(ctx, cameraService + consoleKeys.InformationKey + "camera: ", consoleKeys.InformationKey, { camera })
     const token = generateCameraToken(camera);
 
     Log.info(
       ctx,
       cameraService + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
-      obfuscateToken({ token }),
+      obfuscateToken(token),
     );
     return { token };
   },

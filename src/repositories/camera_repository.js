@@ -39,12 +39,12 @@ export const searchCameras = repositoryHandler(
       order: [["created_at", "DESC"]],
       include: includeLocation
         ? [
-            {
-              model: db.Location,
-              as: "location",
-              attributes: ["id", "zone"],
-            },
-          ]
+          {
+            model: db.Location,
+            as: "location",
+            attributes: ["id", "zone"],
+          },
+        ]
         : undefined,
       ...options,
     });
@@ -61,7 +61,14 @@ export const searchCameras = repositoryHandler(
 export const findById = repositoryHandler(
   cameraRepository,
   async (id = "", ctx) => {
-    return await db.Camera.findByPk(id);
+    return await db.Camera.findByPk(id, {
+      include: [
+        {
+          model: db.Location,
+          as: "location",
+        },
+      ],
+    });
   },
 );
 
@@ -72,6 +79,12 @@ export const findByCode = repositoryHandler(
       where: {
         code: code,
       },
+      include: [
+        {
+          model: db.Location,
+          as: "location",
+        },
+      ],
     });
   },
 );

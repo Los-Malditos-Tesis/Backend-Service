@@ -7,6 +7,7 @@ import {
   findByCode,
   findById,
   findByQrCode,
+  save,
   update,
 } from "../repositories/box_repository.js";
 
@@ -76,10 +77,10 @@ export const createBox = serviceHandler(
       data,
     );
 
-    const box = await findById(data.id, ctx);
+    const box = await findByCode(data.code, ctx);
     if (box)
       throw new AppError(
-        "Ya existe un pallet con el id: " + data.id,
+        "Ya existe una caja con el codigo: " + data.code,
         400,
         CODES.BOX.ALREADY_EXISTS,
       );
@@ -109,7 +110,7 @@ export const findBoxByCode = serviceHandler(
 
     if (!box)
       throw new AppError(
-        "No se encontro ningun pallet con el codigo: " + code,
+        "No se encontro ninguna caja con el codigo: " + code,
         404,
         CODES.BOX.NOT_FOUND,
       );
