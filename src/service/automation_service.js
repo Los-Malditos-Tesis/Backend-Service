@@ -204,12 +204,11 @@ export const searchProductInZones = async (productData = {}, ctx) => {
 
   const matches = (result.results || [])
     .map(parseGS1)
-    .filter(Boolean)
-    .some((p) => p["01"] === product.gtin);
+    .some((p) => p.getin === product.code);
 
   if (!matches) {
     throw new AppError(
-      "El producto no coincide con el escaneado",
+      "No se encontraron existencias",
       400,
       CODES.PRODUCT.NOT_MATCH,
     );
