@@ -3,9 +3,9 @@ import { config } from "./config.js";
 import { Log } from "../libs/logger/logger.js";
 
 export const mqttClient = mqtt.connect(config.mqttUrl, {
-  clientId: "mqttjs_e9f875de",
-  username: "tesis",
-  password: "tesis12345",
+  clientId: config.mqttClientId,
+  username: config.mqttUsername,
+  password: config.mqttPassword,
   rejectUnauthorized: false,
 });
 

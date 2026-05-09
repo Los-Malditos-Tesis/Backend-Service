@@ -40,4 +40,7 @@ export const env = {
   DB_SSL_REQUIRE: require("DB_SSL_REQUIRE"),
   DB_SSL_UNAUTHIRIZED: require("DB_SSL_UNAUTHIRIZED"),
   MQTT_URL: require("MQTT_URL"),
+  MQTT_USERNAME: require("MQTT_USERNAME"),
+  MQTT_PASSWORD: require("MQTT_PASSWORD"),
+  MQTT_CLIENT_ID: require("MQTT_CLIENT_ID"),
 };
