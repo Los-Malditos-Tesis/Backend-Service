@@ -200,12 +200,12 @@ export const dispatchMerchandiseService = serviceHandler(
         const item = await processDispatchedItem(decodedGS1, ctx);
 
         const isOrderCompleted = decodedGS1.unit_type == ITEM_TYPES.PALLET
-            ? orders[0].pallets.length > orders[0].total_quantity - 1
-            : orders[0].boxes.length > orders[0].total_quantity - 1;
+            ? orders[0].pallets.length >= orders[0].total_quantity - 1
+            : orders[0].boxes.length >= orders[0].total_quantity - 1;
 
         decodedGS1.unit_type == ITEM_TYPES.PALLET
             ? await orders[0].addPallet(item.id, { logging: false })
-            : await orders[0].addBox(item.id), { logging: false };
+            : await orders[0].addBox(item.id, { logging: false });
 
 
         await updateOrder({ id: orders[0].id, status: isOrderCompleted ? ORDER_STATUS.DISPATCHED : ORDER_STATUS.PENDING }, ctx);
