@@ -58,6 +58,7 @@ export default (sequelize) => {
         Box.hasMany(models.InventoryMovement, { foreignKey: "box_id" });
         Box.belongsTo(models.Product, { foreignKey: "product_id" });
         Box.belongsTo(models.Pallet, { foreignKey: "pallet_id" });
+        Box.belongsTo(models.Location, { foreignKey: "location_id" });
         Box.belongsToMany(models.Order, {
             through: "order_boxes",
             foreignKey: "box_id",
