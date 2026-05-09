@@ -11,6 +11,7 @@ import {
   findByWarehouseAndStatus,
   findByWarehouseAndStatusWithProduct,
   remove,
+  update,
   searchOrders,
 } from "../repositories/order_repository.js";
 
@@ -66,7 +67,6 @@ export const createOrder = serviceHandler(
     const order = await create(
       {
         ...data,
-        total_quantity: 0,
         status: "PENDING",
       },
       ctx,
@@ -176,13 +176,13 @@ export const updateOrder = serviceHandler(
       );
     }
 
-    const updatedOrder = await updateOrder(data, order, ctx);
+    const updatedOrder = await update(data, order, ctx);
 
     Log.infoCtx(
       ctx,
       orderService + consoleKeys.SuccessKey,
       consoleKeys.InformationKey,
-      updatedOrder,
+      updatedOrder.toJSON(),
     );
     return updatedOrder;
   },
@@ -306,15 +306,15 @@ export const findOrdersByWarehouseAndStatus = serviceHandler(
 export const findOrdersByWarehouseAndStatusWithProduct = serviceHandler(
   orderService,
   CODES.CAMERA.NOT_FOUND,
-  async (warehouse_id = "", product_id = "", status = "", ctx) => {
+  async (origin_warehouse_id = "", product_id = "", status = "", ctx) => {
     Log.infoCtx(
       ctx,
       orderService + consoleKeys.StartKey,
       consoleKeys.RequestKey,
-      { warehouse_id, product_id, status },
+      { origin_warehouse_id, product_id, status },
     );
 
-    const orders = await findByWarehouseAndStatusWithProduct(warehouse_id, product_id, status, ctx);
+    const orders = await findByWarehouseAndStatusWithProduct(origin_warehouse_id, product_id, status, ctx);
 
     Log.infoCtx(
       ctx,
