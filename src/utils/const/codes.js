@@ -26,6 +26,7 @@ export const CODES = {
     NOT_FOUND: 5000,
     ALREADY_EXISTS: 5001,
     HAS_STOCK: 5002,
+    NOT_MATCH: 5003,
   },
   SUPPLIER: {
     NOT_FOUND: 6000,
@@ -74,7 +75,6 @@ export const CODES = {
   SERVER: {
     INTERNAL_ERROR: 16000,
   },
-
 };
 
 export const locationCodes = {};

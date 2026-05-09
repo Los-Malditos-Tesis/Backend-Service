@@ -1,20 +1,32 @@
-import { decode } from "jsonwebtoken";
 import { AppError } from "../errors/app_error.js";
+import crypto from "crypto";
 import { CODES } from "../utils/const/codes.js";
-import { DEVICE_STATUS, ITEM_TYPES, ORDER_STATUS, ORDER_TYPES, ORDER_UNIT_TYPES, PALLETS_STATUS } from "../utils/const/status.js";
+import {
+    DEVICE_STATUS,
+    ITEM_TYPES,
+    ORDER_STATUS,
+    ORDER_TYPES,
+    ORDER_UNIT_TYPES,
+    PALLETS_STATUS,
+} from "../utils/const/status.js";
 import { parseGS1 } from "../utils/gs1_util.js";
 import { createBox, updateBox } from "./box_service.js";
 import { createInventoryMovement } from "./inventory_movement_service.js";
-import { findOrdersByWarehouseAndStatus, findOrdersByWarehouseAndStatusWithProduct, updateOrder } from "./order_service.js";
+import {
+    findOrdersByWarehouseAndStatus,
+    findOrdersByWarehouseAndStatusWithProduct,
+    updateOrder,
+} from "./order_service.js";
 import { createPallet, updatePallet } from "./pallet_service.js";
-import { findProductByCode, getProductById } from "./product_service.js"
-import { createScanEvent } from "./scan_event_service.js"
+import { findProductByCode, getProductById } from "./product_service.js";
+import { createScanEvent } from "./scan_event_service.js";
 import { serviceHandler } from "../utils/handler/service_handler.js";
 import { Log } from "../libs/logger/logger.js";
+import { publishScanRequest } from "../libs/mqtt/mqtt_publisher.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
-import { findByCode as findBoxByCode } from "../repositories/box_repository.js"
-import { findByCode as findPalletByCode } from "../repositories/pallet_repository.js"
-
+import { findByCode as findBoxByCode } from "../repositories/box_repository.js";
+import { findByCode as findPalletByCode } from "../repositories/pallet_repository.js";
+import { waitForScanResult } from "../libs/mqtt/wait_for_scan_result.js";
 
 const automationService = "automation service";
 
@@ -23,7 +35,6 @@ export const registerMerchandiseService = serviceHandler(
     automationService,
     CODES.PRODUCT.NOT_FOUND,
     async (gs1Code = "", cameraData = {}, ctx) => {
-
         Log.infoCtx(
             ctx,
             automationService + consoleKeys.StartKey,
@@ -40,7 +51,6 @@ export const registerMerchandiseService = serviceHandler(
         const item = decodedGS1.unit_type == ITEM_TYPES.PALLET
             ? await findPalletByCode(decodedGS1.code, ctx)
             : await findBoxByCode(decodedGS1.code, ctx);
-
 
         const orders = await findOrdersByWarehouseAndStatus(
             cameraData.location.warehouse_id,
@@ -104,21 +114,32 @@ export const registerMerchandiseService = serviceHandler(
 
         return await createScanEvent({
             camera_id: cameraData.id,
-            qrCode: gs1Code,
+            qrCode: decodedGS1.raw,
             detectedType: decodedGS1.unit_type,
-            status: DEVICE_STATUS.OK,
-            confidence: decodedGS1.confidence
-        }, ctx);
-    },
+            status: DEVICE_STATUS.ERROR,
+            confidence: decodedGS1.confidence,
+        },
+            ctx,
+        );
+    });
 
-);
-
-// sub private functions 
+// sub private functions
 // delivered logic
 async function processDeliveredOrder(order, item_id, ctx) {
-    await updateOrder({ id: order.id, status: ORDER_STATUS.DELIVERED, total_delivered: order.total_delivered + 1 }, ctx);
+    await updateOrder(
+        {
+            id: order.id,
+            status: ORDER_STATUS.DELIVERED,
+            total_delivered: order.total_delivered + 1,
+        },
+        ctx,
+    );
 
-    const unitUpdate = { id: item_id, status: PALLETS_STATUS.DELIVERED, location_id: null };
+    const unitUpdate = {
+        id: item_id,
+        status: PALLETS_STATUS.DELIVERED,
+        location_id: null,
+    };
 
     return order.type === ORDER_UNIT_TYPES.PALLET
         ? await updatePallet(unitUpdate, ctx)
@@ -151,7 +172,7 @@ async function processNewMerchandise(decodedGS1 = {}, location_id = "", ctx) {
 
 //Missing take shoot to update all zones in warehosue
 
-//Missing order taken automation 
+//Missing order taken automation
 export const dispatchMerchandiseService = serviceHandler(
     automationService,
     CODES.SCAN_EVENT.NOT_FOUND,
@@ -223,8 +244,8 @@ export const dispatchMerchandiseService = serviceHandler(
             status: DEVICE_STATUS.OK,
             confidence: decodedGS1.confidence
         }, ctx);
-    }
-);
+    });
+
 
 async function processDispatchedItem(decodedGS1 = {}, ctx) {
     //find box or pallet 
@@ -248,15 +269,66 @@ async function processDispatchedItem(decodedGS1 = {}, ctx) {
         location_id: null
     }
 
-    decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
-        ? await updatePallet(updateItemRequest, ctx)
-        : await updateBox(updateItemRequest, ctx);
+    decodedGS1.unit_type == ITEM_TYPES.PALLET
+        ? await findPalletByCode(decodedGS1.code, ctx)
+        : await findBoxByCode(decodedGS1.code, ctx);
 
     const inventoryMovement = decodedGS1.unit_type == ITEM_TYPES.PALLET
         ? { type: ITEM_TYPES.PALLET, pallet_id: item.id, state: PALLETS_STATUS.PP_DISPATCHED }
         : { type: ITEM_TYPES.BOX, box_id: item.id, state: PALLETS_STATUS.PP_DISPATCHED }
 
-    await createInventoryMovement(inventoryMovement, ctx)
+
+    await createInventoryMovement(inventoryMovement, ctx);
 
     return item;
 }
+
+export const searchProductInZones = async (productData = {}, ctx) => {
+    Log.infoCtx(ctx, "START", "REQUEST", productData);
+
+    const product = await getProductById(productData.id, ctx);
+
+    if (!product) {
+        throw new AppError("El producto no existe", 404, CODES.PRODUCT.NOT_FOUND);
+    }
+
+    const correlationId = crypto.randomUUID();
+
+    const publishData = {
+        warehouseId: "1",
+        productCode: product.code,
+        correlationId,
+    };
+
+    Log.infoCtx(ctx, "MQTT", "PUBLISH", publishData);
+
+    await publishScanRequest(publishData);
+
+    const result = await waitForScanResult(correlationId, 50000);
+
+    if (!result) {
+        throw new AppError(
+            "Timeout esperando resultado del escaneo",
+            504,
+            CODES.SERVER.TIMEOUT,
+        );
+    }
+
+    const matches = (result.results || [])
+        .map(parseGS1)
+        .some((p) => p.getin === product.code);
+
+    if (!matches) {
+        throw new AppError(
+            "No se encontraron existencias",
+            400,
+            CODES.PRODUCT.NOT_MATCH,
+        );
+    }
+
+    return {
+        product,
+        zone: result.zoneId || result.location,
+        correlationId,
+    };
+};
