@@ -27,6 +27,7 @@ import { consoleKeys } from "../libs/logger/console/constant.js";
 import { findByCode as findBoxByCode } from "../repositories/box_repository.js";
 import { findByCode as findPalletByCode } from "../repositories/pallet_repository.js";
 import { waitForProductMatch } from "../libs/mqtt/wait_for_scan_result.js";
+import { config } from "../config/config.js";
 
 const automationService = "automation service";
 
@@ -383,7 +384,11 @@ export const searchProductInZones = async (productData = {}, ctx) => {
 
   await publishScanRequest(publishData);
 
-  const zone = await waitForProductMatch(correlationId, product.code, 50000);
+  const zone = await waitForProductMatch(
+    correlationId,
+    product.code,
+    config.timeoutMqtt,
+  );
 
   Log.infoCtx(
     ctx,

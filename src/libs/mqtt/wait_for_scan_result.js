@@ -34,11 +34,7 @@ export const waitForProductMatch = (
         return;
       }
 
-      Log.info(
-        waitForScanResultService + correlationId,
-        "MATCH FOUND:",
-        data.zoneId,
-      );
+      Log.info(waitForScanResultService + correlationId, "MATCH FOUND:", data);
 
       cleanup();
 
