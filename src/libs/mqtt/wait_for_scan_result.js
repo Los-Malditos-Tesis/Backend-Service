@@ -3,13 +3,35 @@ import { Log } from "../logger/logger.js";
 
 const waitForScanResultService = "wait For Scan Result: ";
 
-export const waitForScanResult = (correlationId, timeout = 5000) => {
-  return new Promise((resolve, reject) => {
+export const waitForScanResults = (
+  correlationId,
+  { timeout = 5000, expectedResponses = null } = {},
+) => {
+  return new Promise((resolve) => {
+    const results = [];
+
     Log.info(
       waitForScanResultService + correlationId,
       "LISTENER CREATED:",
       correlationId,
     );
+
+    const cleanup = () => {
+      clearTimeout(timer);
+      scanEmitter.removeListener(correlationId, handler);
+    };
+
+    const finish = () => {
+      cleanup();
+
+      Log.info(
+        waitForScanResultService + correlationId,
+        "FINISHED WITH RESULTS:",
+        results.length,
+      );
+
+      resolve(results);
+    };
 
     const timer = setTimeout(() => {
       Log.warn(
@@ -18,19 +40,19 @@ export const waitForScanResult = (correlationId, timeout = 5000) => {
         correlationId,
       );
 
-      scanEmitter.removeListener(correlationId, handler);
-
-      reject(new Error("Scan timeout"));
+      finish();
     }, timeout);
 
     const handler = (data) => {
       Log.info(waitForScanResultService + correlationId, "EVENT CAUGHT:", data);
 
-      clearTimeout(timer);
+      results.push(data);
 
-      resolve(data);
+      if (expectedResponses && results.length >= expectedResponses) {
+        finish();
+      }
     };
 
-    scanEmitter.once(correlationId, handler);
+    scanEmitter.on(correlationId, handler);
   });
 };
