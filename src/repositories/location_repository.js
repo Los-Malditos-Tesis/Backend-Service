@@ -99,6 +99,7 @@ export const search = repositoryHandler(
       limit,
       offset,
       order: [["zone", "ASC"]],
+      include: [{ model: db.Warehouse, as: "Warehouse" }],
     });
 
     return {

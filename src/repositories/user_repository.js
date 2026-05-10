@@ -52,4 +52,5 @@ export const findByEmailWithRoles = repositoryHandler(
       },
     });
   },
+  obfuscatePass,
 );
