@@ -69,7 +69,7 @@ export const searchCameras = repositoryHandler(
 
 const maskApiKey = (item = "") => {
   if (!item) return item;
-  return `${value.slice(0, 4)}****${item.slice(-4)}`;
+  return `${item.slice(0, 4)}********${item.slice(-4)}`;
 };
 
 export const findById = repositoryHandler(
