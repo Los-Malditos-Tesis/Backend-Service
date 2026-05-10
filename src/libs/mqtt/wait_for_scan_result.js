@@ -1,56 +1,52 @@
 import { scanEmitter } from "./events/scan_emitter.js";
 import { Log } from "../logger/logger.js";
+import { parseGS1 } from "../../utils/gs1_util.js";
 
 const waitForScanResultService = "wait For Scan Result: ";
 
-export const waitForScanResults = (
+export const waitForProductMatch = (
   correlationId,
-  { timeout = 5000, expectedResponses = null } = {},
+  productCode,
+  timeout = 5000,
 ) => {
   return new Promise((resolve) => {
-    const results = [];
-
-    Log.info(
-      waitForScanResultService + correlationId,
-      "LISTENER CREATED:",
-      correlationId,
-    );
-
     const cleanup = () => {
       clearTimeout(timer);
       scanEmitter.removeListener(correlationId, handler);
     };
 
-    const finish = () => {
+    const timer = setTimeout(() => {
+      Log.warn(waitForScanResultService + correlationId, "NO MATCH FOUND");
+
       cleanup();
 
-      Log.info(
-        waitForScanResultService + correlationId,
-        "FINISHED WITH RESULTS:",
-        results.length,
-      );
-
-      resolve(results);
-    };
-
-    const timer = setTimeout(() => {
-      Log.warn(
-        waitForScanResultService + correlationId,
-        "TIMEOUT:",
-        correlationId,
-      );
-
-      finish();
+      resolve(null);
     }, timeout);
 
     const handler = (data) => {
       Log.info(waitForScanResultService + correlationId, "EVENT CAUGHT:", data);
 
-      results.push(data);
+      const match = (data.results || [])
+        .map(parseGS1)
+        .some((p) => p.gtin == productCode);
 
-      if (expectedResponses && results.length >= expectedResponses) {
-        finish();
+      if (!match) {
+        return;
       }
+
+      Log.info(
+        waitForScanResultService + correlationId,
+        "MATCH FOUND:",
+        data.zoneId,
+      );
+
+      cleanup();
+
+      resolve({
+        zoneId: data.zoneId,
+        cameraId: data.cameraId,
+        results: data.results,
+      });
     };
 
     scanEmitter.on(correlationId, handler);

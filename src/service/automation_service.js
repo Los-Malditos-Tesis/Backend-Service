@@ -26,8 +26,7 @@ import { publishScanRequest } from "../libs/mqtt/mqtt_publisher.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { findByCode as findBoxByCode } from "../repositories/box_repository.js";
 import { findByCode as findPalletByCode } from "../repositories/pallet_repository.js";
-import { waitForScanResults } from "../libs/mqtt/wait_for_scan_result.js";
-import { config } from "../config/config.js";
+import { waitForProductMatch } from "../libs/mqtt/wait_for_scan_result.js";
 
 const automationService = "automation service";
 
@@ -384,36 +383,16 @@ export const searchProductInZones = async (productData = {}, ctx) => {
 
   await publishScanRequest(publishData);
 
-  const results = await waitForScanResults(correlationId, {
-    timeout: 50000,
-    expectedResponses: config.numberCameras,
-  });
+  const zone = await waitForProductMatch(correlationId, product.code, 50000);
 
   Log.infoCtx(
     ctx,
-    automationService + consoleKeys.InformationKey,
-    "RESULTS",
-    results,
+    automationService + consoleKeys.SuccessKey,
+    consoleKeys.ResponseKey,
+    zone,
   );
 
-  if (results.length === 0) {
-    throw new AppError(
-      "Timeout esperando resultado del escaneo",
-      504,
-      CODES.SERVER.TIMEOUT,
-    );
-  }
-
-  const zones = results
-    .filter((scan) =>
-      (scan.results || []).map(parseGS1).some((p) => p.getin === product.code),
-    )
-    .map((scan) => ({
-      zoneId: scan.zoneId,
-      cameraId: scan.cameraId,
-    }));
-
-  if (zones.length === 0) {
+  if (!zone) {
     throw new AppError(
       "No se encontraron existencias",
       400,
@@ -424,7 +403,7 @@ export const searchProductInZones = async (productData = {}, ctx) => {
   Log.infoCtx(ctx, automationService + consoleKeys.EndKey);
   return {
     product,
-    zones,
+    zone,
     correlationId,
   };
 };
