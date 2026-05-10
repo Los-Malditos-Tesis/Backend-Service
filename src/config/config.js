@@ -32,4 +32,5 @@ export const config = Object.freeze({
   mqttUsername: env.MQTT_USERNAME,
   mqttPassword: env.MQTT_PASSWORD,
   mqttClientId: env.MQTT_CLIENT_ID,
+  numberCameras: env.NUMBER_CAMERAS,
 });
