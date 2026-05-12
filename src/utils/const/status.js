@@ -45,7 +45,7 @@ export const ORDER_TYPES = {
 };
 
 export const ORDER_UNIT_TYPES = {
-  PALLET: "PALLET",
+  PALLET: "PAL",
   BOX: "BOX",
 };
 

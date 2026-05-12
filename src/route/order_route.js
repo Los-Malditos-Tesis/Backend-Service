@@ -22,7 +22,7 @@ const orderRouter = Router();
 orderRouter.post(
   "/",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["ADMIN", "USER"]),
   createOrderValidator,
   validateMiddleware,
   createOrdenController,

@@ -56,7 +56,7 @@ export default (sequelize) => {
             defaultValue: PALLETS_STATUS.CREATED,
             validate: {
                 isIn: {
-                    args: [Object.values(PALLETS_STATUS)],
+                    args: [ Object.values(PALLETS_STATUS)],
                     msg: "El estado proporcionado no es válido"
                 }
             }

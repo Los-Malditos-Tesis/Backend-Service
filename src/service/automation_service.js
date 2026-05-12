@@ -26,7 +26,8 @@ import { publishScanRequest } from "../libs/mqtt/mqtt_publisher.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { findByCode as findBoxByCode } from "../repositories/box_repository.js";
 import { findByCode as findPalletByCode } from "../repositories/pallet_repository.js";
-import { waitForScanResult } from "../libs/mqtt/wait_for_scan_result.js";
+import { waitForProductMatch } from "../libs/mqtt/wait_for_scan_result.js";
+import { config } from "../config/config.js";
 
 const automationService = "automation service";
 
@@ -49,7 +50,7 @@ export const registerMerchandiseService = serviceHandler(
 
     //check if item exists in warehosue
     const item =
-      decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
+      decodedGS1.unit_type == ITEM_TYPES.PALLET
         ? await findPalletByCode(decodedGS1.code, ctx)
         : await findBoxByCode(decodedGS1.code, ctx);
 
@@ -66,7 +67,7 @@ export const registerMerchandiseService = serviceHandler(
       await processDeliveredOrder(order, item.id, ctx);
 
       const inventoryMovement =
-        order.unit_type == ORDER_UNIT_TYPES.PALLET
+        order.unit_type == ITEM_TYPES.PALLET
           ? {
               type: ITEM_TYPES.PALLET,
               pallet_id: item.id,
@@ -99,15 +100,22 @@ export const registerMerchandiseService = serviceHandler(
         );
       }
 
-      await processNewMerchandise(decodedGS1, ctx);
+      await processNewMerchandise(decodedGS1, cameraData.location.id, ctx);
+
+      Log.infoCtx(
+        ctx,
+        automationService + consoleKeys.StartKey,
+        consoleKeys.RequestKey + "item:",
+        decodedGS1,
+      );
 
       const newItem =
-        decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
+        decodedGS1.unit_type == ITEM_TYPES.PALLET
           ? await findPalletByCode(decodedGS1.code, ctx)
           : await findBoxByCode(decodedGS1.code, ctx);
 
       const inventoryMovement =
-        decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
+        decodedGS1.unit_type == ITEM_TYPES.PALLET
           ? {
               type: ITEM_TYPES.PALLET,
               pallet_id: newItem.id,
@@ -119,15 +127,26 @@ export const registerMerchandiseService = serviceHandler(
               state: PALLETS_STATUS.CREATED,
             };
 
-      await createInventoryMovement(inventoryMovement, ctx);
+      await createInventoryMovement(
+        inventoryMovement,
+        cameraData.location.id,
+        ctx,
+      );
     }
+
+    Log.infoCtx(
+      ctx,
+      automationService + consoleKeys.StartKey,
+      consoleKeys.RequestKey + "create scan event",
+      decodedGS1,
+    );
 
     return await createScanEvent(
       {
         camera_id: cameraData.id,
-        qrCode: gs1Code,
+        qrCode: decodedGS1.raw,
         detectedType: decodedGS1.unit_type,
-        status: DEVICE_STATUS.OK,
+        status: DEVICE_STATUS.ERROR,
         confidence: decodedGS1.confidence,
       },
       ctx,
@@ -159,10 +178,10 @@ async function processDeliveredOrder(order, item_id, ctx) {
 }
 
 // new merchandise logic
-async function processNewMerchandise(decodedGS1 = {}, ctx) {
+async function processNewMerchandise(decodedGS1 = {}, location_id = "", ctx) {
   const product = await findProductByCode(decodedGS1.gtin, ctx);
 
-  return decodedGS1.unit_type === ORDER_UNIT_TYPES.PALLET
+  return decodedGS1.unit_type === ITEM_TYPES.PALLET
     ? await createPallet(
         {
           code: decodedGS1.code, // (00)
@@ -171,6 +190,7 @@ async function processNewMerchandise(decodedGS1 = {}, ctx) {
           quantityUnitsInBox: decodedGS1.count30, // (30)
           status: PALLETS_STATUS.CREATED,
           product_id: product.id,
+          location_id: location_id,
         },
         ctx,
       )
@@ -178,9 +198,10 @@ async function processNewMerchandise(decodedGS1 = {}, ctx) {
         {
           code: decodedGS1.code,
           qrCode: decodedGS1.raw,
-          quantity: decodedGS1.count37,
+          quantity: decodedGS1.count30,
           status: PALLETS_STATUS.CREATED,
           product_id: product.id,
+          location_id: location_id,
         },
         ctx,
       );
@@ -247,15 +268,15 @@ export const dispatchMerchandiseService = serviceHandler(
     const item = await processDispatchedItem(decodedGS1, ctx);
 
     const isOrderCompleted =
-      decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
-        ? orders[0].pallets.length == orders[0].total_quantity - 1
-        : orders[0].boxes.length == orders[0].total_quantity - 1;
+      decodedGS1.unit_type == ITEM_TYPES.PALLET
+        ? orders[0].pallets.length >= orders[0].total_quantity - 1
+        : orders[0].boxes.length >= orders[0].total_quantity - 1;
 
-    decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
-      ? await orders[0].addPallet({ id: item.id }, ctx)
-      : await orders[0].addBox({ id: item.id }, ctx);
+    decodedGS1.unit_type == ITEM_TYPES.PALLET
+      ? await orders[0].addPallet(item.id, { logging: false })
+      : await orders[0].addBox(item.id, { logging: false });
 
-    const result = await updateOrder(
+    await updateOrder(
       {
         id: orders[0].id,
         status: isOrderCompleted
@@ -269,7 +290,12 @@ export const dispatchMerchandiseService = serviceHandler(
       ctx,
       automationService + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
-      result,
+      {
+        id: orders[0].id,
+        status: isOrderCompleted
+          ? ORDER_STATUS.DISPATCHED
+          : ORDER_STATUS.PENDING,
+      },
     );
 
     return await createScanEvent(
@@ -287,7 +313,7 @@ export const dispatchMerchandiseService = serviceHandler(
 async function processDispatchedItem(decodedGS1 = {}, ctx) {
   //find box or pallet
   const item =
-    decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
+    decodedGS1.unit_type == ITEM_TYPES.PALLET
       ? await findPalletByCode(decodedGS1.code, ctx)
       : await findBoxByCode(decodedGS1.code, ctx);
 
@@ -310,12 +336,12 @@ async function processDispatchedItem(decodedGS1 = {}, ctx) {
     location_id: null,
   };
 
-  decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
-    ? await updatePallet(updateItemRequest, ctx)
-    : await updateBox(updateItemRequest, ctx);
+  decodedGS1.unit_type == ITEM_TYPES.PALLET
+    ? await findPalletByCode(decodedGS1.code, ctx)
+    : await findBoxByCode(decodedGS1.code, ctx);
 
   const inventoryMovement =
-    decodedGS1.unit_type == ORDER_UNIT_TYPES.PALLET
+    decodedGS1.unit_type == ITEM_TYPES.PALLET
       ? {
           type: ITEM_TYPES.PALLET,
           pallet_id: item.id,
@@ -333,7 +359,12 @@ async function processDispatchedItem(decodedGS1 = {}, ctx) {
 }
 
 export const searchProductInZones = async (productData = {}, ctx) => {
-  Log.infoCtx(ctx, "START", "REQUEST", productData);
+  Log.infoCtx(
+    ctx,
+    automationService + consoleKeys.StartKey,
+    "REQUEST",
+    productData,
+  );
 
   const product = await getProductById(productData.id, ctx);
 
@@ -349,25 +380,24 @@ export const searchProductInZones = async (productData = {}, ctx) => {
     correlationId,
   };
 
-  Log.infoCtx(ctx, "MQTT", "PUBLISH", publishData);
+  Log.infoCtx(ctx, automationService + "MQTT", "PUBLISH", publishData);
 
   await publishScanRequest(publishData);
 
-  const result = await waitForScanResult(correlationId, 50000);
+  const zone = await waitForProductMatch(
+    correlationId,
+    product.code,
+    config.timeoutMqtt,
+  );
 
-  if (!result) {
-    throw new AppError(
-      "Timeout esperando resultado del escaneo",
-      504,
-      CODES.SERVER.TIMEOUT,
-    );
-  }
+  Log.infoCtx(
+    ctx,
+    automationService + consoleKeys.SuccessKey,
+    consoleKeys.ResponseKey,
+    zone,
+  );
 
-  const matches = (result.results || [])
-    .map(parseGS1)
-    .some((p) => p.getin === product.code);
-
-  if (!matches) {
+  if (!zone) {
     throw new AppError(
       "No se encontraron existencias",
       400,
@@ -375,9 +405,10 @@ export const searchProductInZones = async (productData = {}, ctx) => {
     );
   }
 
+  Log.infoCtx(ctx, automationService + consoleKeys.EndKey);
   return {
     product,
-    zone: result.zoneId || result.location,
+    zone,
     correlationId,
   };
 };
