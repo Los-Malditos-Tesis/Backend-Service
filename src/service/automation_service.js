@@ -2,12 +2,14 @@ import { AppError } from "../errors/app_error.js";
 import crypto from "crypto";
 import { CODES } from "../utils/const/codes.js";
 import {
+    CONFIG_TYPE,
     DEVICE_STATUS,
     ITEM_TYPES,
     ORDER_STATUS,
     ORDER_TYPES,
     ORDER_UNIT_TYPES,
     PALLETS_STATUS,
+    SCANNING_MODE_CONFIG,
 } from "../utils/const/status.js";
 import { parseGS1 } from "../utils/gs1_util.js";
 import { createBox, updateBox } from "./box_service.js";
@@ -27,6 +29,7 @@ import { consoleKeys } from "../libs/logger/console/constant.js";
 import { findByCode as findBoxByCode } from "../repositories/box_repository.js";
 import { findByCode as findPalletByCode } from "../repositories/pallet_repository.js";
 import { waitForScanResult } from "../libs/mqtt/wait_for_scan_result.js";
+import { findByKeyConfigParams } from "../service/config_params_service.js"
 
 const automationService = "automation service";
 
@@ -332,3 +335,41 @@ export const searchProductInZones = async (productData = {}, ctx) => {
         correlationId,
     };
 };
+
+export const inventoryAutomationService = serviceHandler(
+    automationService,
+    CODES.SCAN_EVENT.NOT_FOUND,
+    async (gs1Code = "", cameraData = {}, ctx) => {
+          Log.infoCtx(
+            ctx,
+            automationService + consoleKeys.StartKey,
+            consoleKeys.RequestKey,
+            gs1Code,
+        );
+
+        const decodedGS1 = parseGS1(gs1Code);
+        if (!decodedGS1) {
+            throw new AppError("Invalid GS1 code", 400, CODES.GS1.INVALID);
+        }
+
+        const warehouseConfig = await findByKeyConfigParams(CONFIG_TYPE.SCANNING_MODE, ctx);
+
+        if(warehouseConfig.value == SCANNING_MODE_CONFIG.ENTRY)
+            registerMerchandiseService(gs1Code, cameraData, ctx);
+        else
+            dispatchMerchandiseService(gs1Code, cameraData, ctx);
+
+         Log.infoCtx(
+            ctx,
+            automationService + consoleKeys.SuccessKey,
+            consoleKeys.ResponseKey,
+            {  },
+        );
+
+        return await createScanEvent({
+            qrCode: decodedGS1.raw,
+            detectedType: decodedGS1.unit_type,
+            status: DEVICE_STATUS.OK,
+            confidence: decodedGS1.confidence
+        }, ctx);
+    });

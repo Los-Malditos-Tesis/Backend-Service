@@ -4,6 +4,7 @@ import { validateMiddleware } from "../middlewares/validator_moddleware.js";
 import { merchandiseValidator } from "../utils/validator/automation_validator.js";
 import {
   dispatchMerchandiseController,
+  inventoryController,
   registerMerchandiseController,
   searchProductInZonesController,
 } from "../controller/automation_controller.js";
@@ -26,6 +27,14 @@ automationRoute.post(
   merchandiseValidator,
   validateMiddleware,
   dispatchMerchandiseController,
+);
+
+automationRoute.post(
+  "/inventory/merchandise",
+  authCameraMiddleware,
+  merchandiseValidator,
+  validateMiddleware,
+  inventoryController
 );
 
 export default automationRoute;
