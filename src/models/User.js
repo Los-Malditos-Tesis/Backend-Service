@@ -43,7 +43,7 @@ export default (sequelize) => {
           notEmpty: true,
         },
       },
-      status: {
+      active: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
       },

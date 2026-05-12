@@ -1,6 +1,7 @@
 import db from "../models/index.js";
 import { repositoryHandler } from "../utils/handler/repository_handler.js";
 import { obfuscatePass } from "../utils/obfuscate/obfucates.js";
+import { Op } from "sequelize";
 
 const authRepository = "auth repository: ";
 
@@ -51,5 +52,64 @@ export const findByEmailWithRoles = repositoryHandler(
         email: email,
       },
     });
+  },
+);
+
+export const search = repositoryHandler(
+  authRepository,
+  async ({ id, name, email } = {}, ctx) => {
+    const where = {
+      active: true,
+    };
+
+    if (id) {
+      where.id = {
+        [Op.eq]: id,
+      };
+    }
+
+    if (name) {
+      where.name = {
+        [Op.iLike]: `%${name}%`,
+      };
+    }
+
+    if (email) {
+      where.email = {
+        [Op.iLike]: `%${email}%`,
+      };
+    }
+
+    return await db.User.findAll({
+      where,
+    });
+  },
+);
+
+export const updateProfile = repositoryHandler(
+  authRepository,
+  async (user, name, email, ctx) => {
+    if (name !== undefined) {
+      user.name = name;
+    }
+
+    if (email !== undefined) {
+      user.email = email;
+    }
+
+    await user.save();
+
+    return user;
+  },
+);
+
+export const updateStatus = repositoryHandler(
+  authRepository,
+  async (user, status, ctx) => {
+    user.active = status;
+
+    await user.save();
+
+    return user;
   },
 );
