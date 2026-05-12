@@ -43,4 +43,5 @@ export const env = {
   MQTT_USERNAME: require("MQTT_USERNAME"),
   MQTT_PASSWORD: require("MQTT_PASSWORD"),
   MQTT_CLIENT_ID: require("MQTT_CLIENT_ID"),
+  AUTO_CREATE_SCAN_CONFIG: require("AUTO_CREATE_SCAN_CONFIG"),
 };

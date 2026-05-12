@@ -352,7 +352,7 @@ export const inventoryAutomationService = serviceHandler(
             throw new AppError("Invalid GS1 code", 400, CODES.GS1.INVALID);
         }
 
-        const warehouseConfig = await findByKeyConfigParams(CONFIG_TYPE.SCANNING_MODE, ctx);
+        const warehouseConfig = await findByKeyConfigParams(CONFIG_TYPE.SCANNING_MODE, cameraData.location.warehouse_id , ctx);
 
         if(warehouseConfig.value == SCANNING_MODE_CONFIG.ENTRY)
             registerMerchandiseService(gs1Code, cameraData, ctx);

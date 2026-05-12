@@ -24,12 +24,13 @@ export const findById = repositoryHandler(
     }
 );
 
-export const findByKey = repositoryHandler(
+export const findByKeyAndWarehouse = repositoryHandler(
     configParamsRepository,
-    async(key = "", ctx) =>{
+    async(key = "", warehouse_id = "",ctx) =>{
         return await db.ConfigParams.findOne({
             where: {
-                key: key
+                key: key,
+                warehouse_id: warehouse_id
             }
         });
     }

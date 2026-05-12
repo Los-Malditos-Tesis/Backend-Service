@@ -30,6 +30,10 @@ export default (sequelize) => {
         timestamp: true,
         paranoid: true
     });
+
+    ConfigParams.associate = (models) => {
+        ConfigParams.belongsTo(models.Warehouse, { foreignKey: "warehouse_id" });
+    }
     
     return ConfigParams;
 }

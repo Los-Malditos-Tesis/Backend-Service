@@ -32,4 +32,5 @@ export const config = Object.freeze({
   mqttUsername: env.MQTT_USERNAME,
   mqttPassword: env.MQTT_PASSWORD,
   mqttClientId: env.MQTT_CLIENT_ID,
+  autoCreateScanConfig: toBoolean(env.AUTO_CREATE_SCAN_CONFIG),
 });
