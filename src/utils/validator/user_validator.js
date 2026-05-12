@@ -21,10 +21,4 @@ export const updateProfileValidator = [
 
 export const updateStatusValidator = [
   param("id").isUUID().withMessage(MSG.INVALID_FORMAT.es("el id")),
-
-  body("status")
-    .notEmpty()
-    .withMessage(MSG.EMPTY.es("el status"))
-    .isBoolean()
-    .withMessage(MSG.INVALID_FORMAT.es("el status")),
 ];

@@ -22,7 +22,7 @@ userRouter.get(
 );
 
 userRouter.put(
-  "/profile",
+  "/profile/:id",
   authMiddleware,
   authorizeMiddleware(["ADMIN"]),
   updateProfileValidator,
@@ -30,8 +30,8 @@ userRouter.put(
   updateProfileController,
 );
 
-userRouter.put(
-  "/status",
+userRouter.patch(
+  "/status/:id",
   authMiddleware,
   authorizeMiddleware(["ADMIN"]),
   updateStatusValidator,

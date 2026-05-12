@@ -106,7 +106,7 @@ export const updateProfile = repositoryHandler(
 export const updateStatus = repositoryHandler(
   authRepository,
   async (user, status, ctx) => {
-    user.status = status;
+    user.active = status;
 
     await user.save();
 

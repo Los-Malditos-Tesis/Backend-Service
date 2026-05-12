@@ -1,13 +1,14 @@
-import { AppError } from "../errors/app_error.js";
+import { generalResponse } from "../utils/handler/response_handler.js";
 import { Log } from "../libs/logger/logger.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
+import { CODES } from "../utils/const/codes.js";
 import {
-  search,
-  updateStatus,
-  updateProfile,
-} from "../repositories/user_repository.js";
+  searchUsers,
+  updateProfileUser,
+  updateStatusUser,
+} from "../service/user_service.js";
 
-const userService = "user service: ";
+const userService = "user controller: ";
 
 export const searchUserController = async (req, res, next) => {
   try {
@@ -17,16 +18,9 @@ export const searchUserController = async (req, res, next) => {
       consoleKeys.QueryKey,
       req.query,
     );
-    const { id, name, email, page, limit } = req.query;
-    const serviceResp = await search(req.ctx, {
-      id,
-      name,
-      email,
-      page,
-      limit,
-    });
+    const { id, name, email } = req.query;
 
-    const resp = registerUserDto(serviceResp.toJSON());
+    const resp = await searchUsers(req.ctx, { id, name, email });
     Log.infoCtx(
       req.ctx,
       userService + consoleKeys.SuccessKey,
@@ -63,14 +57,13 @@ export const updateProfileController = async (req, res, next) => {
     const id = req.params.id;
     const { name, email } = req.body;
 
-    const serviceResp = await updateProfile(req.ctx, { id, name, email });
+    const resp = await updateProfileUser(req.ctx, { id, name, email });
 
-    const resp = registerUserDto(serviceResp.toJSON());
     Log.infoCtx(
       req.ctx,
       userService + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
-      resp,
+      resp.toJSON(),
     );
 
     return generalResponse(
@@ -100,16 +93,14 @@ export const updateStatusController = async (req, res, next) => {
     );
 
     const id = req.params.id;
-    const { status } = req.body;
 
-    const serviceResp = await updateStatus(req.ctx, { id, status });
+    const resp = await updateStatusUser(req.ctx, id);
 
-    const resp = registerUserDto(serviceResp.toJSON());
     Log.infoCtx(
       req.ctx,
       userService + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
-      resp,
+      resp.toJSON(),
     );
 
     return generalResponse(

@@ -12,7 +12,7 @@ import { Log } from "../libs/logger/logger.js";
 import { config } from "../config/config.js";
 import { CODES } from "../utils/const/codes.js";
 import { obfuscatePass } from "../utils/obfuscate/obfucates.js";
-import { findById } from "../repositories/store_repository.js";
+import { findById } from "../repositories/user_repository.js";
 
 const userService = "user service: ";
 
@@ -130,7 +130,7 @@ export const searchUsers = async (ctx, query = {}) => {
       ctx,
       userService + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
-      users.toJSON(),
+      users,
     );
     return users;
   } catch (e) {
@@ -200,16 +200,16 @@ export const updateProfileUser = async (ctx, data = {}) => {
   }
 };
 
-export const updateStatusUser = async (ctx, data = {}) => {
+export const updateStatusUser = async (ctx, id = "") => {
   try {
     Log.infoCtx(
       ctx,
       userService + consoleKeys.StartKey,
       consoleKeys.RequestKey,
-      data,
+      id,
     );
 
-    const user = await findById(data.id, ctx);
+    const user = await findById(id, ctx);
 
     if (!user)
       throw new AppError(
@@ -218,7 +218,9 @@ export const updateStatusUser = async (ctx, data = {}) => {
         CODES.RESOURCE.NOT_FOUND,
       );
 
-    const updatedUser = await updateStatus(user, data.status, ctx);
+    const newStatus = user.active ? false : true;
+
+    const updatedUser = await updateStatus(user, newStatus, ctx);
 
     Log.infoCtx(
       ctx,
