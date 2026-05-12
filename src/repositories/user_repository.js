@@ -59,9 +59,7 @@ export const findByEmailWithRoles = repositoryHandler(
 export const search = repositoryHandler(
   authRepository,
   async ({ id, name, email } = {}, ctx) => {
-    const where = {
-      active: true,
-    };
+    const where = {};
 
     if (id) {
       where.id = {
