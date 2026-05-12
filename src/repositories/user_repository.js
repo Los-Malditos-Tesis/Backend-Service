@@ -81,7 +81,7 @@ export const search = repositoryHandler(
       };
     }
 
-    return await db.User.findAll({
+    return await db.User.scope("withRoles").findAll({
       where,
     });
   },
