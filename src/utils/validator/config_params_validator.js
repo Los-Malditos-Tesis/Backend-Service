@@ -1,5 +1,5 @@
 import { body, params } from "express-validator"
-import { CONFIG_TYPE } from "../const/status.js"
+import { CONFIG_TYPE, SCANNING_MODE_CONFIG } from "../const/status.js"
 import {  VALIDATION_MESSAGES as MSG } from "../const/messages.js"
 
 export const validateCreateConfigParams = [
@@ -17,7 +17,16 @@ export const validateCreateConfigParams = [
         .isString()
         .withMessage(MSG.STRING.es("El valor"))
         .bail()
-        .trim()    
+        .trim() 
+        .custom((value, { req }) => {
+            if (req.body.key === CONFIG_TYPE.SCANNING_MODE) {
+                const validModes = Object.values(SCANNING_MODE_CONFIG);
+                if (!validModes.includes(value)) {
+                    throw new Error(`El valor debe ser un modo de escaneo válido: ${validModes.join(", ")}`);
+                }
+            }
+            return true;
+        })   
 ]
 
 export const validateUpdateConfigParams = [
@@ -38,6 +47,15 @@ export const validateUpdateConfigParams = [
         .withMessage(MSG.STRING.es("El valor"))
         .bail()
         .trim()
+        .custom((value, { req }) => {
+            if (req.body.key === CONFIG_TYPE.SCANNING_MODE) {
+                const validModes = Object.values(SCANNING_MODE_CONFIG);
+                if (!validModes.includes(value)) {
+                    throw new Error(`El valor debe ser un modo de escaneo válido: ${validModes.join(", ")}`);
+                }
+            }
+            return true;
+        })   
 ]
 
 export const validateIdConfigParams = [
