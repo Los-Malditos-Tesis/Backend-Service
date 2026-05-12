@@ -1,4 +1,9 @@
-import { registerCamera, searchAllCameras } from "../service/camera_service.js";
+import {
+  registerCamera,
+  searchAllCameras,
+  updateCameraData,
+  deleteCamera,
+} from "../service/camera_service.js";
 import { Log } from "../libs/logger/logger.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { CODES } from "../utils/const/codes.js";
@@ -97,7 +102,7 @@ export const updateCameraController = async (req, res, next) => {
 
     const { id } = req.params;
 
-    const resp = await updateCamera({ ...req.body, id }, req.ctx);
+    const resp = await updateCameraData({ ...req.body, id }, req.ctx);
 
     Log.infoCtx(
       req.ctx,
