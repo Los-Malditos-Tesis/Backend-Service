@@ -3,6 +3,7 @@ import { authMiddleware } from "../middlewares/auth_middleware.js";
 import { authorizeMiddleware } from "../middlewares/authorize_middleware.js";
 import { validateMiddleware } from "../middlewares/validator_moddleware.js";
 import { createConfigParamsController, deleteByIdConfigParamsController, findAllConfigParamsController, findByIdConfigParamsController, updateConfigParamsController } from "../controller/config_params_controller.js";
+import { validateCreateConfigParams, validateIdConfigParams, validateUpdateConfigParams } from "../utils/validator/config_params_validator.js";
 
 const configParamsRouter = Router();
 
@@ -26,7 +27,7 @@ configParamsRouter.get(
     "/:id",
     authMiddleware,
     authorizeMiddleware(["ADMIN", "USER"]),
-    validateIdMiddelware,
+    validateIdConfigParams,
     validateMiddleware,
     findByIdConfigParamsController
 )
@@ -42,7 +43,7 @@ configParamsRouter.delete(
     "/:id",
     authMiddleware,
     authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
-    validateIdMiddelware,
+    validateIdConfigParams,
     validateMiddleware,
     deleteByIdConfigParamsController
 )
