@@ -28,7 +28,7 @@ import { publishScanRequest } from "../libs/mqtt/mqtt_publisher.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { findByCode as findBoxByCode } from "../repositories/box_repository.js";
 import { findByCode as findPalletByCode } from "../repositories/pallet_repository.js";
-import { waitForScanResult } from "../libs/mqtt/wait_for_scan_result.js";
+// import { waitForScanResult } from "../libs/mqtt/wait_for_scan_result.js";
 import { findByKeyAndWarehouseConfigParams } from "../service/config_params_service.js"
 import { waitForProductMatch } from "../libs/mqtt/wait_for_scan_result.js";
 import { config } from "../config/config.js";

@@ -1,6 +1,6 @@
 import { body, param } from "express-validator";
 import { VALIDATION_MESSAGES as MSG } from "../const/messages.js";
-import { ITEM_TYPES } from "../const/status.js";
+import { DEVICE_STATUS, ITEM_TYPES } from "../const/status.js";
 
 export const validateSearchController = [
     body("camera_id")
