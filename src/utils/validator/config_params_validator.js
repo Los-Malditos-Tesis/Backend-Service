@@ -1,4 +1,4 @@
-import { body } from "express-validator"
+import { body, param } from "express-validator"
 import { CONFIG_TYPE, SCANNING_MODE_CONFIG } from "../const/status.js"
 import { VALIDATION_MESSAGES as MSG } from "../const/messages.js"
 
@@ -30,7 +30,7 @@ export const validateCreateConfigParams = [
 ]
 
 export const validateUpdateConfigParams = [
-    params("id")
+    param("id")
         .exists()
         .withMessage(MSG.REQUIRED.es("El id"))
         .bail()
@@ -59,7 +59,7 @@ export const validateUpdateConfigParams = [
 ]
 
 export const validateIdConfigParams = [
-    params("id")
+    param("id")
         .exists()
         .withMessage(MSG.REQUIRED.es("El id"))
         .isUUID()
