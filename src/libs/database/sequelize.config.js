@@ -10,10 +10,7 @@ const sequelize = new Sequelize(
     port: config.dbPort,
     dialect: config.dialect,
     dialectOptions: {
-      ssl: {
-        require: config.dbSslRequire,
-        rejectUnauthorized: config.dbSslUnauthorized, // IMPORTANTE para Neon
-      },
+
     },
     logging: false, // Disable logging; default: console.log
   },
