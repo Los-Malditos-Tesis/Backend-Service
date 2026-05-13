@@ -1,6 +1,6 @@
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { Log } from "../libs/logger/logger.js";
-import { CODES } from "../utils/const/codes";
+import { CODES } from "../utils/const/codes.js";
 import { generalResponse } from "../utils/handler/response_handler.js";
 import { createConfigParams, findAllConfigParams, updateConfigParams } from "../service/config_params_service.js"
 
