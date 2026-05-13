@@ -10,10 +10,7 @@ const db = {};
 
 const files = fs
   .readdirSync(__dirname)
-  .filter(file =>
-    file !== "index.js" &&
-    file.endsWith(".js")
-  );
+  .filter((file) => file !== "index.js" && file.endsWith(".js"));
 
 for (const file of files) {
   const modelModule = await import(`./${file}`);
@@ -22,7 +19,7 @@ for (const file of files) {
 }
 
 // Ejecutar asociaciones
-Object.keys(db).forEach(modelName => {
+Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }

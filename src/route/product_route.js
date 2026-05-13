@@ -20,7 +20,7 @@ import {
 const productRouter = Router();
 
 productRouter.get(
-  "/:id",
+  "/find-by-id/:id",
   authMiddleware,
   validateGetProductById,
   validateMiddleware,

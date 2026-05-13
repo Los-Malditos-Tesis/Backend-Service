@@ -55,8 +55,9 @@ export const updateCameraValidator = [
 
   body("code")
     .optional()
-    .isEmpty()
+    .notEmpty()
     .withMessage(MSG.EMPTY.es("El código"))
+    .bail()
     .isString()
     .withMessage(MSG.STRING.es("El código"))
     .bail()
@@ -70,8 +71,9 @@ export const updateCameraValidator = [
 
   body("location_id")
     .optional()
-    .isEmpty()
+    .notEmpty()
     .withMessage(MSG.EMPTY.es("La ubicación"))
+    .bail()
     .isUUID()
     .withMessage(MSG.UUID.es("La ubicación"))
     .bail(),

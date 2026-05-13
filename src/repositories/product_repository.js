@@ -82,6 +82,7 @@ export const deleteById = repositoryHandler(
 );
 
 export const search = repositoryHandler(
+  productRepository,
   async (query = {}, warehouseId, limit = 10, page = 1, ctx) => {
     const offset = (page - 1) * limit;
     const { name, sku, code, category } = query;
@@ -117,6 +118,20 @@ export const search = repositoryHandler(
       attributes: {
         include: [[literal(countProducts), "total_available_units"]],
       },
+      include: [
+        {
+          model: db.Supplier,
+          attributes: [
+            "id",
+            "name",
+            "code",
+            "contactName",
+            "phone",
+            "email",
+            "location",
+          ],
+        },
+      ],
       limit,
       offset,
       order: [["name", "ASC"]],
