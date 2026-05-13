@@ -98,3 +98,39 @@ export const deleteById = repositoryHandler(
         })
     }
 )
+
+export const search = repositoryHandler(
+  scanEventRepository,
+  async (query = {}, limit = 10, page = 1, ctx) => {
+    const { id, qrCode, detectedType, status, confidense, camera_id } = query;
+
+    const offset = (page - 1) * limit;
+    const whereClause = { deleted_at: null };
+
+    if (id) whereClause.id = { [Op.iLike]: `%${id}%` };
+
+    if (qrCode) whereClause.qrCode = { [Op.iLike]: `%${qrCode}%` };
+
+    if (detectedType) whereClause.detectedType = { [Op.iLike]: `%${detectedType}%` };
+
+    if (status) whereClause.status = { [Op.iLike]: `%${status}%` };
+
+    if (confidense) whereClause.confidense = { [Op.iLike]: `%${confidense}%` };
+
+    if (camera_id) whereClause.camera_id = { [Op.iLike]: `%${camera_id}%` };
+
+    const { rows, count } = await db.ScanEvent.findAndCountAll({
+      where: whereClause,
+      limit: limit,
+      offset: offset,
+      order: [["created_at", "DESC"]],
+    });
+
+    return {
+      items: rows,
+      total: count,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+    };
+  },
+);
