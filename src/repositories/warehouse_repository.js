@@ -7,7 +7,7 @@ const warehouseRepository = "warehouse repository: ";
 export const save = repositoryHandler(
   warehouseRepository,
   async (warehouse = {}, ctx) => {
-    const [result] = await db.Warehouse.upsert(warehouse);
+    const result = await db.Warehouse.create(warehouse);
     return result;
   },
 );
