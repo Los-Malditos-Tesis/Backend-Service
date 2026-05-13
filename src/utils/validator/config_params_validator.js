@@ -1,6 +1,6 @@
-import { body, params } from "express-validator"
+import { body, param } from "express-validator"
 import { CONFIG_TYPE, SCANNING_MODE_CONFIG } from "../const/status.js"
-import {  VALIDATION_MESSAGES as MSG } from "../const/messages.js"
+import { VALIDATION_MESSAGES as MSG } from "../const/messages.js"
 
 export const validateCreateConfigParams = [
     body("key")
@@ -17,7 +17,7 @@ export const validateCreateConfigParams = [
         .isString()
         .withMessage(MSG.STRING.es("El valor"))
         .bail()
-        .trim() 
+        .trim()
         .custom((value, { req }) => {
             if (req.body.key === CONFIG_TYPE.SCANNING_MODE) {
                 const validModes = Object.values(SCANNING_MODE_CONFIG);
@@ -26,11 +26,11 @@ export const validateCreateConfigParams = [
                 }
             }
             return true;
-        })   
+        })
 ]
 
 export const validateUpdateConfigParams = [
-    params("id")
+    param("id")
         .exists()
         .withMessage(MSG.REQUIRED.es("El id"))
         .bail()
@@ -55,13 +55,13 @@ export const validateUpdateConfigParams = [
                 }
             }
             return true;
-        })   
+        })
 ]
 
 export const validateIdConfigParams = [
-    params("id")
-    .exists()
-    .withMessage(MSG.REQUIRED.es("El id"))
-    .isUUID()
-    .withMessage(MSG.UUID.es("El id"))
+    param("id")
+        .exists()
+        .withMessage(MSG.REQUIRED.es("El id"))
+        .isUUID()
+        .withMessage(MSG.UUID.es("El id"))
 ]

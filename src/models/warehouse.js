@@ -32,7 +32,7 @@ export default (sequelize) => {
         tableName: "warehouses",
         underscored: true,
         timestamp: true,
-        paranoid: true
+        paranoid: true,
     })
 
     Warehouse.associate = (models) => {
@@ -41,23 +41,24 @@ export default (sequelize) => {
     }
 
     Warehouse.afterCreate(async (warehouse, options) => {
-        if(config.autoCreateScanConfig){
+        if (config.autoCreateScanConfig) {
             try {
                 Log.info("Start creating auto scan config")
                 await sequelize.models.ConfigParams.create({
                     key: CONFIG_TYPE.SCANNING_MODE,
                     value: SCANNING_MODE_CONFIG.ENTRY,
                     warehouse_id: warehouse.id
-                }, { transaction: options.transaction})
+                }, { transaction: options.transaction })
                 Log.info("Success assign auto scan config to new warehouse")
             }
-            catch(e) {
+            catch (e) {
                 Log.error("Error creating auto scan config", e);
             }
             finally {
                 Log.info("Finish creating auto scan config")
             }
         }
-    });
+    })
+
     return Warehouse;
 }

@@ -29,7 +29,7 @@ import { consoleKeys } from "../libs/logger/console/constant.js";
 import { findByCode as findBoxByCode } from "../repositories/box_repository.js";
 import { findByCode as findPalletByCode } from "../repositories/pallet_repository.js";
 import { waitForScanResult } from "../libs/mqtt/wait_for_scan_result.js";
-import { findByKeyConfigParams } from "../service/config_params_service.js"
+import { findByKeyAndWarehouseConfigParams } from "../service/config_params_service.js"
 
 const automationService = "automation service";
 
@@ -340,7 +340,7 @@ export const inventoryAutomationService = serviceHandler(
     automationService,
     CODES.SCAN_EVENT.NOT_FOUND,
     async (gs1Code = "", cameraData = {}, ctx) => {
-          Log.infoCtx(
+        Log.infoCtx(
             ctx,
             automationService + consoleKeys.StartKey,
             consoleKeys.RequestKey,
@@ -352,18 +352,18 @@ export const inventoryAutomationService = serviceHandler(
             throw new AppError("Invalid GS1 code", 400, CODES.GS1.INVALID);
         }
 
-        const warehouseConfig = await findByKeyConfigParams(CONFIG_TYPE.SCANNING_MODE, cameraData.location.warehouse_id , ctx);
+        const warehouseConfig = await findByKeyAndWarehouseConfigParams(CONFIG_TYPE.SCANNING_MODE, cameraData.location.warehouse_id, ctx);
 
-        if(warehouseConfig.value == SCANNING_MODE_CONFIG.ENTRY)
+        if (warehouseConfig.value == SCANNING_MODE_CONFIG.ENTRY)
             registerMerchandiseService(gs1Code, cameraData, ctx);
         else
             dispatchMerchandiseService(gs1Code, cameraData, ctx);
 
-         Log.infoCtx(
+        Log.infoCtx(
             ctx,
             automationService + consoleKeys.SuccessKey,
             consoleKeys.ResponseKey,
-            {  },
+            {},
         );
 
         return await createScanEvent({
