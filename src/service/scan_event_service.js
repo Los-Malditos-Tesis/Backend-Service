@@ -30,7 +30,7 @@ export const createScanEvent = serviceHandler(
 export const searchScanEvent = serviceHandler(
   scan_event_service,
   CODES.SCAN_EVENT.NOT_FOUND,
-  async (query = "", limit = 10, page = 1, ctx) => {
+  async (query = {}, limit = 10, page = 1, ctx) => {
     Log.infoCtx(
       ctx,
       scan_event_service + consoleKeys.StartKey,
