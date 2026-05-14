@@ -5,6 +5,7 @@ import { generalResponse } from "../utils/handler/response_handler.js";
 import {
   changeOrderStatus,
   createOrder,
+  searchOrdersService,
   updateOrder,
 } from "../service/order_service.js";
 
@@ -52,7 +53,7 @@ export const searchOrdersController = async (req, res, next) => {
       req.query,
     );
 
-    const resp = await searchOrders(req.query, req.ctx);
+    const resp = await searchOrdersService(req.query, req.query.limit, req.query.page, req.ctx);
 
     Log.infoCtx(
       req.ctx,

@@ -325,3 +325,33 @@ export const findOrdersByWarehouseAndStatusWithProduct = serviceHandler(
     return orders;
   },
 );
+
+export const searchOrdersService = serviceHandler(
+  orderService,
+  CODES.ORDER.NOT_FOUND,
+  async (query = "", limit = 10, page = 1, ctx) => {
+    Log.infoCtx(
+      ctx,
+      orderService + consoleKeys.StartKey,
+      consoleKeys.RequestKey,
+      query,
+    );
+
+    if (page < 1 || limit < 1)
+      throw new AppError(
+        "Numero de paginacion invalido",
+        400,
+        CODES.RESOURCE.INVALID_OPERATION,
+      );
+
+    const orders = await searchOrders(query, limit, page, ctx);
+
+    Log.infoCtx(
+      ctx,
+      orderService + consoleKeys.SuccessKey,
+      consoleKeys.InformationKey,
+      orders,
+    );
+    return orders;
+  },
+);
