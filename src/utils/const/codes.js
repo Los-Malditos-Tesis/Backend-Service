@@ -72,8 +72,12 @@ export const CODES = {
   INVENTORY_MOVEMENT: {
     NOT_FOUND: 15000,
   },
+  CONFIG_PARAMS: {
+    NOT_FOUND: 16000,
+    ALREADY_EXISTS: 16001,
+  },
   SERVER: {
-    INTERNAL_ERROR: 16000,
+    INTERNAL_ERROR: 17000,
   },
 };
 

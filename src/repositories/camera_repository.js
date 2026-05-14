@@ -32,31 +32,45 @@ export const searchCameras = repositoryHandler(
       };
     }
 
-    const { rows, count } = await db.Camera.findAndCountAll({
-      where,
-      limit,
-      offset,
-      order: [["created_at", "DESC"]],
-      include: includeLocation
-        ? [
-          {
-            model: db.Location,
-            as: "location",
-            attributes: ["id", "zone"],
-          },
-        ]
-        : undefined,
-      ...options,
+    const { rows, count } = await db.Camera.scope("withApiKey").findAndCountAll(
+      {
+        where,
+        limit,
+        offset,
+        order: [["created_at", "DESC"]],
+        include: includeLocation
+          ? [
+              {
+                model: db.Location,
+                as: "location",
+                attributes: ["id", "zone"],
+              },
+            ]
+          : undefined,
+        ...options,
+      },
+    );
+
+    const items = rows.map((camera) => {
+      return {
+        ...camera.toJSON(),
+        api_key: maskApiKey(camera.api_key),
+      };
     });
 
     return {
-      items: rows,
+      items: items,
       total: count,
       totalPages: Math.ceil(count / limit),
       currentPage: page,
     };
   },
 );
+
+const maskApiKey = (item = "") => {
+  if (!item) return item;
+  return `${item.slice(0, 4)}********${item.slice(-4)}`;
+};
 
 export const findById = repositoryHandler(
   cameraRepository,

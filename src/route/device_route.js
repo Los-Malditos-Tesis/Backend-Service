@@ -27,7 +27,7 @@ deviceRouter.post(
 );
 
 deviceRouter.get(
-  "/",
+  "/search",
   authMiddleware,
   authorizeMiddleware(["ADMIN", "USER"]),
   searchCamerasValidator,

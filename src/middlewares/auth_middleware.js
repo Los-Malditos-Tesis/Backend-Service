@@ -1,10 +1,8 @@
-import { getUserByEmail } from "../service/user_service.js";
 import { verifyAuthToken } from "../service/auth_service.js";
 import { AppError } from "../errors/app_error.js";
 import { CODES } from "../utils/const/codes.js";
 import { Log } from "../libs/logger/logger.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
-import { obfuscatePass } from "../utils/obfuscate/obfucates.js";
 import { findByEmailWithRoles } from "../repositories/user_repository.js";
 
 const authMiddlewareKey = "auth middleware: ";

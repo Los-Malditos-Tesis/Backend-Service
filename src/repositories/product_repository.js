@@ -118,6 +118,20 @@ export const search = repositoryHandler(
       attributes: {
         include: [[literal(countProducts), "total_available_units"]],
       },
+      include: [
+        {
+          model: db.Supplier,
+          attributes: [
+            "id",
+            "name",
+            "code",
+            "contactName",
+            "phone",
+            "email",
+            "location",
+          ],
+        },
+      ],
       limit,
       offset,
       order: [["name", "ASC"]],

@@ -61,3 +61,12 @@ export const DEVICE_STATUS = {
   WARN: "WAR",
   ERROR: "ERR",
 };
+
+export const CONFIG_TYPE = {
+  SCANNING_MODE: "SCM"
+}
+
+export const SCANNING_MODE_CONFIG = {
+  EXIT: "EXT",
+  ENTRY: "ENT",
+}

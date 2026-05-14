@@ -53,14 +53,13 @@ export const findByEmailWithRoles = repositoryHandler(
       },
     });
   },
+  obfuscatePass,
 );
 
 export const search = repositoryHandler(
   authRepository,
   async ({ id, name, email } = {}, ctx) => {
-    const where = {
-      active: true,
-    };
+    const where = {};
 
     if (id) {
       where.id = {
@@ -80,7 +79,7 @@ export const search = repositoryHandler(
       };
     }
 
-    return await db.User.findAll({
+    return await db.User.scope("withRoles").findAll({
       where,
     });
   },

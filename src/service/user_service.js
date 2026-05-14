@@ -126,13 +126,15 @@ export const searchUsers = async (ctx, query = {}) => {
         CODES.RESOURCE.NOT_FOUND,
       );
 
+    const usersWithRoles = users.map((user) => user.toJSON());
+
     Log.infoCtx(
       ctx,
       userService + consoleKeys.SuccessKey,
       consoleKeys.ResponseKey,
-      users,
+      usersWithRoles,
     );
-    return users;
+    return usersWithRoles;
   } catch (e) {
     let error = e;
 

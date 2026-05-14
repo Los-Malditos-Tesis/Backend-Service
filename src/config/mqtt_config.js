@@ -9,10 +9,18 @@ export const mqttClient = mqtt.connect(config.mqttUrl, {
   rejectUnauthorized: false,
 });
 
-mqttClient.on("connect", () => {
-  Log.info("MQTT connected");
+mqttClient.on("reconnect", () => {
+  Log.warn("MQTT reconnecting...");
 });
 
-mqttClient.on("error", (err) => {
-  Log.error("MQTT error", err);
+mqttClient.on("close", () => {
+  Log.warn("MQTT connection closed");
+});
+
+mqttClient.on("offline", () => {
+  Log.warn("MQTT offline");
+});
+
+mqttClient.on("end", () => {
+  Log.warn("MQTT ended");
 });
