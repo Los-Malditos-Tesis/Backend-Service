@@ -22,10 +22,10 @@ export const createEventController = async (req, res, next) => {
       "success",
     );
   } catch (e) {
-    Log.errorCtx(req.ctx, locationController + consoleKeys.FailKey, e);
+    Log.errorCtx(req.ctx, scanEventController + consoleKeys.FailKey, e);
     next(e);
   } finally {
-    Log.infoCtx(req.ctx, locationController + consoleKeys.FinishKey);
+    Log.infoCtx(req.ctx, scanEventController + consoleKeys.FinishKey);
   }
 };
 
