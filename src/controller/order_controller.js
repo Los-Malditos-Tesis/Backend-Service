@@ -8,6 +8,7 @@ import {
   searchOrdersService,
   updateOrder,
 } from "../service/order_service.js";
+import { searchOrders } from "../repositories/order_repository.js";
 
 const orderController = "order controller: ";
 

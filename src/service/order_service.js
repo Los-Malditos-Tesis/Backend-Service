@@ -31,7 +31,7 @@ export const createOrder = serviceHandler(
     const {
       type,
       unit_type,
-      warehouse_id,
+      origin_warehouse_id,
       destination_warehouse_id,
       store_id,
     } = data;
@@ -55,7 +55,7 @@ export const createOrder = serviceHandler(
     }
 
     // validar warehouse origen
-    const warehouse = await getWarehouseById(warehouse_id, ctx);
+    const warehouse = await getWarehouseById(origin_warehouse_id, ctx);
     if (!warehouse) {
       throw new AppError(
         "Origin warehouse not found",
