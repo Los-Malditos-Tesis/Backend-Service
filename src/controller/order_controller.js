@@ -93,7 +93,7 @@ export const updateOrderController = async (req, res, next) => {
     const { id } = req.params;
     const { type, unit_type } = req.body;
 
-    const resp = await updateOrder({ id, type, unit_type }, ctx);
+    const resp = await updateOrder({ id, type, unit_type }, req.ctx);
 
     Log.infoCtx(
       req.ctx,
@@ -131,7 +131,7 @@ export const changeOrderStatusController = async (req, res, next) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const resp = await changeOrderStatus(id, status, ctx);
+    const resp = await changeOrderStatus(id, status, req.ctx);
 
     Log.infoCtx(
       req.ctx,
