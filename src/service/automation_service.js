@@ -2,14 +2,14 @@ import { AppError } from "../errors/app_error.js";
 import crypto from "crypto";
 import { CODES } from "../utils/const/codes.js";
 import {
-    CONFIG_TYPE,
-    DEVICE_STATUS,
-    ITEM_TYPES,
-    ORDER_STATUS,
-    ORDER_TYPES,
-    ORDER_UNIT_TYPES,
-    PALLETS_STATUS,
-    SCANNING_MODE_CONFIG,
+  CONFIG_TYPE,
+  DEVICE_STATUS,
+  ITEM_TYPES,
+  ORDER_STATUS,
+  ORDER_TYPES,
+  ORDER_UNIT_TYPES,
+  PALLETS_STATUS,
+  SCANNING_MODE_CONFIG,
 } from "../utils/const/status.js";
 import { parseGS1 } from "../utils/gs1_util.js";
 import { createBox, updateBox } from "./box_service.js";
@@ -73,15 +73,15 @@ export const registerMerchandiseService = serviceHandler(
       const inventoryMovement =
         order.unit_type == ITEM_TYPES.PALLET
           ? {
-              type: ITEM_TYPES.PALLET,
-              pallet_id: item.id,
-              state: PALLETS_STATUS.DELIVERED,
-            }
+            type: ITEM_TYPES.PALLET,
+            pallet_id: item.id,
+            state: PALLETS_STATUS.DELIVERED,
+          }
           : {
-              type: ITEM_TYPES.BOX,
-              box_id: item.id,
-              state: PALLETS_STATUS.DELIVERED,
-            };
+            type: ITEM_TYPES.BOX,
+            box_id: item.id,
+            state: PALLETS_STATUS.DELIVERED,
+          };
 
       await createInventoryMovement(inventoryMovement, ctx);
     } else {
@@ -121,15 +121,15 @@ export const registerMerchandiseService = serviceHandler(
       const inventoryMovement =
         decodedGS1.unit_type == ITEM_TYPES.PALLET
           ? {
-              type: ITEM_TYPES.PALLET,
-              pallet_id: newItem.id,
-              state: PALLETS_STATUS.CREATED,
-            }
+            type: ITEM_TYPES.PALLET,
+            pallet_id: newItem.id,
+            state: PALLETS_STATUS.CREATED,
+          }
           : {
-              type: ITEM_TYPES.BOX,
-              box_id: newItem.id,
-              state: PALLETS_STATUS.CREATED,
-            };
+            type: ITEM_TYPES.BOX,
+            box_id: newItem.id,
+            state: PALLETS_STATUS.CREATED,
+          };
 
       await createInventoryMovement(
         inventoryMovement,
@@ -176,7 +176,7 @@ async function processDeliveredOrder(order, item_id, ctx) {
     location_id: null,
   };
 
-  return order.type === ORDER_UNIT_TYPES.PALLET
+  return order.unit_type == ORDER_UNIT_TYPES.PALLET
     ? await updatePallet(unitUpdate, ctx)
     : await updateBox(unitUpdate, ctx);
 }
@@ -187,28 +187,28 @@ async function processNewMerchandise(decodedGS1 = {}, location_id = "", ctx) {
 
   return decodedGS1.unit_type === ITEM_TYPES.PALLET
     ? await createPallet(
-        {
-          code: decodedGS1.code, // (00)
-          qrCode: decodedGS1.raw,
-          quantityBox: decodedGS1.count37, // (37)
-          quantityUnitsInBox: decodedGS1.count30, // (30)
-          status: PALLETS_STATUS.CREATED,
-          product_id: product.id,
-          location_id: location_id,
-        },
-        ctx,
-      )
+      {
+        code: decodedGS1.code, // (00)
+        qrCode: decodedGS1.raw,
+        quantityBox: decodedGS1.count37, // (37)
+        quantityUnitsInBox: decodedGS1.count30, // (30)
+        status: PALLETS_STATUS.CREATED,
+        product_id: product.id,
+        location_id: location_id,
+      },
+      ctx,
+    )
     : await createBox(
-        {
-          code: decodedGS1.code,
-          qrCode: decodedGS1.raw,
-          quantity: decodedGS1.count30,
-          status: PALLETS_STATUS.CREATED,
-          product_id: product.id,
-          location_id: location_id,
-        },
-        ctx,
-      );
+      {
+        code: decodedGS1.code,
+        qrCode: decodedGS1.raw,
+        quantity: decodedGS1.count30,
+        status: PALLETS_STATUS.CREATED,
+        product_id: product.id,
+        location_id: location_id,
+      },
+      ctx,
+    );
 }
 
 //Missing take shoot to update all zones in warehosue
@@ -347,15 +347,15 @@ async function processDispatchedItem(decodedGS1 = {}, ctx) {
   const inventoryMovement =
     decodedGS1.unit_type == ITEM_TYPES.PALLET
       ? {
-          type: ITEM_TYPES.PALLET,
-          pallet_id: item.id,
-          state: PALLETS_STATUS.PP_DISPATCHED,
-        }
+        type: ITEM_TYPES.PALLET,
+        pallet_id: item.id,
+        state: PALLETS_STATUS.PP_DISPATCHED,
+      }
       : {
-          type: ITEM_TYPES.BOX,
-          box_id: item.id,
-          state: PALLETS_STATUS.PP_DISPATCHED,
-        };
+        type: ITEM_TYPES.BOX,
+        box_id: item.id,
+        state: PALLETS_STATUS.PP_DISPATCHED,
+      };
 
   await createInventoryMovement(inventoryMovement, ctx);
 
@@ -418,39 +418,39 @@ export const searchProductInZones = async (productData = {}, ctx) => {
 };
 
 export const inventoryAutomationService = serviceHandler(
-    automationService,
-    CODES.SCAN_EVENT.NOT_FOUND,
-    async (gs1Code = "", cameraData = {}, ctx) => {
-        Log.infoCtx(
-            ctx,
-            automationService + consoleKeys.StartKey,
-            consoleKeys.RequestKey,
-            gs1Code,
-        );
+  automationService,
+  CODES.SCAN_EVENT.NOT_FOUND,
+  async (gs1Code = "", cameraData = {}, ctx) => {
+    Log.infoCtx(
+      ctx,
+      automationService + consoleKeys.StartKey,
+      consoleKeys.RequestKey,
+      gs1Code,
+    );
 
-        const decodedGS1 = parseGS1(gs1Code);
-        if (!decodedGS1) {
-            throw new AppError("Invalid GS1 code", 400, CODES.GS1.INVALID);
-        }
+    const decodedGS1 = parseGS1(gs1Code);
+    if (!decodedGS1) {
+      throw new AppError("Invalid GS1 code", 400, CODES.GS1.INVALID);
+    }
 
-        const warehouseConfig = await findByKeyAndWarehouseConfigParams(CONFIG_TYPE.SCANNING_MODE, cameraData.location.warehouse_id, ctx);
+    const warehouseConfig = await findByKeyAndWarehouseConfigParams(CONFIG_TYPE.SCANNING_MODE, cameraData.location.warehouse_id, ctx);
 
-        if (warehouseConfig.value == SCANNING_MODE_CONFIG.ENTRY)
-            registerMerchandiseService(gs1Code, cameraData, ctx);
-        else
-            dispatchMerchandiseService(gs1Code, cameraData, ctx);
+    if (warehouseConfig.value == SCANNING_MODE_CONFIG.ENTRY)
+      registerMerchandiseService(gs1Code, cameraData, ctx);
+    else
+      dispatchMerchandiseService(gs1Code, cameraData, ctx);
 
-        Log.infoCtx(
-            ctx,
-            automationService + consoleKeys.SuccessKey,
-            consoleKeys.ResponseKey,
-            {},
-        );
+    Log.infoCtx(
+      ctx,
+      automationService + consoleKeys.SuccessKey,
+      consoleKeys.ResponseKey,
+      {},
+    );
 
-        return await createScanEvent({
-            qrCode: decodedGS1.raw,
-            detectedType: decodedGS1.unit_type,
-            status: DEVICE_STATUS.OK,
-            confidence: decodedGS1.confidence
-        }, ctx);
-    });
+    return await createScanEvent({
+      qrCode: decodedGS1.raw,
+      detectedType: decodedGS1.unit_type,
+      status: DEVICE_STATUS.OK,
+      confidence: decodedGS1.confidence
+    }, ctx);
+  });

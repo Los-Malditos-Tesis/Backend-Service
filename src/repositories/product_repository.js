@@ -111,11 +111,11 @@ export const search = repositoryHandler(
             AND p.status = '${PALLETS_STATUS.STORED}'
             ${warehouseId ? `AND p.warehouse_id = '${warehouseId}'` : ""}
             AND p.deleted_at IS NULL
-        )`;
+        )`; 
 
     const { rows, count } = await db.Product.findAndCountAll({
       where: whereClouse,
-      attributes: {
+       attributes: {
         include: [[literal(countProducts), "total_available_units"]],
       },
       include: [
