@@ -135,6 +135,7 @@ export const findByCategory = repositoryHandler(
       where: {
         category: { [Op.iLike]: `%${category}%` },
       },
+      include: [{ model: db.Warehouse, as: "Warehouse" }],
     });
   },
 );

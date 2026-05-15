@@ -26,7 +26,10 @@ import { serviceHandler } from "../utils/handler/service_handler.js";
 import { Log } from "../libs/logger/logger.js";
 import { publishScanRequest } from "../libs/mqtt/mqtt_publisher.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
-import { findByCode as findBoxByCode } from "../repositories/box_repository.js";
+import {
+  findByCode as findBoxByCode,
+  getByProductId,
+} from "../repositories/box_repository.js";
 import { findByCode as findPalletByCode } from "../repositories/pallet_repository.js";
 import { findByKeyAndWarehouseConfigParams } from "../service/config_params_service.js";
 import { waitForScanResults } from "../libs/mqtt/wait_for_scan_result.js";
@@ -411,14 +414,14 @@ export const searchProductInZones = async (productData = {}, ctx) => {
     correlationId,
   });
 
-  const detections = await waitForScanResults(
+  const scanResult = await waitForScanResults(
     correlationId,
     product.code,
     camerasCodes,
     config.timeoutMqtt,
   );
 
-  if (!detections.length) {
+  if (!scanResult) {
     throw new AppError(
       "No se encontraron existencias",
       400,
@@ -430,15 +433,39 @@ export const searchProductInZones = async (productData = {}, ctx) => {
     ctx,
     automationService + consoleKeys.SuccessKey,
     consoleKeys.ResponseKey,
-    detections,
+    scanResult,
   );
+
+  const { detections, respondedCameras, pendingCameras } = scanResult;
+  let status = "success";
+  if (detections.length > 0) status = "pending";
+
+  if (pendingCameras.length > 0) status = "partial response";
+
+  const boxInf = await getByProductId(product.id, ctx);
 
   Log.infoCtx(ctx, automationService + consoleKeys.EndKey);
 
   return {
-    product,
-    detections,
+    status,
     correlationId,
+    product: {
+      id: product.id,
+      code: product.code,
+      name: product.name,
+      category: product.category,
+      boxes: boxInf?.quantity,
+    },
+    summary: {
+      zonesScanned: locations.length,
+      cameraExpected: cameras.length,
+      cameraResponded: respondedCameras.length,
+      locationsFound: locations.length,
+    },
+    locations: locations,
+    respondedCameras,
+    notRespondedCameras: pendingCameras,
+    scannedAt: new Date().toISOString(),
   };
 };
 

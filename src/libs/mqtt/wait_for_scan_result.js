@@ -13,8 +13,9 @@ export const waitForScanResults = (
   return new Promise((resolve) => {
     const detections = [];
 
-    // convertir array -> Set
     const pending = new Set(pendingCameras);
+
+    const responded = new Set();
 
     const cleanup = () => {
       clearTimeout(timer);
@@ -22,13 +23,13 @@ export const waitForScanResults = (
     };
 
     const finish = () => {
-      Log.info(waitForScanResultService + correlationId, "FINISHED", {
-        detections: detections.length,
-      });
-
       cleanup();
 
-      resolve(detections);
+      resolve({
+        detections,
+        respondedCameras: [...responded],
+        pendingCameras: [...pending],
+      });
     };
 
     const timer = setTimeout(() => {
@@ -38,15 +39,13 @@ export const waitForScanResults = (
     }, timeout);
 
     const handler = (data) => {
-      Log.info(waitForScanResultService + correlationId, "EVENT CAUGHT:", data);
-
-      // ignorar cámaras no esperadas
       if (!pending.has(data.cameraId)) {
         return;
       }
 
-      // marcar como respondida
       pending.delete(data.cameraId);
+
+      responded.add(data.cameraId);
 
       const parsedResults = (data.results || []).map(parseGS1);
 
@@ -58,19 +57,10 @@ export const waitForScanResults = (
           cameraId: data.cameraId,
           matches: productMatches,
         });
-
-        Log.info(waitForScanResultService + correlationId, "MATCH FOUND:", {
-          cameraId: data.cameraId,
-        });
       }
 
       // todas respondieron
       if (pending.size === 0) {
-        Log.info(
-          waitForScanResultService + correlationId,
-          "ALL CAMERAS RESPONDED",
-        );
-
         finish();
       }
     };
