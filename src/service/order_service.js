@@ -31,7 +31,7 @@ export const createOrder = serviceHandler(
     const {
       type,
       unit_type,
-      warehouse_id,
+      origin_warehouse_id,
       destination_warehouse_id,
       store_id,
     } = data;
@@ -55,7 +55,7 @@ export const createOrder = serviceHandler(
     }
 
     // validar warehouse origen
-    const warehouse = await getWarehouseById(warehouse_id, ctx);
+    const warehouse = await getWarehouseById(origin_warehouse_id, ctx);
     if (!warehouse) {
       throw new AppError(
         "Origin warehouse not found",
@@ -210,8 +210,8 @@ export const changeOrderStatus = serviceHandler(
     }
 
     const validTransitions = {
-      [ORDER_STATUS.PENDING]: [ORDER_STATUS.SHIPPED, ORDER_STATUS.CANCELLED],
-      [ORDER_STATUS.SHIPPED]: [ORDER_STATUS.DELIVERED],
+      [ORDER_STATUS.PENDING]: [ORDER_STATUS.DISPATCHED, ORDER_STATUS.CANCELLED],
+      [ORDER_STATUS.DISPATCHED]: [ORDER_STATUS.DELIVERED],
       [ORDER_STATUS.DELIVERED]: [],
       [ORDER_STATUS.CANCELLED]: [],
     };
@@ -224,13 +224,13 @@ export const changeOrderStatus = serviceHandler(
       );
     }
 
-    const updatedOrder = await updateOrder({ status }, order, ctx);
+    const updatedOrder = await update({ status }, order, ctx);
 
     Log.infoCtx(
       ctx,
       orderService + consoleKeys.SuccessKey,
       consoleKeys.InformationKey,
-      updatedOrder,
+      updatedOrder.toJSON(),
     );
     return updatedOrder;
   },
@@ -258,7 +258,7 @@ export const deleteOrder = serviceHandler(
     }
 
     if (
-      order.status === ORDER_STATUS.SHIPPED ||
+      order.status === ORDER_STATUS.DISPATCHED ||
       order.status === ORDER_STATUS.DELIVERED
     ) {
       throw new AppError(
@@ -267,6 +267,8 @@ export const deleteOrder = serviceHandler(
         CODES.RESOURCE.INVALID_OPERATION,
       );
     }
+
+    await changeOrderStatus(id, ORDER_STATUS.CANCELLED, ctx);
 
     const deleted = await remove(order, ctx);
 
@@ -315,6 +317,36 @@ export const findOrdersByWarehouseAndStatusWithProduct = serviceHandler(
     );
 
     const orders = await findByWarehouseAndStatusWithProduct(origin_warehouse_id, product_id, status, ctx);
+
+    Log.infoCtx(
+      ctx,
+      orderService + consoleKeys.SuccessKey,
+      consoleKeys.InformationKey,
+      orders,
+    );
+    return orders;
+  },
+);
+
+export const searchOrdersService = serviceHandler(
+  orderService,
+  CODES.ORDER.NOT_FOUND,
+  async (query = "", limit = 10, page = 1, ctx) => {
+    Log.infoCtx(
+      ctx,
+      orderService + consoleKeys.StartKey,
+      consoleKeys.RequestKey,
+      query,
+    );
+
+    if (page < 1 || limit < 1)
+      throw new AppError(
+        "Numero de paginacion invalido",
+        400,
+        CODES.RESOURCE.INVALID_OPERATION,
+      );
+
+    const orders = await searchOrders(query, limit, page, ctx);
 
     Log.infoCtx(
       ctx,

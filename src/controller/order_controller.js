@@ -5,8 +5,11 @@ import { generalResponse } from "../utils/handler/response_handler.js";
 import {
   changeOrderStatus,
   createOrder,
+  deleteOrder,
+  searchOrdersService,
   updateOrder,
 } from "../service/order_service.js";
+import { searchOrders } from "../repositories/order_repository.js";
 
 const orderController = "order controller: ";
 
@@ -52,7 +55,7 @@ export const searchOrdersController = async (req, res, next) => {
       req.query,
     );
 
-    const resp = await searchOrders(req.query, req.ctx);
+    const resp = await searchOrdersService(req.query, req.query.limit, req.query.page, req.ctx);
 
     Log.infoCtx(
       req.ctx,
@@ -90,7 +93,7 @@ export const updateOrderController = async (req, res, next) => {
     const { id } = req.params;
     const { type, unit_type } = req.body;
 
-    const resp = await updateOrder({ id, type, unit_type }, ctx);
+    const resp = await updateOrder({ id, type, unit_type }, req.ctx);
 
     Log.infoCtx(
       req.ctx,
@@ -128,7 +131,7 @@ export const changeOrderStatusController = async (req, res, next) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const resp = await changeOrderStatus(id, status, ctx);
+    const resp = await changeOrderStatus(id, status, req.ctx);
 
     Log.infoCtx(
       req.ctx,
@@ -163,7 +166,9 @@ export const deleteOrderController = async (req, res, next) => {
 
     const { id } = req.params;
 
-    const resp = await changeOrderStatus(id, ctx);
+    Log.infoCtx(req.ctx, orderController + consoleKeys.StartKey, consoleKeys.ParamKey, { id });
+
+    const resp = await deleteOrder(id, req.ctx);
 
     Log.infoCtx(
       req.ctx,

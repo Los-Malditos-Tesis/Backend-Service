@@ -22,15 +22,15 @@ export const createEventController = async (req, res, next) => {
       "success",
     );
   } catch (e) {
-    Log.errorCtx(req.ctx, locationController + consoleKeys.FailKey, e);
+    Log.errorCtx(req.ctx, scanEventController + consoleKeys.FailKey, e);
     next(e);
   } finally {
-    Log.infoCtx(req.ctx, locationController + consoleKeys.FinishKey);
+    Log.infoCtx(req.ctx, scanEventController + consoleKeys.FinishKey);
   }
 };
 
 export const searchScanEventController = async (req, res, next) => {
-try {
+  try {
     Log.infoCtx(
       req.ctx,
       scanEventController + consoleKeys.StartKey,
@@ -50,12 +50,12 @@ try {
       201,
       CODES.SUCCESS.OK,
       "eventos encontrados",
-      "success",
+      response,
     );
   } catch (e) {
-    Log.errorCtx(req.ctx, locationController + consoleKeys.FailKey, e);
+    Log.errorCtx(req.ctx, scanEventController + consoleKeys.FailKey, e);
     next(e);
   } finally {
-    Log.infoCtx(req.ctx, locationController + consoleKeys.FinishKey);
+    Log.infoCtx(req.ctx, scanEventController + consoleKeys.FinishKey);
   }
 };

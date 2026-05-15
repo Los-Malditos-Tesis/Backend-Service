@@ -26,7 +26,7 @@ export const findById = repositoryHandler(
 
 export const searchOrders = repositoryHandler(
   orderRepository,
-  async (query = {}, limit = 10, page = 1, ctx) => {
+  async (query = "", limit = 10, page = 1, ctx) => {
     const offset = (page - 1) * limit;
 
     const { id, type, status, unit_type, warehouse_id, store_id } = query;
@@ -35,7 +35,7 @@ export const searchOrders = repositoryHandler(
       deleted_at: null,
     };
 
-    if (id) where.id = { [Op.iLike]: `%${id}%` };
+    if (id) where.id = id;
     if (type) where.type = type;
     if (status) where.status = status;
     if (unit_type) where.unit_type = unit_type;
