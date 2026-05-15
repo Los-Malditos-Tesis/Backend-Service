@@ -5,6 +5,7 @@ import { generalResponse } from "../utils/handler/response_handler.js";
 import {
   changeOrderStatus,
   createOrder,
+  deleteOrder,
   searchOrdersService,
   updateOrder,
 } from "../service/order_service.js";
@@ -165,7 +166,9 @@ export const deleteOrderController = async (req, res, next) => {
 
     const { id } = req.params;
 
-    const resp = await changeOrderStatus(id, ctx);
+    Log.infoCtx(req.ctx, orderController + consoleKeys.StartKey, consoleKeys.ParamKey, { id });
+
+    const resp = await deleteOrder(id, req.ctx);
 
     Log.infoCtx(
       req.ctx,

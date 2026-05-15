@@ -224,13 +224,13 @@ export const changeOrderStatus = serviceHandler(
       );
     }
 
-    const updatedOrder = await updateOrder({ status }, order, ctx);
+    const updatedOrder = await update({ status }, order, ctx);
 
     Log.infoCtx(
       ctx,
       orderService + consoleKeys.SuccessKey,
       consoleKeys.InformationKey,
-      updatedOrder,
+      updatedOrder.toJSON(),
     );
     return updatedOrder;
   },
@@ -258,7 +258,7 @@ export const deleteOrder = serviceHandler(
     }
 
     if (
-      order.status === ORDER_STATUS.SHIPPED ||
+      order.status === ORDER_STATUS.DISPATCHED ||
       order.status === ORDER_STATUS.DELIVERED
     ) {
       throw new AppError(
@@ -267,6 +267,8 @@ export const deleteOrder = serviceHandler(
         CODES.RESOURCE.INVALID_OPERATION,
       );
     }
+
+    await changeOrderStatus(id, ORDER_STATUS.CANCELLED, ctx);
 
     const deleted = await remove(order, ctx);
 
