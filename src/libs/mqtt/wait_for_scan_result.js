@@ -4,45 +4,75 @@ import { parseGS1 } from "../../utils/gs1_util.js";
 
 const waitForScanResultService = "wait For Scan Result: ";
 
-export const waitForProductMatch = (
+export const waitForScanResults = (
   correlationId,
   productCode,
+  pendingCameras = [],
   timeout = 5000,
 ) => {
   return new Promise((resolve) => {
+    const detections = [];
+
+    // convertir array -> Set
+    const pending = new Set(pendingCameras);
+
     const cleanup = () => {
       clearTimeout(timer);
       scanEmitter.removeListener(correlationId, handler);
     };
 
-    const timer = setTimeout(() => {
-      Log.warn(waitForScanResultService + correlationId, "NO MATCH FOUND");
+    const finish = () => {
+      Log.info(waitForScanResultService + correlationId, "FINISHED", {
+        detections: detections.length,
+      });
 
       cleanup();
 
-      resolve(null);
+      resolve(detections);
+    };
+
+    const timer = setTimeout(() => {
+      Log.warn(waitForScanResultService + correlationId, "TIMEOUT");
+
+      finish();
     }, timeout);
 
     const handler = (data) => {
       Log.info(waitForScanResultService + correlationId, "EVENT CAUGHT:", data);
 
-      const match = (data.results || [])
-        .map(parseGS1)
-        .some((p) => p.gtin == productCode);
-
-      if (!match) {
+      // ignorar cámaras no esperadas
+      if (!pending.has(data.cameraId)) {
         return;
       }
 
-      Log.info(waitForScanResultService + correlationId, "MATCH FOUND:", data);
+      // marcar como respondida
+      pending.delete(data.cameraId);
 
-      cleanup();
+      const parsedResults = (data.results || []).map(parseGS1);
 
-      resolve({
-        zoneId: data.zoneId,
-        cameraId: data.cameraId,
-        results: data.results,
-      });
+      const productMatches = parsedResults.filter((p) => p.gtin == productCode);
+
+      if (productMatches.length) {
+        detections.push({
+          zoneId: data.zoneId,
+          cameraId: data.cameraId,
+          matches: productMatches,
+        });
+
+        Log.info(waitForScanResultService + correlationId, "MATCH FOUND:", {
+          cameraId: data.cameraId,
+        });
+      }
+
+      // todas respondieron
+      if (pending.size === 0) {
+        Log.info(
+          waitForScanResultService + correlationId,
+          "ALL CAMERAS RESPONDED",
+        );
+
+        finish();
+      }
     };
 
     scanEmitter.on(correlationId, handler);

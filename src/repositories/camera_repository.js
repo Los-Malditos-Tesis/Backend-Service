@@ -179,3 +179,16 @@ export const updateCamera = repositoryHandler(
     return await camera.update(data);
   },
 );
+
+export const findAllByLocations = repositoryHandler(
+  cameraRepository,
+  async (locationIds = [], ctx) => {
+    return await db.Camera.findAll({
+      where: {
+        location_id: {
+          [Op.in]: locationIds,
+        },
+      },
+    });
+  },
+);

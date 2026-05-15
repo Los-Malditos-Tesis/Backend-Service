@@ -2,14 +2,14 @@ import { AppError } from "../errors/app_error.js";
 import crypto from "crypto";
 import { CODES } from "../utils/const/codes.js";
 import {
-    CONFIG_TYPE,
-    DEVICE_STATUS,
-    ITEM_TYPES,
-    ORDER_STATUS,
-    ORDER_TYPES,
-    ORDER_UNIT_TYPES,
-    PALLETS_STATUS,
-    SCANNING_MODE_CONFIG,
+  CONFIG_TYPE,
+  DEVICE_STATUS,
+  ITEM_TYPES,
+  ORDER_STATUS,
+  ORDER_TYPES,
+  ORDER_UNIT_TYPES,
+  PALLETS_STATUS,
+  SCANNING_MODE_CONFIG,
 } from "../utils/const/status.js";
 import { parseGS1 } from "../utils/gs1_util.js";
 import { createBox, updateBox } from "./box_service.js";
@@ -28,10 +28,11 @@ import { publishScanRequest } from "../libs/mqtt/mqtt_publisher.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { findByCode as findBoxByCode } from "../repositories/box_repository.js";
 import { findByCode as findPalletByCode } from "../repositories/pallet_repository.js";
-// import { waitForScanResult } from "../libs/mqtt/wait_for_scan_result.js";
-import { findByKeyAndWarehouseConfigParams } from "../service/config_params_service.js"
-import { waitForProductMatch } from "../libs/mqtt/wait_for_scan_result.js";
+import { findByKeyAndWarehouseConfigParams } from "../service/config_params_service.js";
+import { waitForScanResults } from "../libs/mqtt/wait_for_scan_result.js";
 import { config } from "../config/config.js";
+import { findByCategory } from "../repositories/location_repository.js";
+import { findAllByLocations } from "../repositories/camera_repository.js";
 
 const automationService = "automation service";
 
@@ -376,32 +377,48 @@ export const searchProductInZones = async (productData = {}, ctx) => {
     throw new AppError("El producto no existe", 404, CODES.PRODUCT.NOT_FOUND);
   }
 
+  const locations = await findByCategory(product.category, ctx);
+
+  if (!locations?.length) {
+    throw new AppError(
+      "La categoría del producto no tiene zonas asignadas",
+      404,
+      CODES.PRODUCT.NOT_FOUND,
+    );
+  }
+
+  const locationIds = locations.map((l) => l.id);
+  const cameras = await findAllByLocations(locationIds, ctx);
+
+  if (!cameras?.length) {
+    throw new AppError(
+      "No se encontraron cámaras en las ubicaciones asignadas",
+      404,
+      CODES.PRODUCT.NOT_FOUND,
+    );
+  }
+
+  const camerasCodes = cameras.map((c) => c.code);
   const correlationId = crypto.randomUUID();
 
-  const publishData = {
-    warehouseId: "1",
-    productCode: product.code,
+  await publishScanRequest({
+    cameras: camerasCodes,
     correlationId,
-  };
+  });
 
-  Log.infoCtx(ctx, automationService + "MQTT", "PUBLISH", publishData);
+  Log.infoCtx(ctx, automationService + "MQTT", "PUBLISH", {
+    cameras: camerasCodes,
+    correlationId,
+  });
 
-  await publishScanRequest(publishData);
-
-  const zone = await waitForProductMatch(
+  const detections = await waitForScanResults(
     correlationId,
     product.code,
+    camerasCodes,
     config.timeoutMqtt,
   );
 
-  Log.infoCtx(
-    ctx,
-    automationService + consoleKeys.SuccessKey,
-    consoleKeys.ResponseKey,
-    zone,
-  );
-
-  if (!zone) {
+  if (!detections.length) {
     throw new AppError(
       "No se encontraron existencias",
       400,
@@ -409,48 +426,63 @@ export const searchProductInZones = async (productData = {}, ctx) => {
     );
   }
 
+  Log.infoCtx(
+    ctx,
+    automationService + consoleKeys.SuccessKey,
+    consoleKeys.ResponseKey,
+    detections,
+  );
+
   Log.infoCtx(ctx, automationService + consoleKeys.EndKey);
+
   return {
     product,
-    zone,
+    detections,
     correlationId,
   };
 };
 
 export const inventoryAutomationService = serviceHandler(
-    automationService,
-    CODES.SCAN_EVENT.NOT_FOUND,
-    async (gs1Code = "", cameraData = {}, ctx) => {
-        Log.infoCtx(
-            ctx,
-            automationService + consoleKeys.StartKey,
-            consoleKeys.RequestKey,
-            gs1Code,
-        );
+  automationService,
+  CODES.SCAN_EVENT.NOT_FOUND,
+  async (gs1Code = "", cameraData = {}, ctx) => {
+    Log.infoCtx(
+      ctx,
+      automationService + consoleKeys.StartKey,
+      consoleKeys.RequestKey,
+      gs1Code,
+    );
 
-        const decodedGS1 = parseGS1(gs1Code);
-        if (!decodedGS1) {
-            throw new AppError("Invalid GS1 code", 400, CODES.GS1.INVALID);
-        }
+    const decodedGS1 = parseGS1(gs1Code);
+    if (!decodedGS1) {
+      throw new AppError("Invalid GS1 code", 400, CODES.GS1.INVALID);
+    }
 
-        const warehouseConfig = await findByKeyAndWarehouseConfigParams(CONFIG_TYPE.SCANNING_MODE, cameraData.location.warehouse_id, ctx);
+    const warehouseConfig = await findByKeyAndWarehouseConfigParams(
+      CONFIG_TYPE.SCANNING_MODE,
+      cameraData.location.warehouse_id,
+      ctx,
+    );
 
-        if (warehouseConfig.value == SCANNING_MODE_CONFIG.ENTRY)
-            registerMerchandiseService(gs1Code, cameraData, ctx);
-        else
-            dispatchMerchandiseService(gs1Code, cameraData, ctx);
+    if (warehouseConfig.value == SCANNING_MODE_CONFIG.ENTRY)
+      registerMerchandiseService(gs1Code, cameraData, ctx);
+    else dispatchMerchandiseService(gs1Code, cameraData, ctx);
 
-        Log.infoCtx(
-            ctx,
-            automationService + consoleKeys.SuccessKey,
-            consoleKeys.ResponseKey,
-            {},
-        );
+    Log.infoCtx(
+      ctx,
+      automationService + consoleKeys.SuccessKey,
+      consoleKeys.ResponseKey,
+      {},
+    );
 
-        return await createScanEvent({
-            qrCode: decodedGS1.raw,
-            detectedType: decodedGS1.unit_type,
-            status: DEVICE_STATUS.OK,
-            confidence: decodedGS1.confidence
-        }, ctx);
-    });
+    return await createScanEvent(
+      {
+        qrCode: decodedGS1.raw,
+        detectedType: decodedGS1.unit_type,
+        status: DEVICE_STATUS.OK,
+        confidence: decodedGS1.confidence,
+      },
+      ctx,
+    );
+  },
+);

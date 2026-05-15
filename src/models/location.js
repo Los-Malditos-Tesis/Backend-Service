@@ -22,6 +22,15 @@ export default (sequelize) => {
           is: /^[a-zA-Z0-9._-]+$/,
         },
       },
+      category: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          len: [3, 30],
+          is: /^[a-zA-Z._-]+$/,
+        },
+      },
     },
     {
       tableName: "locations",
