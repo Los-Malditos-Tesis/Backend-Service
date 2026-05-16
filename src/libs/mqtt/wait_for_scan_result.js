@@ -39,13 +39,13 @@ export const waitForScanResults = (
     }, timeout);
 
     const handler = (data) => {
-      if (!pending.has(data.cameraId)) {
+      if (!pending.has(data.cameraCode)) {
         return;
       }
 
-      pending.delete(data.cameraId);
+      pending.delete(data.cameraCode);
 
-      responded.add(data.cameraId);
+      responded.add(data.cameraCode);
 
       const parsedResults = (data.results || []).map(parseGS1);
 
@@ -53,8 +53,7 @@ export const waitForScanResults = (
 
       if (productMatches.length) {
         detections.push({
-          zoneId: data.zoneId,
-          cameraId: data.cameraId,
+          cameraCode: data.cameraCode,
           matches: productMatches,
         });
       }

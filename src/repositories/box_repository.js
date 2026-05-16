@@ -109,15 +109,3 @@ export const findByCode = repositoryHandler(
     });
   },
 );
-
-export const getByProductId = repositoryHandler(
-  boxRepository,
-  async (productId = "", ctx) => {
-    return await db.Box.findOne({
-      where: {
-        product_id: productId,
-        status: PALLETS_STATUS.CREATED,
-      },
-    });
-  },
-);

@@ -26,10 +26,7 @@ import { serviceHandler } from "../utils/handler/service_handler.js";
 import { Log } from "../libs/logger/logger.js";
 import { publishScanRequest } from "../libs/mqtt/mqtt_publisher.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
-import {
-  findByCode as findBoxByCode,
-  getByProductId,
-} from "../repositories/box_repository.js";
+import { findByCode as findBoxByCode } from "../repositories/box_repository.js";
 import { findByCode as findPalletByCode } from "../repositories/pallet_repository.js";
 import { findByKeyAndWarehouseConfigParams } from "../service/config_params_service.js";
 import { waitForScanResults } from "../libs/mqtt/wait_for_scan_result.js";
@@ -366,58 +363,31 @@ async function processDispatchedItem(decodedGS1 = {}, ctx) {
   return item;
 }
 
-export const searchProductInZones = async (productData = {}, ctx) => {
-  Log.infoCtx(
-    ctx,
-    automationService + consoleKeys.StartKey,
-    "REQUEST",
-    productData,
-  );
+export const searchProductInZones = async (data = {}, ctx) => {
+  Log.infoCtx(ctx, automationService + consoleKeys.StartKey, "REQUEST", data);
 
-  const product = await getProductById(productData.id, ctx);
+  const product = await getProductById(data.productId, ctx);
 
   if (!product) {
     throw new AppError("El producto no existe", 404, CODES.PRODUCT.NOT_FOUND);
   }
 
-  const locations = await findByCategory(product.category, ctx);
-
-  if (!locations?.length) {
-    throw new AppError(
-      "La categoría del producto no tiene zonas asignadas",
-      404,
-      CODES.PRODUCT.NOT_FOUND,
-    );
-  }
-
-  const locationIds = locations.map((l) => l.id);
-  const cameras = await findAllByLocations(locationIds, ctx);
-
-  if (!cameras?.length) {
-    throw new AppError(
-      "No se encontraron cámaras en las ubicaciones asignadas",
-      404,
-      CODES.PRODUCT.NOT_FOUND,
-    );
-  }
-
-  const camerasCodes = cameras.map((c) => c.code);
   const correlationId = crypto.randomUUID();
 
   await publishScanRequest({
-    cameras: camerasCodes,
+    cameras: data.cameraCodes,
     correlationId,
   });
 
   Log.infoCtx(ctx, automationService + "MQTT", "PUBLISH", {
-    cameras: camerasCodes,
+    cameras: data.cameraCodes,
     correlationId,
   });
 
   const scanResult = await waitForScanResults(
     correlationId,
     product.code,
-    camerasCodes,
+    data.cameraCodes,
     config.timeoutMqtt,
   );
 
@@ -442,9 +412,9 @@ export const searchProductInZones = async (productData = {}, ctx) => {
 
   if (pendingCameras.length > 0) status = "partial response";
 
-  const boxInf = await getByProductId(product.id, ctx);
-
   Log.infoCtx(ctx, automationService + consoleKeys.EndKey);
+
+  const matchedCameras = detections.map((d) => d.cameraCode);
 
   return {
     status,
@@ -454,15 +424,8 @@ export const searchProductInZones = async (productData = {}, ctx) => {
       code: product.code,
       name: product.name,
       category: product.category,
-      boxes: boxInf?.quantity,
     },
-    summary: {
-      zonesScanned: locations.length,
-      cameraExpected: cameras.length,
-      cameraResponded: respondedCameras.length,
-      locationsFound: locations.length,
-    },
-    locations: locations,
+    matchedCameras,
     respondedCameras,
     notRespondedCameras: pendingCameras,
     scannedAt: new Date().toISOString(),

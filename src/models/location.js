@@ -19,7 +19,7 @@ export default (sequelize) => {
         validate: {
           notEmpty: true,
           len: [3, 30],
-          is: /^[a-zA-Z0-9._-]+$/,
+          is: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/,
         },
       },
       category: {
@@ -28,7 +28,7 @@ export default (sequelize) => {
         validate: {
           notEmpty: true,
           len: [3, 30],
-          is: /^[a-zA-Z._-]+$/,
+          is: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/,
         },
       },
     },
