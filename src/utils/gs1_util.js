@@ -1,13 +1,6 @@
 import { Log } from "../libs/logger/logger.js";
 import { ITEM_TYPES, ORDER_UNIT_TYPES } from "../utils/const/status.js"
 
-const AI_CODES = {
-  SSCC: "(00)",
-  GTIN: "(01)",
-  COUNT30: "30",
-  COUNT37: "37",
-};
-
 export const parseGS1 = (gs1Code = "") => {
   if (!gs1Code || typeof gs1Code !== "string") return null;
 
@@ -24,11 +17,9 @@ export const parseGS1 = (gs1Code = "") => {
 
   try {
     // Buscamos el SSCC (00) para determinar si es PALLET, tiene 18 dígitos después del (00)
-    const ssccMatch = gs1Code.match(/\(00\)(\d{5})/);
-
+    const ssccMatch = gs1Code.match(/\(00\)(\d{5})(?!\d)/);
     // Si no tiene (00) pero tiene (01), lo tratamos como BOX
-    const gtinMatch = gs1Code.match(/\(01\)(\d{5})/);
-
+    const gtinMatch = gs1Code.match(/\(01\)(\d{5})(?!\d)/);
     // serial could be alfa numeric only used for box (to add on tesis TODO )
     const serialMatch = gs1Code.match(/\(21\)([^\\(]+)/);
 
@@ -44,6 +35,9 @@ export const parseGS1 = (gs1Code = "") => {
       decodedGs1.code = ssccMatch[1];
       decodedGs1.unit_type = ITEM_TYPES.PALLET;
       decodedGs1.gtin = gtinMatch ? gtinMatch[1] : null;
+      decodedGs1.count37 = parseInt(count37Match[1] || 0);
+      decodedGs1.count30 = parseInt(count30Match[1] || 0);
+
     } else if (gtinMatch) {
 
       if (!serialMatch || !count30Match) {
@@ -52,18 +46,16 @@ export const parseGS1 = (gs1Code = "") => {
       }
       decodedGs1.gtin = gtinMatch[1];
       decodedGs1.unit_type = ITEM_TYPES.BOX;
+      decodedGs1.count30 = parseInt(count30Match[1] || 0);
 
       if (serialMatch) {
         decodedGs1.code = serialMatch[1];
       }
     }
-    // Extraer cantidades dinámicamente
-    decodedGs1.count30 = parseInt(count30Match[1] || 0);
-    decodedGs1.count37 = parseInt(count37Match[1] || 1);
 
-    // Fallback: si no se detectó por AI, intentamos inferir por longitud o formato
     if (!decodedGs1.unit_type) {
-      decodedGs1.unit_type = inferUnitType(gs1Code);
+      Log.error("GS1 Parsing Failed: Code does not strictly match 5-digit simulation formats.");
+      return null;
     }
 
     return decodedGs1;
@@ -71,15 +63,4 @@ export const parseGS1 = (gs1Code = "") => {
     Log.errorCtx(null, "Error parsing GS1:", error);
     return null;
   }
-};
-
-const extractAI = (code, ai) => {
-  const regex = new RegExp(`\\(${ai}\\)(\\d+)`);
-  const match = code.match(regex);
-  return match ? match[1] : null;
-};
-
-const inferUnitType = (code) => {
-  // códigos muy largos suelen ser Pallets (SSCC)
-  return code.length > 20 ? ORDER_UNIT_TYPES.PALLET : ORDER_UNIT_TYPES.BOX;
 };
