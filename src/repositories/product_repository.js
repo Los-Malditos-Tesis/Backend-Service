@@ -7,83 +7,98 @@ const productRepository = "product repository: ";
 
 export const save = repositoryHandler(
   productRepository,
-  async (product = {}, ctx) => {
-    const [result] = await db.Product.upsert(product);
+  async (product = {}, transaction = {}, ctx) => {
+    const [result] = await db.Product.upsert(product, { transaction });
     return result;
   },
 );
 
-export const findAll = repositoryHandler(productRepository, async (ctx) => {
-  return await db.Product.findAll();
-});
+export const findAll = repositoryHandler(
+  productRepository,
+  async (transaction = {}, ctx) => {
+    return await db.Product.findAll({ transaction });
+  },
+);
 
 export const findById = repositoryHandler(
   productRepository,
-  async (id = "", ctx) => {
-    return await db.Product.findByPk(id);
+  async (id = "", transaction = {}, ctx) => {
+    return await db.Product.findByPk(id, { transaction });
   },
 );
 
 export const findByCode = repositoryHandler(
   productRepository,
-  async (code = "", ctx) => {
+  async (code = "", transaction = {}, ctx) => {
     return await db.Product.findOne({
       where: {
         code: code,
       },
+      transaction,
     });
   },
 );
 
 export const findByCategory = repositoryHandler(
   productRepository,
-  async (category = "", ctx) => {
+  async (category = "", transaction = {}, ctx) => {
     return await db.Product.findAll({
       where: {
         category: {
           [Op.like]: `%${category}%`,
         },
       },
+      transaction,
     });
   },
 );
 
 export const findBySku = repositoryHandler(
   productRepository,
-  async (sku = "", ctx) => {
+  async (sku = "", transaction = {}, ctx) => {
     return await db.Product.findOne({
       where: {
         sku: sku,
       },
+      transaction,
     });
   },
 );
 
 export const findBySupplierId = repositoryHandler(
   productRepository,
-  async (supplierId = "", ctx) => {
+  async (supplierId = "", transaction = {}, ctx) => {
     return await db.Product.findAll({
       where: {
         supplier_id: supplierId,
       },
+      transaction,
     });
   },
 );
 
 export const deleteById = repositoryHandler(
   productRepository,
-  async (id = "", ctx) => {
+  async (id = "", transaction = {}, ctx) => {
     return await db.Product.destroy({
       where: {
         id: id,
       },
+      transaction,
     });
   },
 );
 
 export const search = repositoryHandler(
   productRepository,
-  async (query = {}, warehouseId, limit = 10, page = 1, ctx) => {
+  async (
+    query = {},
+    warehouseId,
+    limit = 10,
+    page = 1,
+    transaction = {},
+    ctx,
+  ) => {
     const offset = (page - 1) * limit;
     const { name, sku, code, category } = query;
     const whereClouse = {
@@ -133,6 +148,7 @@ export const search = repositoryHandler(
         },
       ],
       limit,
+      transaction,
       offset,
       order: [["name", "ASC"]],
     });
@@ -148,12 +164,13 @@ export const search = repositoryHandler(
 
 export const countActiveProducts = repositoryHandler(
   productRepository,
-  async (supplierId, ctx) => {
+  async (supplierId, transaction = {}, ctx) => {
     const count = await db.Product.count({
       where: {
         supplier_id: supplierId,
         deleted_at: null,
       },
+      transaction,
     });
     return count;
   },
@@ -161,11 +178,12 @@ export const countActiveProducts = repositoryHandler(
 
 export const update = repositoryHandler(
   productRepository,
-  async (id, product = {}, ctx) => {
+  async (id, product = {}, transaction = {}, ctx) => {
     return await db.Product.update(product, {
       where: {
         id: id,
       },
+      transaction,
     });
   },
 );

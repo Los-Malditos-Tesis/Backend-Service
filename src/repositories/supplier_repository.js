@@ -6,29 +6,35 @@ const supplierRepository = "supplier repository: ";
 
 export const save = repositoryHandler(
   supplierRepository,
-  async (supplier = {}, ctx) => {
-    return await db.Supplier.create(supplier);
+  async (supplier = {}, transaction = {}, ctx) => {
+    return await db.Supplier.create(supplier, { transaction });
   },
 );
 
-export const findAll = repositoryHandler(supplierRepository, async (ctx) => {
-  return await db.Supplier.findAll({
-    order: [["name", "ASC"]],
-  });
-});
+export const findAll = repositoryHandler(
+  supplierRepository,
+  async (options = {}, transaction = {}, ctx) => {
+    return await db.Supplier.findAll({
+      order: [["name", "ASC"]],
+      ...options,
+      transaction,
+    });
+  },
+);
 
 export const findById = repositoryHandler(
   supplierRepository,
-  async (id = "", ctx) => {
-    return await db.Supplier.findByPk(id);
+  async (id = "", transaction = {}, ctx) => {
+    return await db.Supplier.findByPk(id, { transaction });
   },
 );
 
 export const update = repositoryHandler(
   supplierRepository,
-  async (id = "", data = {}, ctx) => {
+  async (id = "", data = {}, transaction = {}, ctx) => {
     const [updated] = await db.Supplier.update(data, {
       where: { id: id },
+      transaction,
     });
 
     return updated;
@@ -37,25 +43,27 @@ export const update = repositoryHandler(
 
 export const deleteById = repositoryHandler(
   supplierRepository,
-  async (id = "", ctx) => {
+  async (id = "", transaction = {}, ctx) => {
     return await db.Supplier.destroy({
       where: { id: id },
+      transaction,
     });
   },
 );
 
 export const findByCode = repositoryHandler(
   supplierRepository,
-  async (code = "", ctx) => {
+  async (code = "", transaction = {}, ctx) => {
     return await db.Supplier.findOne({
       where: { code: code },
+      transaction,
     });
   },
 );
 
 export const findWithProducts = repositoryHandler(
   supplierRepository,
-  async (id = "", ctx) => {
+  async (id = "", transaction = {}, ctx) => {
     return await db.Supplier.findByPk(id, {
       include: [
         {
@@ -63,19 +71,21 @@ export const findWithProducts = repositoryHandler(
           as: "Products",
         },
       ],
+      transaction,
     });
   },
 );
 
 export const searchByName = repositoryHandler(
   supplierRepository,
-  async (query = "", ctx) => {
+  async (query = "", transaction = {}, ctx) => {
     const { Op } = db.sequelize;
     return await db.Supplier.findAll({
       where: {
         name: { [Op.iLike]: `%${query}%` },
       },
       limit: 10,
+      transaction,
     });
   },
 );
@@ -83,7 +93,7 @@ export const searchByName = repositoryHandler(
 //TODO:validar la paginacion
 export const search = repositoryHandler(
   supplierRepository,
-  async (query = "", limit = 10, page = 1, ctx) => {
+  async (query = "", limit = 10, page = 1, transaction = {}, ctx) => {
     const offset = (page - 1) * limit;
     const { id, name, code, phone, email, contactName, location } = query;
     const whereClouse = {
@@ -108,6 +118,7 @@ export const search = repositoryHandler(
       where: whereClouse,
       limit,
       offset,
+      transaction,
       order: [["name", "ASC"]],
       include: [productsQuery],
     });

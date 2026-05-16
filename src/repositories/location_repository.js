@@ -7,37 +7,41 @@ const locationRepository = "location repository: ";
 
 export const save = repositoryHandler(
   locationRepository,
-  async (location = {}, ctx) => {
-    const [result] = await db.Location.upsert(location);
+  async (location = {}, transaction = {}, ctx) => {
+    const [result] = await db.Location.upsert(location, { transaction });
     return result;
   },
 );
 
-export const findAll = repositoryHandler(locationRepository, async (ctx) => {
-  return await db.Location.findAll();
-});
+export const findAll = repositoryHandler(
+  locationRepository,
+  async (transaction = {}, ctx) => {
+    return await db.Location.findAll({ transaction });
+  },
+);
 
 export const findById = repositoryHandler(
   locationRepository,
-  async (id = "", ctx) => {
-    return await db.Location.findByPk(id);
+  async (id = "", transaction = {}, ctx) => {
+    return await db.Location.findByPk(id, { transaction });
   },
 );
 
 export const findByZone = repositoryHandler(
   locationRepository,
-  async (zone = "", ctx) => {
+  async (zone = "", transaction = {}, ctx) => {
     return await db.Location.findOne({
       where: {
         zone: zone,
       },
+      transaction,
     });
   },
 );
 
 export const findZonePallets = repositoryHandler(
   locationRepository,
-  async (zone = "", ctx) => {
+  async (zone = "", transaction = {}, ctx) => {
     return await db.Location.findOne({
       where: {
         zone: zone,
@@ -55,36 +59,39 @@ export const findZonePallets = repositoryHandler(
           ],
         },
       ],
+      transaction,
     });
   },
 );
 
 export const findByWarehouseId = repositoryHandler(
   locationRepository,
-  async (warehouseId = "", ctx) => {
+  async (warehouseId = "", transaction = {}, ctx) => {
     return await db.Location.findAll({
       where: {
         warehouse_id: warehouseId,
       },
       include: [{ model: db.Warehouse, as: "Warehouse" }],
+      transaction,
     });
   },
 );
 
 export const deleteById = repositoryHandler(
   locationRepository,
-  async (id = "", ctx) => {
+  async (id = "", transaction = {}, ctx) => {
     return await db.Location.destroy({
       where: {
         id: id,
       },
+      transaction,
     });
   },
 );
 
 export const search = repositoryHandler(
   locationRepository,
-  async (query = {}, limit = 10, page = 1, ctx) => {
+  async (query = {}, limit = 10, page = 1, transaction = {}, ctx) => {
     const offset = (page - 1) * limit;
     const { id, zone } = query;
     const whereClouse = {
@@ -100,6 +107,7 @@ export const search = repositoryHandler(
       offset,
       order: [["zone", "ASC"]],
       include: [{ model: db.Warehouse, as: "Warehouse" }],
+      transaction,
     });
 
     return {
@@ -113,7 +121,7 @@ export const search = repositoryHandler(
 
 export const hasStoredPallets = repositoryHandler(
   locationRepository,
-  async (zone = "", ctx) => {
+  async (zone = "", transaction = {}, ctx) => {
     const count = await db.Pallet.count({
       include: [
         {
@@ -123,6 +131,7 @@ export const hasStoredPallets = repositoryHandler(
         },
       ],
       where: { status: PALLETS_STATUS.STORED },
+      transaction,
     });
     return count > 0;
   },
@@ -130,12 +139,13 @@ export const hasStoredPallets = repositoryHandler(
 
 export const findByCategory = repositoryHandler(
   locationRepository,
-  async (category = "", ctx) => {
+  async (category = "", transaction = {}, ctx) => {
     return await db.Location.findAll({
       where: {
         category: { [Op.iLike]: `%${category}%` },
       },
       include: [{ model: db.Warehouse, as: "Warehouse" }],
+      transaction,
     });
   },
 );

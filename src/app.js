@@ -6,6 +6,7 @@ import { globalErrorHandler } from "./errors/global_error_handler.js";
 import { config } from "./config/config.js";
 import router from "./route/index.js";
 import cors from "cors";
+import { loginUser } from "./service/auth_service.js";
 
 const app = express();
 syncDatabase();

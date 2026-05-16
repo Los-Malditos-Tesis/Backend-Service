@@ -6,141 +6,161 @@ const warehouseRepository = "warehouse repository: ";
 
 export const save = repositoryHandler(
   warehouseRepository,
-  async (warehouse = {}, ctx) => {
-    const result = await db.Warehouse.create(warehouse);
+  async (warehouse = {}, transaction = {}, ctx) => {
+    const result = await db.Warehouse.create(warehouse, { transaction });
     return result;
   },
 );
 
-export const findAll = repositoryHandler(warehouseRepository, async (ctx) => {
-  return await db.Warehouse.findAll();
-});
+export const findAll = repositoryHandler(
+  warehouseRepository,
+  async (transaction = {}, ctx) => {
+    return await db.Warehouse.findAll({ transaction });
+  },
+);
 
 export const findById = repositoryHandler(
   warehouseRepository,
-  async (id = "", ctx) => {
-    return await db.Warehouse.findByPk(id);
+  async (id = "", transaction = {}, ctx) => {
+    return await db.Warehouse.findByPk(id, { transaction });
   },
 );
 
 export const getWarehouseInventory = repositoryHandler(
   warehouseRepository,
-  async (id = "", ctx) => {
-    return await db.Warehouse.findByPk(id, {
-      include: [
-        {
-          model: db.Location,
-          as: "Locations",
-          include: [
-            {
-              model: db.Pallet,
-              as: "Pallets",
-              include: [
-                {
-                  model: db.Box,
-                  as: "Boxes",
-                  include: [
-                    {
-                      model: db.Product,
-                      as: "Product",
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    });
+  async (id = "", transaction = {}, ctx) => {
+    return await db.Warehouse.findByPk(
+      id,
+      {
+        include: [
+          {
+            model: db.Location,
+            as: "Locations",
+            include: [
+              {
+                model: db.Pallet,
+                as: "Pallets",
+                include: [
+                  {
+                    model: db.Box,
+                    as: "Boxes",
+                    include: [
+                      {
+                        model: db.Product,
+                        as: "Product",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      { transaction },
+    );
   },
 );
 
 export const getWarehouseInventoryByLocation = repositoryHandler(
   warehouseRepository,
-  async (id = "", locationId = "", ctx) => {
-    return await db.Warehouse.findByPk(id, {
-      include: [
-        {
-          model: db.Location,
-          as: "Locations",
-          where: {
-            id: locationId,
-          },
-          include: [
-            {
-              model: db.Pallet,
-              as: "Pallets",
-              include: [
-                {
-                  model: db.Box,
-                  as: "Boxes",
-                  include: [
-                    {
-                      model: db.Product,
-                      as: "Product",
-                    },
-                  ],
-                },
-              ],
+  async (id = "", locationId = "", transaction = {}, ctx) => {
+    return await db.Warehouse.findByPk(
+      id,
+      {
+        include: [
+          {
+            model: db.Location,
+            as: "Locations",
+            where: {
+              id: locationId,
             },
-          ],
-        },
-      ],
-    });
+            include: [
+              {
+                model: db.Pallet,
+                as: "Pallets",
+                include: [
+                  {
+                    model: db.Box,
+                    as: "Boxes",
+                    include: [
+                      {
+                        model: db.Product,
+                        as: "Product",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      { transaction },
+    );
   },
 );
 
 export const getWarehouseStructure = repositoryHandler(
   warehouseRepository,
-  async (id = "", ctx) => {
-    return await db.Warehouse.findByPk(id, {
-      include: [
-        {
-          model: db.Location,
-          as: "Locations",
-          include: [
-            {
-              model: db.Camera,
-              as: "Cameras",
-            },
-          ],
-        },
-      ],
-    });
+  async (id = "", transaction = {}, ctx) => {
+    return await db.Warehouse.findByPk(
+      id,
+      {
+        include: [
+          {
+            model: db.Location,
+            as: "Locations",
+            include: [
+              {
+                model: db.Camera,
+                as: "Cameras",
+              },
+            ],
+          },
+        ],
+      },
+      { transaction },
+    );
   },
 );
 
 export const findLocationByQrInWarehouse = repositoryHandler(
   warehouseRepository,
-  async (id = "", zone = "", ctx) => {
-    return await db.Warehouse.findByPk(id, {
-      include: [
-        {
-          model: db.Location,
-          as: "Locations",
-          where: {
-            zone: zone,
+  async (id = "", zone = "", transaction = {}, ctx) => {
+    return await db.Warehouse.findByPk(
+      id,
+      {
+        include: [
+          {
+            model: db.Location,
+            as: "Locations",
+            where: {
+              zone: zone,
+            },
           },
-        },
-      ],
-    });
+        ],
+      },
+      { transaction },
+    );
   },
 );
 
 export const deleteById = repositoryHandler(
   warehouseRepository,
-  async (id = "", ctx) => {
+  async (id = "", transaction = {}, ctx) => {
     return await db.Warehouse.destroy({
       where: {
         id: id,
       },
+      transaction,
     });
   },
 );
 
 export const search = repositoryHandler(
   warehouseRepository,
-  async (query = {}, limit = 10, page = 1, ctx) => {
+  async (query = {}, limit = 10, page = 1, transaction = {}, ctx) => {
     const { name, address, user_id } = query;
 
     const offset = (page - 1) * limit;
@@ -157,6 +177,7 @@ export const search = repositoryHandler(
       limit: limit,
       offset: offset,
       order: [["name", "ASC"]],
+      transaction,
     });
 
     return {
@@ -170,12 +191,13 @@ export const search = repositoryHandler(
 
 export const update = repositoryHandler(
   warehouseRepository,
-  async (id = "", warehouseData = {}, ctx) => {
+  async (id = "", warehouseData = {}, transaction = {}, ctx) => {
     const result = await db.Warehouse.update(warehouseData, {
       where: {
         id: id,
       },
       returning: true,
+      transaction,
     });
     return result[1];
   },

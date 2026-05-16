@@ -1,11 +1,11 @@
 import { ValidationError } from "sequelize";
-import { Log } from "../../libs/logger/logger.js"
+import { Log } from "../../libs/logger/logger.js";
 import { consoleKeys } from "../../libs/logger/console/constant.js";
 
 /**
  * @description function that handle errors and logging
- * @param {string} repositoryName 
- * @param {function} operation 
+ * @param {string} repositoryName
+ * @param {function} operation
  * @returns async function that handle errors and logging
  * @example
  * export const save = repositoryHandler("product repository", async (product, ctx) => {
@@ -14,39 +14,52 @@ import { consoleKeys } from "../../libs/logger/console/constant.js";
  * !important: the last argument must be ctx
  */
 
-export const repositoryHandler = (repositoryName, operation, transformation = (data) => data) => {
-    return async (...args) => {
-        //getting last argument as ctx
-        const ctx = args[args.length - 1]
+export const repositoryHandler = (
+  repositoryName,
+  operation,
+  transformation = (data) => data,
+) => {
+  return async (...args) => {
+    //getting last argument as ctx
+    const ctx = args[args.length - 1];
 
-        //getting all model arguments
-        const params = args.slice(0, - 1)
-        const payload = params.length === 1 ? params[0] : params;
+    //getting all model arguments
+    const params = args.slice(0, args.length - 2);
+    const payload = params.length === 1 ? params[0] : params;
 
-        try {
-            Log.infoCtx(ctx, repositoryName + consoleKeys.StartKey, consoleKeys.RequestKey, transformation(payload))
+    try {
+      Log.infoCtx(
+        ctx,
+        repositoryName + consoleKeys.StartKey,
+        consoleKeys.RequestKey,
+        transformation(payload),
+      );
 
-            const result = await operation(...params)
+      const result = await operation(...params);
 
-            const logData = result
-                ? (result.dataValues || (typeof result.toJSON === 'function' ? result.toJSON() : result))
-                : null;
+      const logData = result
+        ? result.dataValues ||
+          (typeof result.toJSON === "function" ? result.toJSON() : result)
+        : null;
 
-            Log.infoCtx(ctx, repositoryName + consoleKeys.SuccessKey, consoleKeys.ResponseKey, transformation(logData));
-            return result;
-        } catch (e) {
-            if (e instanceof ValidationError) {
-                const newError = new Error("Sequelize Errors");
-                newError.errors = e.errors.map(err => err.message);
-                e = newError;
-            }
+      Log.infoCtx(
+        ctx,
+        repositoryName + consoleKeys.SuccessKey,
+        consoleKeys.ResponseKey,
+        transformation(logData),
+      );
+      return result;
+    } catch (e) {
+      if (e instanceof ValidationError) {
+        const newError = new Error("Sequelize Errors");
+        newError.errors = e.errors.map((err) => err.message);
+        e = newError;
+      }
 
-            Log.errorCtx(ctx, repositoryName + consoleKeys.FailKey, e)
-            throw e
-        } finally {
-            Log.infoCtx(ctx, repositoryName + consoleKeys.FinishKey)
-
-        }
-
+      Log.errorCtx(ctx, repositoryName + consoleKeys.FailKey, e);
+      throw e;
+    } finally {
+      Log.infoCtx(ctx, repositoryName + consoleKeys.FinishKey);
     }
-}
+  };
+};

@@ -7,34 +7,40 @@ const storeRepository = "store repository: ";
 
 export const create = repositoryHandler(
   storeRepository,
-  async (ctx, store = {}, options = {}) => {
+  async (store = {}, options = {}, transaction = {}, ctx) => {
     Log.infoCtx(ctx, storeRepository, "data en repo", store);
-    return await db.Store.create(store, options);
+    return await db.Store.create(store, { ...options, transaction });
   },
 );
 
 export const findById = repositoryHandler(
   storeRepository,
-  async (ctx, id = "", options = {}) => {
-    return await db.Store.findByPk(id, options);
+  async (id = "", options = {}, transaction = {}, ctx) => {
+    return await db.Store.findByPk(id, { ...options, transaction });
   },
 );
 
 export const findByCode = repositoryHandler(
   storeRepository,
-  async (ctx, code = "", options = {}) => {
+  async (code = "", options = {}, transaction = {}, ctx) => {
     return await db.Store.findOne({
       where: {
         code: code,
       },
       ...options,
+      transaction,
     });
   },
 );
 
 export const findAll = repositoryHandler(
   storeRepository,
-  async (ctx, { page = 1, limit = 10, code, name } = {}, options = {}) => {
+  async (
+    { page = 1, limit = 10, code, name } = {},
+    options = {},
+    transaction = {},
+    ctx,
+  ) => {
     const safePage = Math.max(1, page);
     const safeLimit = Math.max(1, limit);
     const offset = (safePage - 1) * safeLimit;
@@ -59,6 +65,7 @@ export const findAll = repositoryHandler(
       offset,
       order: [["created_at", "DESC"]],
       ...options,
+      transaction,
     });
 
     return {
@@ -72,21 +79,23 @@ export const findAll = repositoryHandler(
 
 export const update = repositoryHandler(
   storeRepository,
-  async (ctx, id = "", data = {}, options = {}) => {
+  async (id = "", data = {}, options = {}, transaction = {}, ctx) => {
     return await db.Store.update(data, {
       where: { id },
       returning: true,
       ...options,
+      transaction,
     });
   },
 );
 
 export const remove = repositoryHandler(
   storeRepository,
-  async (ctx, id = "", options = {}) => {
+  async (id = "", options = {}, transaction = {}, ctx) => {
     return await db.Store.destroy({
       where: { id },
       ...options,
+      transaction,
     });
   },
 );

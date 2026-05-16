@@ -14,11 +14,15 @@ import {
   deleteToken,
 } from "../repositories/token_repository.js";
 import { findByEmailWithPassword } from "../repositories/user_repository.js";
+import { startTransaction } from "../libs/database/transaction_manager.js";
 
 const authService = "auth service: ";
 
 export const registerUser = async (ctx, userData = {}) => {
+  let transaction;
   try {
+    transaction = await startTransaction();
+
     Log.infoCtx(
       ctx,
       authService + consoleKeys.StartKey,
@@ -26,7 +30,7 @@ export const registerUser = async (ctx, userData = {}) => {
       obfuscatePass(userData),
     );
 
-    const user = await saveUser(ctx, userData);
+    const user = await saveUser(ctx, userData, transaction);
 
     Log.infoCtx(
       ctx,
@@ -34,8 +38,11 @@ export const registerUser = async (ctx, userData = {}) => {
       consoleKeys.ResponseKey,
       obfuscatePass(user.toJSON()),
     );
+
+    await transaction.commit();
     return user;
   } catch (e) {
+    await transaction.rollback();
     let error = e;
     if (!(e instanceof AppError)) {
       error = new AppError(
@@ -55,7 +62,9 @@ export const registerUser = async (ctx, userData = {}) => {
 };
 
 export const loginUser = async (ctx, authData = {}) => {
+  let transaction;
   try {
+    transaction = await startTransaction();
     Log.infoCtx(
       ctx,
       authService + consoleKeys.StartKey,
@@ -84,7 +93,7 @@ export const loginUser = async (ctx, authData = {}) => {
       obfuscateToken(token),
     );
 
-    await save(token, ctx);
+    await save(token, ctx, transaction);
 
     Log.infoCtx(
       ctx,
@@ -92,8 +101,11 @@ export const loginUser = async (ctx, authData = {}) => {
       consoleKeys.ResponseKey,
       obfuscateToken(token),
     );
+
+    await transaction.commit();
     return token;
   } catch (e) {
+    await transaction.rollback();
     let error = e;
 
     if (!(e instanceof AppError)) {

@@ -6,8 +6,8 @@ const cameraRepository = "camera repository: ";
 
 export const save = repositoryHandler(
   cameraRepository,
-  async (camera = {}, ctx) => {
-    return await db.Camera.create(camera);
+  async (camera = {}, transaction = {}, ctx) => {
+    return await db.Camera.create(camera, { transaction });
   },
 );
 
@@ -16,6 +16,7 @@ export const searchCameras = repositoryHandler(
   async (
     { page = 1, limit = 10, locationId, code, includeLocation = true },
     options = {},
+    transaction = {},
     ctx,
   ) => {
     const offset = (page - 1) * limit;
@@ -37,6 +38,7 @@ export const searchCameras = repositoryHandler(
         where,
         limit,
         offset,
+        transaction,
         order: [["created_at", "DESC"]],
         include: includeLocation
           ? [
@@ -74,7 +76,7 @@ const maskApiKey = (item = "") => {
 
 export const findById = repositoryHandler(
   cameraRepository,
-  async (id = "", ctx) => {
+  async (id = "", transaction = {}, ctx) => {
     return await db.Camera.findByPk(id, {
       include: [
         {
@@ -82,13 +84,14 @@ export const findById = repositoryHandler(
           as: "location",
         },
       ],
+      transaction,
     });
   },
 );
 
 export const findByCode = repositoryHandler(
   cameraRepository,
-  async (code = "", ctx) => {
+  async (code = "", transaction = {}, ctx) => {
     return await db.Camera.scope("withApiKey").findOne({
       where: {
         code: code,
@@ -99,24 +102,26 @@ export const findByCode = repositoryHandler(
           as: "location",
         },
       ],
+      transaction,
     });
   },
 );
 
 export const findByLocationId = repositoryHandler(
   cameraRepository,
-  async (locationId = "", ctx) => {
+  async (locationId = "", transaction = {}, ctx) => {
     return await db.Camera.findAll({
       where: {
         location_id: locationId,
       },
+      transaction,
     });
   },
 );
 
 export const findLiveZone = repositoryHandler(
   cameraRepository,
-  async (id = "", zone = "", ctx) => {
+  async (id = "", zone = "", transaction = {}, ctx) => {
     return await db.Camera.findAll({
       where: {
         id: id,
@@ -139,13 +144,14 @@ export const findLiveZone = repositoryHandler(
           ],
         },
       ],
+      transaction,
     });
   },
 );
 
 export const getLastEventByCameraId = repositoryHandler(
   cameraRepository,
-  async (cameraId = "", ctx) => {
+  async (cameraId = "", transaction = {}, ctx) => {
     return await db.Camera.findOne({
       where: {
         id: cameraId,
@@ -158,37 +164,40 @@ export const getLastEventByCameraId = repositoryHandler(
           limit: 1,
         },
       ],
+      transaction,
     });
   },
 );
 
 export const deleteById = repositoryHandler(
   cameraRepository,
-  async (id = "", ctx) => {
+  async (id = "", transaction = {}, ctx) => {
     return await db.Camera.destroy({
       where: {
         id: id,
       },
+      transaction,
     });
   },
 );
 
 export const updateCamera = repositoryHandler(
   cameraRepository,
-  async (data = {}, camera = {}, ctx) => {
-    return await camera.update(data);
+  async (data = {}, camera = {}, transaction = {}, ctx) => {
+    return await camera.update(data, { transaction });
   },
 );
 
 export const findAllByLocations = repositoryHandler(
   cameraRepository,
-  async (locationIds = [], ctx) => {
+  async (locationIds = [], transaction = {}, ctx) => {
     return await db.Camera.findAll({
       where: {
         location_id: {
           [Op.in]: locationIds,
         },
       },
+      transaction,
     });
   },
 );

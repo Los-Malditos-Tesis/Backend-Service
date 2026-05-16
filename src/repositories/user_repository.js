@@ -7,38 +7,40 @@ const authRepository = "auth repository: ";
 
 export const save = repositoryHandler(
   authRepository,
-  async (data = {}, ctx) => {
-    return await db.User.create(data);
+  async (data = {}, transaction = {}, ctx) => {
+    return await db.User.create(data, { transaction });
   },
   obfuscatePass,
 );
 
 export const findByEmail = repositoryHandler(
   authRepository,
-  async (email = "", ctx) => {
+  async (email = "", transaction = {}, ctx) => {
     return await db.User.findOne({
       where: {
         email: email,
       },
+      transaction,
     });
   },
 );
 
 export const findById = repositoryHandler(
   authRepository,
-  async (id = "", ctx) => {
-    return await db.User.findByPk(id);
+  async (id = "", transaction = {}, ctx) => {
+    return await db.User.findByPk(id, { transaction });
   },
   obfuscatePass,
 );
 
 export const findByEmailWithPassword = repositoryHandler(
   authRepository,
-  async (email = "", ctx) => {
+  async (email = "", transaction = {}, ctx) => {
     return await db.User.scope("withPassword").findOne({
       where: {
         email: email,
       },
+      transaction,
     });
   },
   obfuscatePass,
@@ -46,11 +48,12 @@ export const findByEmailWithPassword = repositoryHandler(
 
 export const findByEmailWithRoles = repositoryHandler(
   authRepository,
-  async (email = "", ctx) => {
+  async (email = "", transaction = {}, ctx) => {
     return await db.User.scope("withRoles", "cleanData").findOne({
       where: {
         email: email,
       },
+      transaction,
     });
   },
   obfuscatePass,
@@ -58,7 +61,7 @@ export const findByEmailWithRoles = repositoryHandler(
 
 export const search = repositoryHandler(
   authRepository,
-  async ({ id, name, email } = {}, ctx) => {
+  async ({ id, name, email } = {}, transaction = {}, ctx) => {
     const where = {};
 
     if (id) {
@@ -81,13 +84,14 @@ export const search = repositoryHandler(
 
     return await db.User.scope("withRoles").findAll({
       where,
+      transaction,
     });
   },
 );
 
 export const updateProfile = repositoryHandler(
   authRepository,
-  async (user, name, email, ctx) => {
+  async (user, name, email, transaction = {}, ctx) => {
     if (name !== undefined) {
       user.name = name;
     }
@@ -96,7 +100,7 @@ export const updateProfile = repositoryHandler(
       user.email = email;
     }
 
-    await user.save();
+    await user.save({ transaction });
 
     return user;
   },
@@ -104,10 +108,10 @@ export const updateProfile = repositoryHandler(
 
 export const updateStatus = repositoryHandler(
   authRepository,
-  async (user, status, ctx) => {
+  async (user, status, transaction = {}, ctx) => {
     user.active = status;
 
-    await user.save();
+    await user.save({ transaction });
 
     return user;
   },

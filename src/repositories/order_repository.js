@@ -1,32 +1,36 @@
 import db from "../models/index.js";
 import { Op } from "sequelize";
 import { repositoryHandler } from "../utils/handler/repository_handler.js";
-import { ORDER_STATUS, ORDER_TYPES, ORDER_UNIT_TYPES } from "../utils/const/status.js";
-import { Log } from "../libs/logger/logger.js";
+import {
+  ORDER_STATUS,
+  ORDER_TYPES,
+  ORDER_UNIT_TYPES,
+} from "../utils/const/status.js";
 
 const orderRepository = "order repository: ";
 
 export const create = repositoryHandler(
   orderRepository,
-  async (order = {}, ctx) => {
-    return await db.Order.create(order);
+  async (order = {}, transaction = {}, ctx) => {
+    return await db.Order.create(order, { transaction });
   },
 );
 
 export const findById = repositoryHandler(
   orderRepository,
-  async (id = "", ctx) => {
+  async (id = "", transaction = {}, ctx) => {
     return await db.Order.scope("withBoxes", "withPallets").findByPk(id, {
       attributes: {
         exclude: ["deleted_at"],
       },
+      transaction,
     });
   },
 );
 
 export const searchOrders = repositoryHandler(
   orderRepository,
-  async (query = "", limit = 10, page = 1, ctx) => {
+  async (query = "", limit = 10, page = 1, transaction = {}, ctx) => {
     const offset = (page - 1) * limit;
 
     const { id, type, status, unit_type, warehouse_id, store_id } = query;
@@ -46,6 +50,7 @@ export const searchOrders = repositoryHandler(
       where,
       limit,
       offset,
+      transaction,
       order: [["created_at", "DESC"]],
       attributes: {
         exclude: ["deleted_at"],
@@ -63,36 +68,44 @@ export const searchOrders = repositoryHandler(
 
 export const update = repositoryHandler(
   orderRepository,
-  async (data = {}, order = {}, ctx) => {
-    const updated = await order.update(data);
+  async (data = {}, order = {}, transaction = {}, ctx) => {
+    const updated = await order.update(data, { transaction });
     return updated;
   },
 );
 
 export const remove = repositoryHandler(
   orderRepository,
-  async (order = {}, ctx) => {
-    await order.destroy();
+  async (order = {}, transaction = {}, ctx) => {
+    await order.destroy({ transaction });
     return { id: order.id };
   },
 );
 
 export const findByStatus = repositoryHandler(
   orderRepository,
-  async (status = "PENDING", ctx) => {
+  async (status = "PENDING", transaction = {}, ctx) => {
     return await db.Order.findAll({
       where: { status, deleted_at: null },
       order: [["created_at", "DESC"]],
+      transaction,
     });
   },
 );
 
 export const findByWarehouseAndStatus = repositoryHandler(
   orderRepository,
-  async (warehouse_id = "", orderUnitType = "", merchandise_code = "", status = "", ctx) => {
-    const isPallet = orderUnitType == ORDER_UNIT_TYPES.PALLET
+  async (
+    warehouse_id = "",
+    orderUnitType = "",
+    merchandise_code = "",
+    status = "",
+    transaction = {},
+    ctx,
+  ) => {
+    const isPallet = orderUnitType == ORDER_UNIT_TYPES.PALLET;
 
-    const where = { status, deleted_at: null }
+    const where = { status, deleted_at: null };
     if (warehouse_id) where.origin_warehouse_id = warehouse_id;
 
     return await db.Order.findAll({
@@ -105,33 +118,41 @@ export const findByWarehouseAndStatus = repositoryHandler(
           where: { code: merchandise_code },
           required: true,
           through: {
-            attributes: []
-          }
-        }
+            attributes: [],
+          },
+        },
       ],
       order: [["created_at", "DESC"]],
+      transaction: transaction,
     });
   },
 );
 
 export const findByWarehouseAndStatusWithProduct = repositoryHandler(
   orderRepository,
-  async (origin_warehouse_id = "", product_id = "", status = "", ctx) => {
+  async (
+    origin_warehouse_id = "",
+    product_id = "",
+    status = "",
+    transaction = {},
+    ctx,
+  ) => {
     return await db.Order.findAll({
       where: { origin_warehouse_id, status, product_id, deleted_at: null },
       include: [
         {
           model: db.Pallet,
           as: "pallets",
-          attributes: ["id"]
+          attributes: ["id"],
         },
         {
           model: db.Box,
           as: "boxes",
-          attributes: ["id"]
-        }
+          attributes: ["id"],
+        },
       ],
       order: [["created_at", "DESC"]],
+      transaction,
     });
-  }
+  },
 );
