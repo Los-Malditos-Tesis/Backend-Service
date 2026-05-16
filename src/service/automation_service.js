@@ -443,11 +443,6 @@ export const inventoryAutomationService = serviceHandler(
       gs1Code,
     );
 
-    const decodedGS1 = parseGS1(gs1Code);
-    if (!decodedGS1) {
-      throw new AppError("Invalid GS1 code", 400, CODES.GS1.INVALID);
-    }
-
     const warehouseConfig = await findByKeyAndWarehouseConfigParams(
       CONFIG_TYPE.SCANNING_MODE,
       cameraData.location.warehouse_id,
