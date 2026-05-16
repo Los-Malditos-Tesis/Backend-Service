@@ -4,45 +4,64 @@ import { parseGS1 } from "../../utils/gs1_util.js";
 
 const waitForScanResultService = "wait For Scan Result: ";
 
-export const waitForProductMatch = (
+export const waitForScanResults = (
   correlationId,
   productCode,
+  pendingCameras = [],
   timeout = 5000,
 ) => {
   return new Promise((resolve) => {
+    const detections = [];
+
+    const pending = new Set(pendingCameras);
+
+    const responded = new Set();
+
     const cleanup = () => {
       clearTimeout(timer);
       scanEmitter.removeListener(correlationId, handler);
     };
 
-    const timer = setTimeout(() => {
-      Log.warn(waitForScanResultService + correlationId, "NO MATCH FOUND");
-
-      cleanup();
-
-      resolve(null);
-    }, timeout);
-
-    const handler = (data) => {
-      Log.info(waitForScanResultService + correlationId, "EVENT CAUGHT:", data);
-
-      const match = (data.results || [])
-        .map(parseGS1)
-        .some((p) => p.gtin == productCode);
-
-      if (!match) {
-        return;
-      }
-
-      Log.info(waitForScanResultService + correlationId, "MATCH FOUND:", data);
-
+    const finish = () => {
       cleanup();
 
       resolve({
-        zoneId: data.zoneId,
-        cameraId: data.cameraId,
-        results: data.results,
+        detections,
+        respondedCameras: [...responded],
+        pendingCameras: [...pending],
       });
+    };
+
+    const timer = setTimeout(() => {
+      Log.warn(waitForScanResultService + correlationId, "TIMEOUT");
+
+      finish();
+    }, timeout);
+
+    const handler = (data) => {
+      if (!pending.has(data.cameraCode)) {
+        return;
+      }
+
+      pending.delete(data.cameraCode);
+
+      responded.add(data.cameraCode);
+
+      const parsedResults = (data.results || []).map(parseGS1);
+
+      const productMatches = parsedResults.filter((p) => p.gtin == productCode);
+
+      if (productMatches.length) {
+        detections.push({
+          cameraCode: data.cameraCode,
+          matches: productMatches,
+        });
+      }
+
+      // todas respondieron
+      if (pending.size === 0) {
+        finish();
+      }
     };
 
     scanEmitter.on(correlationId, handler);

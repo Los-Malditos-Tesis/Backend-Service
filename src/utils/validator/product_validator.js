@@ -9,7 +9,7 @@ export const validateCreateProduct = [
     .withMessage(MSG.REQUIRED.es("El nombre"))
     .isLength({ min: 3, max: 100 })
     .withMessage(MSG.LENGTH.es("El nombre", 3, 100))
-    .matches(/^[a-zA-Z0-9._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre")),
   body("code")
     .trim()
@@ -27,7 +27,7 @@ export const validateCreateProduct = [
     .withMessage(MSG.REQUIRED.es("La categoría"))
     .isLength({ min: 3, max: 30 })
     .withMessage(MSG.LENGTH.es("La categoría", 3, 30))
-    .matches(/^[a-zA-Z._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("La categoría")),
   body("sku")
     .trim()
@@ -61,7 +61,7 @@ export const validateSearchProducts = [
     .escape()
     .isLength({ min: 3, max: 100 })
     .withMessage(MSG.LENGTH.es("El nombre", 3, 100))
-    .matches(/^[a-zA-Z0-9._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre")),
   body("code")
     .optional()
@@ -77,7 +77,7 @@ export const validateSearchProducts = [
     .escape()
     .isLength({ min: 3, max: 30 })
     .withMessage(MSG.LENGTH.es("La categoría", 3, 30))
-    .matches(/^[a-zA-Z._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("La categoría")),
   body("sku")
     .optional()
@@ -109,7 +109,7 @@ export const validateUpdateProduct = [
     .escape()
     .isLength({ min: 3, max: 100 })
     .withMessage(MSG.LENGTH.es("El nombre", 3, 100))
-    .matches(/^[a-zA-Z0-9._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre")),
   body("code")
     .optional()
@@ -126,7 +126,7 @@ export const validateUpdateProduct = [
     .escape()
     .isLength({ min: 3, max: 30 })
     .withMessage(MSG.LENGTH.es("La categoría", 3, 30))
-    .matches(/^[a-zA-Z._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("La categoría")),
   body("sku")
     .optional()
