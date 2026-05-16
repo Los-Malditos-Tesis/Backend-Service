@@ -74,15 +74,15 @@ export const registerMerchandiseService = serviceHandler(
       const inventoryMovement =
         order.unit_type == ITEM_TYPES.PALLET
           ? {
-              type: ITEM_TYPES.PALLET,
-              pallet_id: item.id,
-              state: PALLETS_STATUS.DELIVERED,
-            }
+            type: ITEM_TYPES.PALLET,
+            pallet_id: item.id,
+            state: PALLETS_STATUS.DELIVERED,
+          }
           : {
-              type: ITEM_TYPES.BOX,
-              box_id: item.id,
-              state: PALLETS_STATUS.DELIVERED,
-            };
+            type: ITEM_TYPES.BOX,
+            box_id: item.id,
+            state: PALLETS_STATUS.DELIVERED,
+          };
 
       await createInventoryMovement(inventoryMovement, ctx);
     } else {
@@ -105,7 +105,7 @@ export const registerMerchandiseService = serviceHandler(
         );
       }
 
-      await processNewMerchandise(decodedGS1, cameraData.location.id, ctx);
+      await processNewMerchandise(decodedGS1, cameraData.location.warehouse_id, ctx);
 
       Log.infoCtx(
         ctx,
@@ -122,15 +122,15 @@ export const registerMerchandiseService = serviceHandler(
       const inventoryMovement =
         decodedGS1.unit_type == ITEM_TYPES.PALLET
           ? {
-              type: ITEM_TYPES.PALLET,
-              pallet_id: newItem.id,
-              state: PALLETS_STATUS.CREATED,
-            }
+            type: ITEM_TYPES.PALLET,
+            pallet_id: newItem.id,
+            state: PALLETS_STATUS.CREATED,
+          }
           : {
-              type: ITEM_TYPES.BOX,
-              box_id: newItem.id,
-              state: PALLETS_STATUS.CREATED,
-            };
+            type: ITEM_TYPES.BOX,
+            box_id: newItem.id,
+            state: PALLETS_STATUS.CREATED,
+          };
 
       await createInventoryMovement(
         inventoryMovement,
@@ -174,42 +174,42 @@ async function processDeliveredOrder(order, item_id, ctx) {
   const unitUpdate = {
     id: item_id,
     status: PALLETS_STATUS.DELIVERED,
-    location_id: null,
+    warehouse_id: null,
   };
 
-  return order.type === ORDER_UNIT_TYPES.PALLET
+  return order.unit_type == ORDER_UNIT_TYPES.PALLET
     ? await updatePallet(unitUpdate, ctx)
     : await updateBox(unitUpdate, ctx);
 }
 
 // new merchandise logic
-async function processNewMerchandise(decodedGS1 = {}, location_id = "", ctx) {
+async function processNewMerchandise(decodedGS1 = {}, warehouse_id = "", ctx) {
   const product = await findProductByCode(decodedGS1.gtin, ctx);
 
   return decodedGS1.unit_type === ITEM_TYPES.PALLET
     ? await createPallet(
-        {
-          code: decodedGS1.code, // (00)
-          qrCode: decodedGS1.raw,
-          quantityBox: decodedGS1.count37, // (37)
-          quantityUnitsInBox: decodedGS1.count30, // (30)
-          status: PALLETS_STATUS.CREATED,
-          product_id: product.id,
-          location_id: location_id,
-        },
-        ctx,
-      )
+      {
+        code: decodedGS1.code, // (00)
+        qrCode: decodedGS1.raw,
+        quantityBox: decodedGS1.count37, // (37)
+        quantityUnitsInBox: decodedGS1.count30, // (30)
+        status: PALLETS_STATUS.CREATED,
+        product_id: product.id,
+        warehouse_id: warehouse_id,
+      },
+      ctx,
+    )
     : await createBox(
-        {
-          code: decodedGS1.code,
-          qrCode: decodedGS1.raw,
-          quantity: decodedGS1.count30,
-          status: PALLETS_STATUS.CREATED,
-          product_id: product.id,
-          location_id: location_id,
-        },
-        ctx,
-      );
+      {
+        code: decodedGS1.code,
+        qrCode: decodedGS1.raw,
+        quantity: decodedGS1.count30,
+        status: PALLETS_STATUS.CREATED,
+        product_id: product.id,
+        warehouse_id: warehouse_id,
+      },
+      ctx,
+    );
 }
 
 //Missing take shoot to update all zones in warehosue
@@ -338,7 +338,7 @@ async function processDispatchedItem(decodedGS1 = {}, ctx) {
   const updateItemRequest = {
     id: item.id,
     status: PALLETS_STATUS.PP_DISPATCHED,
-    location_id: null,
+    warehouse_id: null,
   };
 
   decodedGS1.unit_type == ITEM_TYPES.PALLET
@@ -348,15 +348,15 @@ async function processDispatchedItem(decodedGS1 = {}, ctx) {
   const inventoryMovement =
     decodedGS1.unit_type == ITEM_TYPES.PALLET
       ? {
-          type: ITEM_TYPES.PALLET,
-          pallet_id: item.id,
-          state: PALLETS_STATUS.PP_DISPATCHED,
-        }
+        type: ITEM_TYPES.PALLET,
+        pallet_id: item.id,
+        state: PALLETS_STATUS.PP_DISPATCHED,
+      }
       : {
-          type: ITEM_TYPES.BOX,
-          box_id: item.id,
-          state: PALLETS_STATUS.PP_DISPATCHED,
-        };
+        type: ITEM_TYPES.BOX,
+        box_id: item.id,
+        state: PALLETS_STATUS.PP_DISPATCHED,
+      };
 
   await createInventoryMovement(inventoryMovement, ctx);
 

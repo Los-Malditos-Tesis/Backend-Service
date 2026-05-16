@@ -80,7 +80,7 @@ export const updatePallet = serviceHandler(
       data,
     );
 
-    const pallet = await findByIdPallet(data.id, ctx);
+    await findByIdPallet(data.id, ctx);
 
     const updated = await update(data.id, data, ctx);
 
@@ -105,9 +105,9 @@ export const createPallet = serviceHandler(
       data,
     );
 
-        const pallet = await findByCode(data.code, ctx);
-        if (pallet)
-            throw new AppError("Ya existe un pallet con el codigo: " + data.code, 400, CODES.PALLET.ALREADY_EXISTS);
+    const pallet = await findByCode(data.code, ctx);
+    if (pallet)
+      throw new AppError("Ya existe un pallet con el codigo: " + data.code, 400, CODES.PALLET.ALREADY_EXISTS);
 
     const response = await save(data, ctx);
 
