@@ -11,6 +11,7 @@ import {
   save,
   findByContent,
   updateToken,
+  deleteToken,
 } from "../repositories/token_repository.js";
 import { findByEmailWithPassword } from "../repositories/user_repository.js";
 
@@ -133,7 +134,7 @@ export const verifyAuthToken = async (ctx, token = "", userId = "") => {
     });
 
     if (!decoded.valid) {
-      await updateToken({ ...validToken.toJSON(), isActive: false }, ctx);
+      await deleteToken(validToken, ctx);
     }
 
     Log.infoCtx(
