@@ -137,12 +137,12 @@ export const inventoryController = async (req, res, next) => {
       res,
       201,
       CODES.SUCCESS.OK,
-      "Merchandise dispatched successfully",
+      "Merchandise registered successfully",
       response,
     );
   } catch (e) {
     Log.errorCtx(req.ctx, automationController + consoleKeys.FailKey, e);
-    next(e);
+    return next(e);
   } finally {
     Log.infoCtx(req.ctx, automationController + consoleKeys.FinishKey);
   }

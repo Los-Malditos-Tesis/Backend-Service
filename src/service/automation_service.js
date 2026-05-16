@@ -151,7 +151,7 @@ export const registerMerchandiseService = serviceHandler(
         camera_id: cameraData.id,
         qrCode: decodedGS1.raw,
         detectedType: decodedGS1.unit_type,
-        status: DEVICE_STATUS.ERROR,
+        status: DEVICE_STATUS.OK,
         confidence: decodedGS1.confidence,
       },
       ctx,
@@ -455,8 +455,8 @@ export const inventoryAutomationService = serviceHandler(
     );
 
     if (warehouseConfig.value == SCANNING_MODE_CONFIG.ENTRY)
-      registerMerchandiseService(gs1Code, cameraData, ctx);
-    else dispatchMerchandiseService(gs1Code, cameraData, ctx);
+      await registerMerchandiseService(gs1Code, cameraData, ctx);
+    else await dispatchMerchandiseService(gs1Code, cameraData, ctx);
 
     Log.infoCtx(
       ctx,

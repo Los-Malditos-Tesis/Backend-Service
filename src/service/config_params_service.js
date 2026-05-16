@@ -3,6 +3,7 @@ import { Log } from "../libs/logger/logger.js";
 import { CODES } from "../utils/const/codes.js";
 import { serviceHandler } from "../utils/handler/service_handler.js";
 import { deleteById, findAll, findById, findByKeyAndWarehouse, save, update } from "../repositories/config_params_repository.js"
+import { AppError } from "../errors/app_error.js";
 
 const configParamsService = "config params service";
 
