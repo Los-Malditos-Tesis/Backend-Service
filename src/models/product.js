@@ -1,64 +1,68 @@
 import { DataTypes } from "sequelize";
 
 export default (sequelize) => {
-    const Product = sequelize.define("Product", {
-        id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
-            primaryKey: true
+  const Product = sequelize.define(
+    "Product",
+    {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
+      code: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: {
+          args: true,
+          msg: "Code already in products!",
         },
-        code: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: {
-                args: true,
-                msg: 'Code already in products!'
-            },
-            validate: {
-                notEmpty: true,
-                len: [3, 30],
-                is: /^[a-zA-Z0-9._-]+$/
-            }
+        validate: {
+          notEmpty: true,
+          len: [3, 30],
+          is: /^[a-zA-Z0-9._-]+$/,
         },
-        name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true,
-                len: [3, 100],
-                is: /^[a-zA-Z0-9._-]+$/
-            }
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          len: [3, 100],
+          is: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/,
         },
-        category: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true,
-                len: [3, 30],
-                is: /^[a-zA-Z._-]+$/
-            }
+      },
+      category: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          len: [3, 30],
+          is: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/,
         },
-        sku: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true,
-                len: [3, 50],
-                is: /^[a-zA-Z0-9._-]+$/
-            }
+      },
+      sku: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          len: [3, 50],
+          is: /^[a-zA-Z0-9._-]+$/,
         },
-    }, {
-        tableName: "products",
-        underscored: true,
-        timestamp: true,
-        paranoid: true
-    })
+      },
+    },
+    {
+      tableName: "products",
+      underscored: true,
+      timestamp: true,
+      paranoid: true,
+    },
+  );
 
-    Product.associate = (models) => {
-        Product.belongsTo(models.Supplier, { foreignKey: "supplier_id" });
-        Product.hasMany(models.Box, { foreignKey: "product_id" });
-        Product.hasMany(models.Pallet, { foreignKey: "product_id" })
-    }
+  Product.associate = (models) => {
+    Product.belongsTo(models.Supplier, { foreignKey: "supplier_id" });
+    Product.hasMany(models.Box, { foreignKey: "product_id" });
+    Product.hasMany(models.Pallet, { foreignKey: "product_id" });
+  };
 
-    return Product;
-}
+  return Product;
+};

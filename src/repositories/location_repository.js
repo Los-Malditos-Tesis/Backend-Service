@@ -127,3 +127,15 @@ export const hasStoredPallets = repositoryHandler(
     return count > 0;
   },
 );
+
+export const findByCategory = repositoryHandler(
+  locationRepository,
+  async (category = "", ctx) => {
+    return await db.Location.findAll({
+      where: {
+        category: { [Op.iLike]: `%${category}%` },
+      },
+      include: [{ model: db.Warehouse, as: "Warehouse" }],
+    });
+  },
+);

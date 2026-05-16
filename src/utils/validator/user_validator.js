@@ -9,7 +9,7 @@ export const updateProfileValidator = [
     .isString()
     .isLength({ min: 3, max: 30 })
     .withMessage(MSG.LENGTH.es("El nombre", 3, 30))
-    .matches(/^[a-zA-Z0-9._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("el nombre")),
 
   body("email")
