@@ -56,7 +56,7 @@ export default (sequelize) => {
             defaultValue: PALLETS_STATUS.CREATED,
             validate: {
                 isIn: {
-                    args: [ Object.values(PALLETS_STATUS)],
+                    args: [Object.values(PALLETS_STATUS)],
                     msg: "El estado proporcionado no es válido"
                 }
             }
@@ -71,7 +71,7 @@ export default (sequelize) => {
     Pallet.associate = (models) => {
         Pallet.hasMany(models.InventoryMovement, { foreignKey: "pallet_id" });
         Pallet.hasMany(models.Box, { foreignKey: "pallet_id" });
-        Pallet.belongsTo(models.Location, { foreignKey: "location_id" });
+        Pallet.belongsTo(models.Warehouse, { foreignKey: "warehouse_id" });
         Pallet.belongsTo(models.Product, { foreignKey: "product_id" });
 
         Pallet.belongsToMany(models.Order, {

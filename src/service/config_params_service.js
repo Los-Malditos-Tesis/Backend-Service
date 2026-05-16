@@ -3,6 +3,7 @@ import { Log } from "../libs/logger/logger.js";
 import { CODES } from "../utils/const/codes.js";
 import { serviceHandler } from "../utils/handler/service_handler.js";
 import { deleteById, findAll, findById, findByKeyAndWarehouse, save, update } from "../repositories/config_params_repository.js"
+import { AppError } from "../errors/app_error.js";
 
 const configParamsService = "config params service";
 
@@ -41,7 +42,7 @@ export const findByKeyAndWarehouseConfigParams = serviceHandler(
             consoleKeys.RequestKey,
             key
         );
-        const configParams = await findByAndWarehouseKey(key, warehouse_id, ctx);
+        const configParams = await findByKeyAndWarehouse(key, warehouse_id, ctx);
         if (!configParams)
             throw new AppError("No se encontro ningun config params con el key: " + key, 404, CODES.CONFIG_PARAMS.NOT_FOUND);
         Log.infoCtx(

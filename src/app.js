@@ -11,16 +11,11 @@ import { loginUser } from "./service/auth_service.js";
 const app = express();
 syncDatabase();
 
+app.set('trust proxy', true);
 app.use(cors());
 app.use(express.json());
 app.use(contextMiddleware);
 app.use(config.basePath, router);
 app.use(globalErrorHandler);
-
-const runTests = async () => {
-  const mockCtx = { context: "test" };
-};
-
-runTests();
 
 export default app;

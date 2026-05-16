@@ -10,7 +10,7 @@ export const locationCreateValidator = [
     .withMessage(MSG.REQUIRED.es("La zona"))
     .isLength({ min: 3, max: 30 })
     .withMessage(MSG.LENGTH.es("La zona", 3, 30))
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.ZONE.es())
     .customSanitizer((value) => value.toUpperCase())
     .bail(),
@@ -23,7 +23,7 @@ export const locationSearchValidator = [
     .trim()
     .isLength({ min: 3, max: 30 })
     .withMessage(MSG.LENGTH.es("La zona", 3, 30))
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.ZONE.es())
     .customSanitizer((value) => value.toUpperCase())
     .bail(),
@@ -50,7 +50,7 @@ export const locationUpdateValidator = [
     .isLength({ min: 3, max: 30 })
     .withMessage(MSG.LENGTH.es("La zona", 3, 30))
     .bail()
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.ZONE.es())
     .customSanitizer((value) => value.toUpperCase())
     .bail(),

@@ -60,15 +60,16 @@ export const findByStatus = repositoryHandler(
   },
 );
 
-export const findByLocationId = repositoryHandler(
+export const findByWarehouseId = repositoryHandler(
   palletRepository,
-  async (locationId = "", transaction = {}, ctx) => {
+
+  async (warehouse_id = "", ctx) => {
     return await db.Pallet.findAll({
       where: {
-        location_id: locationId,
+        warehouse_id: warehouse_id,
       },
-      include: [{ model: db.Location, as: "Location" }],
-      transaction,
+
+      include: [{ model: db.Warehouse, as: "Warehouse" }],
     });
   },
 );
