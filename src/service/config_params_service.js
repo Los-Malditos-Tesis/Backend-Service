@@ -41,7 +41,7 @@ export const findByKeyAndWarehouseConfigParams = serviceHandler(
             consoleKeys.RequestKey,
             key
         );
-        const configParams = await findByAndWarehouseKey(key, warehouse_id, ctx);
+        const configParams = await findByKeyAndWarehouse(key, warehouse_id, ctx);
         if (!configParams)
             throw new AppError("No se encontro ningun config params con el key: " + key, 404, CODES.CONFIG_PARAMS.NOT_FOUND);
         Log.infoCtx(
