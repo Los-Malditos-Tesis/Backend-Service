@@ -104,7 +104,7 @@ export const registerMerchandiseService = serviceHandler(
         );
       }
 
-      await processNewMerchandise(decodedGS1, cameraData.location.id, ctx);
+      await processNewMerchandise(decodedGS1, cameraData.location.warehouse_id, ctx);
 
       Log.infoCtx(
         ctx,
@@ -173,7 +173,7 @@ async function processDeliveredOrder(order, item_id, ctx) {
   const unitUpdate = {
     id: item_id,
     status: PALLETS_STATUS.DELIVERED,
-    location_id: null,
+    warehouse_id: null,
   };
 
   return order.unit_type == ORDER_UNIT_TYPES.PALLET
@@ -182,7 +182,7 @@ async function processDeliveredOrder(order, item_id, ctx) {
 }
 
 // new merchandise logic
-async function processNewMerchandise(decodedGS1 = {}, location_id = "", ctx) {
+async function processNewMerchandise(decodedGS1 = {}, warehouse_id = "", ctx) {
   const product = await findProductByCode(decodedGS1.gtin, ctx);
 
   return decodedGS1.unit_type === ITEM_TYPES.PALLET
@@ -194,7 +194,7 @@ async function processNewMerchandise(decodedGS1 = {}, location_id = "", ctx) {
         quantityUnitsInBox: decodedGS1.count30, // (30)
         status: PALLETS_STATUS.CREATED,
         product_id: product.id,
-        location_id: location_id,
+        warehouse_id: warehouse_id,
       },
       ctx,
     )
@@ -205,7 +205,7 @@ async function processNewMerchandise(decodedGS1 = {}, location_id = "", ctx) {
         quantity: decodedGS1.count30,
         status: PALLETS_STATUS.CREATED,
         product_id: product.id,
-        location_id: location_id,
+        warehouse_id: warehouse_id,
       },
       ctx,
     );
@@ -337,7 +337,7 @@ async function processDispatchedItem(decodedGS1 = {}, ctx) {
   const updateItemRequest = {
     id: item.id,
     status: PALLETS_STATUS.PP_DISPATCHED,
-    location_id: null,
+    warehouse_id: null,
   };
 
   decodedGS1.unit_type == ITEM_TYPES.PALLET
