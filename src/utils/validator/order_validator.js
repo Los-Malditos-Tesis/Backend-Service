@@ -21,12 +21,27 @@ export const createOrderValidator = [
     .isIn(Object.values(ORDER_UNIT_TYPES))
     .withMessage(MSG.UNIT_TYPE.es()),
 
-  body("warehouse_id")
+  body("origin_warehouse_id")
     .exists()
     .withMessage(MSG.REQUIRED.es("El almacén"))
     .bail()
     .isUUID()
     .withMessage(MSG.UUID.es("El almacén")),
+
+  body("product_id")
+    .exists()
+    .withMessage(MSG.REQUIRED.es("El producto"))
+    .bail()
+    .isUUID()
+    .withMessage(MSG.UUID.es("El producto")),
+
+  body("total_quantity")
+    .exists()
+    .withMessage(MSG.REQUIRED.es("La cantidad total"))
+    .bail()
+    .isNumeric()
+    .custom((value) => value > 0)
+    .withMessage(),
 
   body("destination_warehouse_id")
     .optional()
@@ -68,6 +83,32 @@ export const updateOrderValidator = [
     .optional()
     .isIn(Object.values(ORDER_UNIT_TYPES))
     .withMessage(MSG.UNIT_TYPE.es()),
+
+  body("total_quantity")
+    .optional()
+    .isNumeric()
+    .custom((value) => value > 0)
+    .withMessage(),
+
+  body("destination_warehouse_id")
+    .optional()
+    .isUUID()
+    .withMessage(MSG.UUID.es("El almacén de destino")),
+
+  body("store_id")
+    .optional()
+    .isUUID()
+    .withMessage(MSG.UUID.es("El id de la tienda")),
+
+  body("product_id")
+    .optional()
+    .isUUID()
+    .withMessage(MSG.UUID.es("El id del producto")),
+
+  body("origin_warehouse_id")
+    .optional()
+    .isUUID()
+    .withMessage(MSG.UUID.es("El almacén"))
 ];
 
 export const changeOrderStatusValidator = [

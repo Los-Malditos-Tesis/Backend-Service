@@ -10,13 +10,12 @@ const scanRouter = Router();
 scanRouter.post("/", createEventController);
 
 scanRouter.post(
-    "/search", 
+    "/search",
     authMiddleware,
     authorizeMiddleware(["ADMIN", "USER"]),
     validateSearchController,
     validateMiddleware,
-    searchScanEventController,
-    createEventController
+    searchScanEventController
 );
 
 export default scanRouter;
