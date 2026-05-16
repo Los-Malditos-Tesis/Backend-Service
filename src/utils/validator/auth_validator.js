@@ -9,7 +9,7 @@ export const validateRegister = [
     .withMessage(MSG.REQUIRED.es("El nombre"))
     .isLength({ min: 3, max: 30 })
     .withMessage(MSG.LENGTH.es("El nombre", 3, 30))
-    .matches(/^[a-zA-Z0-9._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(),
 
   body("email")
