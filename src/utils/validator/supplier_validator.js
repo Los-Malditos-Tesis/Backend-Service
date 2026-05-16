@@ -13,7 +13,7 @@ export const createSupplierValidator = [
     .isLength({ min: 3, max: 100 })
     .withMessage(MSG.LENGTH.es("El nombre", 3, 100))
     .bail()
-    .matches(/^[a-zA-Z0-9 ._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre")),
 
   body("code")
@@ -42,7 +42,7 @@ export const createSupplierValidator = [
     .isLength({ min: 3, max: 80 })
     .withMessage(MSG.LENGTH.es("El nombre de contacto", 3, 80))
     .bail()
-    .matches(/^[a-zA-Z0-9 ._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre de contacto"))
     .bail(),
 
@@ -83,7 +83,7 @@ export const createSupplierValidator = [
     .isLength({ min: 3, max: 80 })
     .withMessage(MSG.LENGTH.es("La ubicación", 3, 80))
     .bail()
-    .matches(/^[a-zA-Z0-9 ._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("La ubicación")),
 ];
 
@@ -99,7 +99,7 @@ export const searchSuppliersValidator = [
     .isLength({ min: 1, max: 100 })
     .withMessage(MSG.LENGTH.es("El nombre", 1, 100))
     .bail()
-    .matches(/^[a-zA-Z0-9 ._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre"))
     .bail(),
 
@@ -147,7 +147,7 @@ export const searchSuppliersValidator = [
     .isLength({ min: 1, max: 80 })
     .withMessage(MSG.LENGTH.es("El nombre de contacto", 1, 80))
     .bail()
-    .matches(/^[a-zA-Z0-9 ._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre de contacto")),
 
   query("location")
@@ -159,7 +159,7 @@ export const searchSuppliersValidator = [
     .isLength({ min: 1, max: 80 })
     .withMessage(MSG.LENGTH.es("La ubicacion", 1, 80))
     .bail()
-    .matches(/^[a-zA-Z0-9 ._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("La ubicacion")),
 ];
 

@@ -9,7 +9,7 @@ export const validateCreateStore = [
     .withMessage(MSG.REQUIRED.es("El nombre"))
     .isLength({ min: 3, max: 100 })
     .withMessage(MSG.LENGTH.es("El nombre", 3, 100))
-    .matches(/^[a-zA-Z0-9._\-\s]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre")),
   body("code")
     .trim()
@@ -27,7 +27,7 @@ export const validateCreateStore = [
     .withMessage(MSG.REQUIRED.es("La dirección"))
     .isLength({ min: 3, max: 100 })
     .withMessage(MSG.LENGTH.es("La dirección", 3, 100))
-    .matches(/^[a-zA-Z0-9.,#_\-\s]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ .,#_-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("La dirección")),
 ];
 
@@ -45,7 +45,7 @@ export const validateUpdateStore = [
     .escape()
     .isLength({ min: 3, max: 100 })
     .withMessage(MSG.LENGTH.es("El nombre", 3, 100))
-    .matches(/^[a-zA-Z0-9._\-\s]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre")),
   body("code")
     .optional()
@@ -61,7 +61,7 @@ export const validateUpdateStore = [
     .escape()
     .isLength({ min: 3, max: 100 })
     .withMessage(MSG.LENGTH.es("La dirección", 3, 100))
-    .matches(/^[a-zA-Z0-9.,#_\-\s]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ .,#_-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("La dirección")),
 ];
 
@@ -102,7 +102,7 @@ export const validateSearchStores = [
     .escape()
     .isLength({ min: 3, max: 100 })
     .withMessage(MSG.LENGTH.es("El nombre", 3, 100))
-    .matches(/^[a-zA-Z0-9._-]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre")),
   body("address")
     .optional()
@@ -110,7 +110,7 @@ export const validateSearchStores = [
     .escape()
     .isLength({ min: 3, max: 100 })
     .withMessage(MSG.LENGTH.es("La dirección", 3, 100))
-    .matches(/^[a-zA-Z0-9.,#_\-\s]+$/)
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ .,#_-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("La dirección")),
   body("limit")
     .optional()

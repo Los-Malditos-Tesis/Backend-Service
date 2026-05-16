@@ -28,10 +28,11 @@ import { publishScanRequest } from "../libs/mqtt/mqtt_publisher.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { findByCode as findBoxByCode } from "../repositories/box_repository.js";
 import { findByCode as findPalletByCode } from "../repositories/pallet_repository.js";
-// import { waitForScanResult } from "../libs/mqtt/wait_for_scan_result.js";
-import { findByKeyAndWarehouseConfigParams } from "../service/config_params_service.js"
-import { waitForProductMatch } from "../libs/mqtt/wait_for_scan_result.js";
+import { findByKeyAndWarehouseConfigParams } from "../service/config_params_service.js";
+import { waitForScanResults } from "../libs/mqtt/wait_for_scan_result.js";
 import { config } from "../config/config.js";
+import { findByCategory } from "../repositories/location_repository.js";
+import { findAllByLocations } from "../repositories/camera_repository.js";
 
 const automationService = "automation service";
 
@@ -362,15 +363,10 @@ async function processDispatchedItem(decodedGS1 = {}, ctx) {
   return item;
 }
 
-export const searchProductInZones = async (productData = {}, ctx) => {
-  Log.infoCtx(
-    ctx,
-    automationService + consoleKeys.StartKey,
-    "REQUEST",
-    productData,
-  );
+export const searchProductInZones = async (data = {}, ctx) => {
+  Log.infoCtx(ctx, automationService + consoleKeys.StartKey, "REQUEST", data);
 
-  const product = await getProductById(productData.id, ctx);
+  const product = await getProductById(data.productId, ctx);
 
   if (!product) {
     throw new AppError("El producto no existe", 404, CODES.PRODUCT.NOT_FOUND);
@@ -378,30 +374,24 @@ export const searchProductInZones = async (productData = {}, ctx) => {
 
   const correlationId = crypto.randomUUID();
 
-  const publishData = {
-    warehouseId: "1",
-    productCode: product.code,
+  await publishScanRequest({
+    cameras: data.cameraCodes,
     correlationId,
-  };
+  });
 
-  Log.infoCtx(ctx, automationService + "MQTT", "PUBLISH", publishData);
+  Log.infoCtx(ctx, automationService + "MQTT", "PUBLISH", {
+    cameras: data.cameraCodes,
+    correlationId,
+  });
 
-  await publishScanRequest(publishData);
-
-  const zone = await waitForProductMatch(
+  const scanResult = await waitForScanResults(
     correlationId,
     product.code,
+    data.cameraCodes,
     config.timeoutMqtt,
   );
 
-  Log.infoCtx(
-    ctx,
-    automationService + consoleKeys.SuccessKey,
-    consoleKeys.ResponseKey,
-    zone,
-  );
-
-  if (!zone) {
+  if (!scanResult) {
     throw new AppError(
       "No se encontraron existencias",
       400,
@@ -409,11 +399,36 @@ export const searchProductInZones = async (productData = {}, ctx) => {
     );
   }
 
+  Log.infoCtx(
+    ctx,
+    automationService + consoleKeys.SuccessKey,
+    consoleKeys.ResponseKey,
+    scanResult,
+  );
+
+  const { detections, respondedCameras, pendingCameras } = scanResult;
+  let status = "success";
+  if (detections.length > 0) status = "pending";
+
+  if (pendingCameras.length > 0) status = "partial response";
+
   Log.infoCtx(ctx, automationService + consoleKeys.EndKey);
+
+  const matchedCameras = detections.map((d) => d.cameraCode);
+
   return {
-    product,
-    zone,
+    status,
     correlationId,
+    product: {
+      id: product.id,
+      code: product.code,
+      name: product.name,
+      category: product.category,
+    },
+    matchedCameras,
+    respondedCameras,
+    notRespondedCameras: pendingCameras,
+    scannedAt: new Date().toISOString(),
   };
 };
 
@@ -433,12 +448,15 @@ export const inventoryAutomationService = serviceHandler(
       throw new AppError("Invalid GS1 code", 400, CODES.GS1.INVALID);
     }
 
-    const warehouseConfig = await findByKeyAndWarehouseConfigParams(CONFIG_TYPE.SCANNING_MODE, cameraData.location.warehouse_id, ctx);
+    const warehouseConfig = await findByKeyAndWarehouseConfigParams(
+      CONFIG_TYPE.SCANNING_MODE,
+      cameraData.location.warehouse_id,
+      ctx,
+    );
 
     if (warehouseConfig.value == SCANNING_MODE_CONFIG.ENTRY)
       registerMerchandiseService(gs1Code, cameraData, ctx);
-    else
-      dispatchMerchandiseService(gs1Code, cameraData, ctx);
+    else dispatchMerchandiseService(gs1Code, cameraData, ctx);
 
     Log.infoCtx(
       ctx,
@@ -447,10 +465,14 @@ export const inventoryAutomationService = serviceHandler(
       {},
     );
 
-    return await createScanEvent({
-      qrCode: decodedGS1.raw,
-      detectedType: decodedGS1.unit_type,
-      status: DEVICE_STATUS.OK,
-      confidence: decodedGS1.confidence
-    }, ctx);
-  });
+    return await createScanEvent(
+      {
+        qrCode: decodedGS1.raw,
+        detectedType: decodedGS1.unit_type,
+        status: DEVICE_STATUS.OK,
+        confidence: decodedGS1.confidence,
+      },
+      ctx,
+    );
+  },
+);
