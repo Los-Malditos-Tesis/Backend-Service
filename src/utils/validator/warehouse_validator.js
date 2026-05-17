@@ -9,7 +9,7 @@ export const validateCreateWarehouse = [
     .withMessage(MSG.REQUIRED.es("El nombre"))
     .isLength({ min: 3, max: 30 })
     .withMessage(MSG.LENGTH.es("El nombre", 3, 30))
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre")),
 
   body("address")
@@ -19,7 +19,7 @@ export const validateCreateWarehouse = [
     .withMessage(MSG.REQUIRED.es("La dirección"))
     .isLength({ min: 3, max: 250 })
     .withMessage(MSG.LENGTH.es("La dirección", 3, 250))
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ .,#_-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("La dirección")),
 ];
 
@@ -38,7 +38,7 @@ export const validateUpdateWarehouse = [
     .escape()
     .isLength({ min: 3, max: 30 })
     .withMessage(MSG.LENGTH.es("El nombre", 3, 30))
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre")),
 
   body("address")
@@ -47,7 +47,7 @@ export const validateUpdateWarehouse = [
     .escape()
     .isLength({ min: 3, max: 250 })
     .withMessage(MSG.LENGTH.es("La dirección", 3, 250))
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ .,#_-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("La dirección")),
 ];
 
@@ -84,7 +84,7 @@ export const validateSearchWarehouses = [
     .escape()
     .isLength({ min: 3, max: 30 })
     .withMessage(MSG.LENGTH.es("El nombre", 3, 30))
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre")),
   body("address")
     .optional()
@@ -92,7 +92,7 @@ export const validateSearchWarehouses = [
     .escape()
     .isLength({ min: 3, max: 250 })
     .withMessage(MSG.LENGTH.es("La dirección", 3, 250))
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ .,#_-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("La dirección")),
 ];
 

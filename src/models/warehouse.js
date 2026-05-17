@@ -16,7 +16,7 @@ export default (sequelize) => {
             validate: {
                 notEmpty: true,
                 len: [3, 30],
-                is: /^[a-zA-Z0-9._\s,\\\-#áéíóúÁÉÍÓÚñÑ]+$/
+                is: /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/
             }
         },
         address: {
@@ -25,7 +25,7 @@ export default (sequelize) => {
             validate: {
                 notEmpty: true,
                 len: [3, 250],
-                is: /^[a-zA-Z0-9._\s,\\\-#áéíóúÁÉÍÓÚñÑ]+$/
+                is: /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ .,#_-]+$/
             }
         },
     }, {
