@@ -4,6 +4,7 @@ import { CODES } from "../utils/const/codes.js";
 import { Log } from "../libs/logger/logger.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
 import { findByEmailWithRoles } from "../repositories/user_repository.js";
+import { als } from "../libs/logger/console/context.js";
 
 const authMiddlewareKey = "auth middleware: ";
 
@@ -35,6 +36,8 @@ export const authMiddleware = async (req, res, next) => {
 
     req.user = user;
     req.ctx = { ...req.ctx, user_id: user.id };
+    als.getStore().set("userId", user.id);
+
     Log.infoCtx(req.ctx, authMiddlewareKey + consoleKeys.FinishKey);
     next();
   } catch (e) {
