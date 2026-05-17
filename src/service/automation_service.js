@@ -450,24 +450,8 @@ export const inventoryAutomationService = serviceHandler(
     );
 
     if (warehouseConfig.value == SCANNING_MODE_CONFIG.ENTRY)
-      await registerMerchandiseService(gs1Code, cameraData, ctx);
-    else await dispatchMerchandiseService(gs1Code, cameraData, ctx);
+      return await registerMerchandiseService(gs1Code, cameraData, ctx);
+    else return await dispatchMerchandiseService(gs1Code, cameraData, ctx);
 
-    Log.infoCtx(
-      ctx,
-      automationService + consoleKeys.SuccessKey,
-      consoleKeys.ResponseKey,
-      {},
-    );
-
-    return await createScanEvent(
-      {
-        qrCode: decodedGS1.raw,
-        detectedType: decodedGS1.unit_type,
-        status: DEVICE_STATUS.OK,
-        confidence: decodedGS1.confidence,
-      },
-      ctx,
-    );
   },
 );
