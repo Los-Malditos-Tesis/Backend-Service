@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import sequelize from "../libs/database/sequelize.config.js";
+import { registerAuditHooks } from "../repositories/audit_repository.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,5 +27,6 @@ Object.keys(db).forEach((modelName) => {
 });
 
 db.sequelize = sequelize;
+registerAuditHooks(sequelize, db);
 
 export default db;

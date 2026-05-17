@@ -28,7 +28,7 @@ export default (sequelize) => {
         validate: {
           notEmpty: true,
           len: [3, 100],
-          is: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/,
+          is: /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/,
         },
       },
       category: {
@@ -37,7 +37,7 @@ export default (sequelize) => {
         validate: {
           notEmpty: true,
           len: [3, 30],
-          is: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/,
+          is: /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/,
         },
       },
       sku: {

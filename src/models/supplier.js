@@ -15,7 +15,7 @@ export default (sequelize) => {
         validate: {
           notEmpty: true,
           len: [3, 100],
-          is: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/,
+          is: /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/,
         },
       },
       code: {
@@ -36,7 +36,7 @@ export default (sequelize) => {
         allowNull: false,
         validate: {
           len: [3, 80],
-          is: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/,
+          is: /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/,
         },
       },
       phone: {
@@ -59,7 +59,7 @@ export default (sequelize) => {
         allowNull: false,
         validate: {
           len: [3, 80],
-          is: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/,
+          is: /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ .,#_-]+$/,
         },
       },
     },

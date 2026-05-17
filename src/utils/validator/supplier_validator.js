@@ -13,7 +13,7 @@ export const createSupplierValidator = [
     .isLength({ min: 3, max: 100 })
     .withMessage(MSG.LENGTH.es("El nombre", 3, 100))
     .bail()
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre")),
 
   body("code")
@@ -42,7 +42,7 @@ export const createSupplierValidator = [
     .isLength({ min: 3, max: 80 })
     .withMessage(MSG.LENGTH.es("El nombre de contacto", 3, 80))
     .bail()
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre de contacto"))
     .bail(),
 
@@ -83,7 +83,7 @@ export const createSupplierValidator = [
     .isLength({ min: 3, max: 80 })
     .withMessage(MSG.LENGTH.es("La ubicación", 3, 80))
     .bail()
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ .,#_-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("La ubicación")),
 ];
 
@@ -99,7 +99,7 @@ export const searchSuppliersValidator = [
     .isLength({ min: 1, max: 100 })
     .withMessage(MSG.LENGTH.es("El nombre", 1, 100))
     .bail()
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre"))
     .bail(),
 
@@ -147,7 +147,7 @@ export const searchSuppliersValidator = [
     .isLength({ min: 1, max: 80 })
     .withMessage(MSG.LENGTH.es("El nombre de contacto", 1, 80))
     .bail()
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("El nombre de contacto")),
 
   query("location")
@@ -159,7 +159,7 @@ export const searchSuppliersValidator = [
     .isLength({ min: 1, max: 80 })
     .withMessage(MSG.LENGTH.es("La ubicacion", 1, 80))
     .bail()
-    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ .,#_-]+$/)
     .withMessage(MSG.INVALID_FORMAT.es("La ubicacion")),
 ];
 
@@ -169,28 +169,74 @@ export const updateSupplierValidator = [
   body("name")
     .optional()
     .isString()
-    .notEmpty()
-    .withMessage(MSG.EMPTY.es("El nombre del proveedor")),
+    .withMessage(MSG.STRING.es("El nombre"))
+    .bail()
+    .trim()
+    .isLength({ min: 3, max: 100 })
+    .withMessage(MSG.LENGTH.es("El nombre", 3, 100))
+    .bail()
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .withMessage(MSG.INVALID_FORMAT.es("El nombre")),
 
   body("code")
     .optional()
     .isString()
-    .notEmpty()
-    .withMessage(MSG.EMPTY.es("El codigo del proveedor")),
+    .withMessage(MSG.STRING.es("El código"))
+    .bail()
+    .trim()
+    .isLength({ min: 3, max: 30 })
+    .withMessage(MSG.LENGTH.es("El código", 3, 30))
+    .bail()
+    .matches(/^[a-zA-Z0-9._-]+$/)
+    .withMessage(MSG.INVALID_FORMAT.es("El código"))
+    .bail(),
 
-  body("email").optional().isEmail().withMessage(MSG.EMAIL.es()),
+  body("email")
+    .optional()
+    .isString()
+    .withMessage(MSG.STRING.es("El correo electrónico"))
+    .bail()
+    .trim()
+    .isEmail()
+    .withMessage(MSG.INVALID_FORMAT.es("El correo electrónico")),
 
-  body("phone").optional().isString().withMessage(MSG.STRING.es("El telefono")),
+  body("phone")
+    .optional()
+    .isString()
+    .withMessage(MSG.STRING.es("El teléfono"))
+    .bail()
+    .trim()
+    .isLength({ min: 3, max: 30 })
+    .withMessage(MSG.LENGTH.es("El teléfono", 3, 30))
+    .bail()
+    .matches(/^[0-9+() \-]+$/)
+    .withMessage(MSG.INVALID_FORMAT.es("El teléfono"))
+    .bail(),
 
   body("contactName")
     .optional()
     .isString()
-    .withMessage(MSG.STRING.es("El nombre de contacto")),
+    .withMessage(MSG.STRING.es("El nombre de contacto"))
+    .bail()
+    .trim()
+    .isLength({ min: 3, max: 80 })
+    .withMessage(MSG.LENGTH.es("El nombre de contacto", 3, 80))
+    .bail()
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ ._-]+$/)
+    .withMessage(MSG.INVALID_FORMAT.es("El nombre de contacto"))
+    .bail(),
 
   body("location")
     .optional()
     .isString()
-    .withMessage(MSG.STRING.es("La ubicacion")),
+    .withMessage(MSG.STRING.es("La ubicación"))
+    .bail()
+    .trim()
+    .isLength({ min: 3, max: 80 })
+    .withMessage(MSG.LENGTH.es("La ubicación", 3, 80))
+    .bail()
+    .matches(/^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ .,#_-]+$/)
+    .withMessage(MSG.INVALID_FORMAT.es("La ubicación")),
 ];
 
 export const deleteSupplierValidator = [
