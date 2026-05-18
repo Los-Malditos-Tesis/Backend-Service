@@ -29,7 +29,7 @@ export const searchOrders = repositoryHandler(
   async (query = "", limit = 10, page = 1, ctx) => {
     const offset = (page - 1) * limit;
 
-    const { id, type, status, unit_type, warehouse_id, store_id } = query;
+    const { id, type, status, unit_type, destination_warehouse_id, origin_warehouse_id, store_id } = query;
 
     const where = {
       deleted_at: null,
@@ -39,11 +39,22 @@ export const searchOrders = repositoryHandler(
     if (type) where.type = type;
     if (status) where.status = status;
     if (unit_type) where.unit_type = unit_type;
-    if (warehouse_id) where.warehouse_id = warehouse_id;
+    if (origin_warehouse_id && destination_warehouse_id) {
+      where[Op.or] = [
+        { origin_warehouse_id },
+        { destination_warehouse_id }
+      ];
+    } else {
+      if (origin_warehouse_id) where.origin_warehouse_id = origin_warehouse_id;
+      if (destination_warehouse_id) where.destination_warehouse_id = destination_warehouse_id;
+    }
     if (store_id) where.store_id = store_id;
 
     const { rows, count } = await db.Order.findAndCountAll({
       where,
+      include: [
+        { model: db.Product, attributes: ["id", "code", "name", "sku"] },
+      ],
       limit,
       offset,
       order: [["created_at", "DESC"]],
