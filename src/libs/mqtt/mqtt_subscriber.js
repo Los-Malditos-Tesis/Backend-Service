@@ -2,11 +2,12 @@ import { mqttClient } from "../../config/mqtt_config.js";
 import { scanEmitter } from "./events/scan_emitter.js";
 import { Log } from "../logger/logger.js";
 import { consoleKeys } from "../logger/console/constant.js";
+import { config } from "../../config/config.js";
 
 const mqttSubscriber = "mqtt subscriber: ";
 
 mqttClient.on("connect", () => {
-  mqttClient.subscribe("warehouse/+/scan/result");
+  mqttClient.subscribe(config.mqttSubscribeTopic);
 });
 
 mqttClient.on("message", (topic, message) => {
