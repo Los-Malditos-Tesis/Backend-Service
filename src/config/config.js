@@ -34,4 +34,6 @@ export const config = Object.freeze({
   mqttClientId: env.MQTT_CLIENT_ID,
   autoCreateScanConfig: toBoolean(env.AUTO_CREATE_SCAN_CONFIG),
   timeoutMqtt: env.TIMEOUT_MQTT,
+  mqttSubscribeTopic: env.MQTT_SUBCRIBE_TOPIC,
+  mqttPublishTopic: env.MQTT_PUBLISH_TOPIC,
 });
