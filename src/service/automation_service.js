@@ -342,8 +342,8 @@ async function processDispatchedItem(decodedGS1 = {}, ctx) {
   };
 
   decodedGS1.unit_type == ITEM_TYPES.PALLET
-    ? await findPalletByCode(decodedGS1.code, ctx)
-    : await findBoxByCode(decodedGS1.code, ctx);
+    ? await updatePallet(updateItemRequest, ctx)
+    : await updateBox(updateItemRequest, ctx);
 
   const inventoryMovement =
     decodedGS1.unit_type == ITEM_TYPES.PALLET
