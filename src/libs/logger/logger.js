@@ -5,13 +5,6 @@ import { generateTime } from "../../utils/utils.js";
 const baseLogger = pino({
   level: process.env.LOG_LEVEL || "info",
   timestamp: () => `,"time":"${generateTime()}"`,
-  transport: {
-    target: "pino-pretty",
-    options: {
-      translateTime: true,
-      ignore: "pid,hostname",
-    },
-  },
 });
 
 const kvToObject = (kv) => {
