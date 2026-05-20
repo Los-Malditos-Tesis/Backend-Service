@@ -104,7 +104,7 @@ export const findByWarehouseAndStatus = repositoryHandler(
     const isPallet = orderUnitType == ORDER_UNIT_TYPES.PALLET
 
     const where = { status, deleted_at: null }
-    if (warehouse_id) where.origin_warehouse_id = warehouse_id;
+    if (warehouse_id) where.destination_warehouse_id = warehouse_id;
 
     return await db.Order.findAll({
       where,
