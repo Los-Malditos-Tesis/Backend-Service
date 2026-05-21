@@ -10,6 +10,7 @@ import {
   ORDER_UNIT_TYPES,
   PALLETS_STATUS,
   SCANNING_MODE_CONFIG,
+  MOVEMENT_TYPE,
 } from "../utils/const/status.js";
 import { parseGS1 } from "../utils/gs1_util.js";
 import { createBox, updateBox } from "./box_service.js";
@@ -94,6 +95,11 @@ export const registerMerchandiseService = serviceHandler(
             detectedType: decodedGS1.unit_type,
             status: DEVICE_STATUS.ERROR,
             confidence: decodedGS1.confidence,
+            type: MOVEMENT_TYPE.ENTRY,
+            errorMessage: "Unidad con existencia",
+            itemCode: decodedGS1.code,
+            warehouseId: cameraData.location.warehouse_id,
+            productId: item.product_id,
           },
           ctx,
         );
@@ -153,6 +159,11 @@ export const registerMerchandiseService = serviceHandler(
         detectedType: decodedGS1.unit_type,
         status: DEVICE_STATUS.OK,
         confidence: decodedGS1.confidence,
+        type: MOVEMENT_TYPE.ENTRY,
+        itemCode: decodedGS1.code,
+        warehouse_id: cameraData.location.warehouse_id,
+        product_id: item ? item.product_id : null,
+        order_id: (orders && orders.length > 0) ? orders[0].id : null,
       },
       ctx,
     );
@@ -235,10 +246,15 @@ export const dispatchMerchandiseService = serviceHandler(
     if (!productExistance) {
       await createScanEvent(
         {
+          camera_id: cameraData.id,
           qrCode: decodedGS1.raw,
           detectedType: decodedGS1.unit_type,
           status: DEVICE_STATUS.ERROR,
           confidence: decodedGS1.confidence,
+          type: MOVEMENT_TYPE.EXIT,
+          errorMessage: "Product not found",
+          itemCode: decodedGS1.code,
+          warehouse_id: cameraData.location?.warehouse_id,
         },
         ctx,
       );
@@ -256,10 +272,16 @@ export const dispatchMerchandiseService = serviceHandler(
     if (orders.length < 1) {
       await createScanEvent(
         {
-          qrCode: gs1Code,
+          camera_id: cameraData.id,
+          qrCode: decodedGS1.raw,
           detectedType: decodedGS1.unit_type,
           status: DEVICE_STATUS.ERROR,
           confidence: decodedGS1.confidence,
+          type: MOVEMENT_TYPE.EXIT,
+          errorMessage: "No pending orders found for this product",
+          itemCode: decodedGS1.code,
+          warehouse_id: cameraData.location?.warehouse_id,
+          product_id: productExistance.id,
         },
         ctx,
       );
@@ -270,7 +292,7 @@ export const dispatchMerchandiseService = serviceHandler(
       );
     }
 
-    const item = await processDispatchedItem(decodedGS1, ctx);
+    const item = await processDispatchedItem(decodedGS1, cameraData, productExistance, ctx);
 
     const isOrderCompleted = orders[0].total_dispatched + 1 >= orders[0].total_quantity;
 
@@ -303,17 +325,23 @@ export const dispatchMerchandiseService = serviceHandler(
 
     return await createScanEvent(
       {
+        camera_id: cameraData.id,
         qrCode: decodedGS1.raw,
         detectedType: decodedGS1.unit_type,
         status: DEVICE_STATUS.OK,
         confidence: decodedGS1.confidence,
+        type: MOVEMENT_TYPE.EXIT,
+        itemCode: decodedGS1.code,
+        warehouse_id: cameraData.location?.warehouse_id,
+        product_id: productExistance.id,
+        order_id: orders[0].id,
       },
       ctx,
     );
   },
 );
 
-async function processDispatchedItem(decodedGS1 = {}, ctx) {
+async function processDispatchedItem(decodedGS1 = {}, cameraData = {}, productExistance = {}, ctx) {
   //find box or pallet
   const item =
     decodedGS1.unit_type == ITEM_TYPES.PALLET
@@ -323,10 +351,16 @@ async function processDispatchedItem(decodedGS1 = {}, ctx) {
   if (!item) {
     await createScanEvent(
       {
+        camera_id: cameraData.id,
         qrCode: decodedGS1.raw,
         detectedType: decodedGS1.unit_type,
         status: DEVICE_STATUS.ERROR,
         confidence: decodedGS1.confidence,
+        type: MOVEMENT_TYPE.EXIT,
+        errorMessage: "Item not found",
+        itemCode: decodedGS1.code,
+        warehouse_id: cameraData.location?.warehouse_id,
+        product_id: productExistance?.id,
       },
       ctx,
     );

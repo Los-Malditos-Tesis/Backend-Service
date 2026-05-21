@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { DEVICE_STATUS, ITEM_TYPES } from "../utils/const/status.js";
+import { DEVICE_STATUS, ITEM_TYPES, MOVEMENT_TYPE } from "../utils/const/status.js";
 
 export default (sequelize) => {
   const ScanEvent = sequelize.define(
@@ -38,6 +38,21 @@ export default (sequelize) => {
         allowNull: false,
         defaultValue: 0,
       },
+      type: {
+        type: DataTypes.ENUM(...Object.values(MOVEMENT_TYPE)),
+        allowNull: false,
+        validate: {
+          isIn: [Object.values(MOVEMENT_TYPE)],
+        },
+      },
+      errorMessage: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      itemCode: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
     },
     {
       tableName: "scan_events",
@@ -49,6 +64,9 @@ export default (sequelize) => {
 
   ScanEvent.associate = (models) => {
     ScanEvent.belongsTo(models.Camera, { foreignKey: "camera_id" });
+    ScanEvent.belongsTo(models.Product, { foreignKey: "product_id" });
+    ScanEvent.belongsTo(models.Warehouse, { foreignKey: "warehouse_id" });
+    ScanEvent.belongsTo(models.Order, { foreignKey: "order_id" });
   };
 
   return ScanEvent;
