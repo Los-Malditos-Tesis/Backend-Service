@@ -357,14 +357,33 @@ async function processDispatchedItem(decodedGS1 = {}, cameraData = {}, productEx
         status: DEVICE_STATUS.ERROR,
         confidence: decodedGS1.confidence,
         type: MOVEMENT_TYPE.EXIT,
-        errorMessage: "Item not found",
+        errorMessage: "Unidad no encontrada",
         itemCode: decodedGS1.code,
         warehouse_id: cameraData.location?.warehouse_id,
         product_id: productExistance?.id,
       },
       ctx,
     );
-    throw new AppError("Item not found", 404, CODES.SCAN_EVENT.NOT_FOUND);
+    throw new AppError("Unidad no encontrada", 404, CODES.SCAN_EVENT.NOT_FOUND);
+  }
+
+  if (item.product_id !== productExistance.id) {
+    await createScanEvent(
+      {
+        camera_id: cameraData.id,
+        qrCode: decodedGS1.raw,
+        detectedType: decodedGS1.unit_type,
+        status: DEVICE_STATUS.ERROR,
+        confidence: decodedGS1.confidence,
+        type: MOVEMENT_TYPE.EXIT,
+        errorMessage: "Inconsistencia: El bulto escaneado pertenece a otro producto",
+        itemCode: decodedGS1.code,
+        warehouse_id: cameraData.location?.warehouse_id,
+        product_id: productExistance?.id,
+      },
+      ctx,
+    );
+    throw new AppError("Inconsistencia: El bulto escaneado pertenece a otro producto", 404, CODES.SCAN_EVENT.NOT_FOUND);
   }
 
   const updateItemRequest = {
