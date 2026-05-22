@@ -87,49 +87,44 @@ export const findByStatus = repositoryHandler(
   },
 );
 
-export const findByWarehouseAndStatus = repositoryHandler(
+export const findIncomingOrdersForReceipt = repositoryHandler(
   orderRepository,
-  async (warehouse_id = "", orderUnitType = "", merchandise_code = "", status = "", ctx) => {
-    const isPallet = orderUnitType == ORDER_UNIT_TYPES.PALLET
-
-    const where = { status, deleted_at: null }
-    if (warehouse_id) where.destination_warehouse_id = warehouse_id;
-
+  async (destinationWarehouseId = "", unitType = "", productCode = "", status = "", ctx) => {
     return await db.Order.findAll({
-      where,
+      where: {
+        destination_warehouse_id: destinationWarehouseId,
+        unit_type: unitType,
+        status,
+        deleted_at: null,
+      },
       include: [
         {
-          model: isPallet ? db.Pallet : db.Box,
-          as: isPallet ? "pallets" : "boxes",
-          attributes: ["id", "qrCode", "code"],
-          where: { code: merchandise_code },
+          model: db.Product,
+          where: { code: productCode },
           required: true,
-          through: {
-            attributes: []
-          }
-        }
+        },
       ],
       order: [["created_at", "DESC"]],
     });
-  },
+  }
 );
 
-export const findByWarehouseAndStatusWithProduct = repositoryHandler(
+export const findOutgoingOrdersForDispatch = repositoryHandler(
   orderRepository,
-  async (origin_warehouse_id = "", product_id = "", status = "", ctx) => {
+  async (sourceWarehouseId = "", unitType = "", productCode = "", status = "", ctx) => {
     return await db.Order.findAll({
-      where: { origin_warehouse_id, status, product_id, deleted_at: null },
+      where: {
+        origin_warehouse_id: sourceWarehouseId,
+        unit_type: unitType,
+        status,
+        deleted_at: null,
+      },
       include: [
         {
-          model: db.Pallet,
-          as: "pallets",
-          attributes: ["id"]
+          model: db.Product,
+          where: { code: productCode },
+          required: true,
         },
-        {
-          model: db.Box,
-          as: "boxes",
-          attributes: ["id"]
-        }
       ],
       order: [["created_at", "DESC"]],
     });

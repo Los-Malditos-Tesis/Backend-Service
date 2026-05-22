@@ -102,7 +102,20 @@ export const deleteById = repositoryHandler(
 export const search = repositoryHandler(
     scanEventRepository,
     async (query = {}, limit = 10, page = 1, ctx) => {
-        const { id, qrCode, detectedType, status, confidense, camera_id } = query;
+        const {
+            id,
+            qrCode,
+            detectedType,
+            status,
+            confidense,
+            camera_id,
+            type,
+            errorMessage,
+            itemCode,
+            productId,
+            warehouseId,
+            orderId
+        } = query;
 
         const offset = (page - 1) * limit;
         const whereClause = { deleted_at: null };
@@ -118,6 +131,18 @@ export const search = repositoryHandler(
         if (confidense) whereClause.confidense = { [Op.gte]: confidense };
 
         if (camera_id) whereClause.camera_id = { [Op.eq]: `${camera_id}` };
+
+        if (type) whereClause.type = { [Op.eq]: `${type}` };
+
+        if (errorMessage) whereClause.errorMessage = { [Op.iLike]: `%${errorMessage}%` };
+
+        if (itemCode) whereClause.itemCode = { [Op.eq]: `${itemCode}` };
+
+        if (productId) whereClause.productId = { [Op.eq]: `${productId}` };
+
+        if (warehouseId) whereClause.warehouseId = { [Op.eq]: `${warehouseId}` };
+
+        if (orderId) whereClause.orderId = { [Op.eq]: `${orderId}` };
 
         const { rows, count } = await db.ScanEvent.findAndCountAll({
             where: whereClause,

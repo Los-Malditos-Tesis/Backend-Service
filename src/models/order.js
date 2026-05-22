@@ -26,6 +26,7 @@ export default (sequelize) => {
       },
       total_quantity: { type: DataTypes.INTEGER, defaultValue: 0 },
       total_delivered: { type: DataTypes.INTEGER, defaultValue: 0 },
+      total_dispatched: { type: DataTypes.INTEGER, defaultValue: 0 },
       status: {
         type: DataTypes.STRING,
         defaultValue: ORDER_STATUS.PENDING,
@@ -37,8 +38,6 @@ export default (sequelize) => {
       underscored: true,
       timestamps: true,
       paranoid: true,
-      // IMPORTANTE: Quitamos el include del defaultScope de aquí 
-      // porque sequelize.models aún está vacío.
     }
   );
 

@@ -10,13 +10,14 @@ import {
   ORDER_UNIT_TYPES,
   PALLETS_STATUS,
   SCANNING_MODE_CONFIG,
+  MOVEMENT_TYPE,
 } from "../utils/const/status.js";
 import { parseGS1 } from "../utils/gs1_util.js";
 import { createBox, updateBox } from "./box_service.js";
 import { createInventoryMovement } from "./inventory_movement_service.js";
 import {
-  findOrdersByWarehouseAndStatus,
-  findOrdersByWarehouseAndStatusWithProduct,
+  findIncomingOrdersForReceiptService,
+  findOutgoingOrdersForDispatchService,
   updateOrder,
 } from "./order_service.js";
 import { createPallet, updatePallet } from "./pallet_service.js";
@@ -59,7 +60,7 @@ export const registerMerchandiseService = serviceHandler(
         ? await findPalletByCode(decodedGS1.code, ctx)
         : await findBoxByCode(decodedGS1.code, ctx);
 
-    const orders = await findOrdersByWarehouseAndStatus(
+    const orders = await findIncomingOrdersForReceiptService(
       cameraData.location.warehouse_id,
       decodedGS1.unit_type,
       decodedGS1.code,
@@ -94,6 +95,11 @@ export const registerMerchandiseService = serviceHandler(
             detectedType: decodedGS1.unit_type,
             status: DEVICE_STATUS.ERROR,
             confidence: decodedGS1.confidence,
+            type: MOVEMENT_TYPE.ENTRY,
+            errorMessage: "Unidad con existencia",
+            itemCode: decodedGS1.code,
+            warehouseId: cameraData.location.warehouse_id,
+            productId: item.product_id,
           },
           ctx,
         );
@@ -153,6 +159,11 @@ export const registerMerchandiseService = serviceHandler(
         detectedType: decodedGS1.unit_type,
         status: DEVICE_STATUS.OK,
         confidence: decodedGS1.confidence,
+        type: MOVEMENT_TYPE.ENTRY,
+        itemCode: decodedGS1.code,
+        warehouse_id: cameraData.location.warehouse_id,
+        product_id: item ? item.product_id : null,
+        order_id: (orders && orders.length > 0) ? orders[0].id : null,
       },
       ctx,
     );
@@ -235,10 +246,15 @@ export const dispatchMerchandiseService = serviceHandler(
     if (!productExistance) {
       await createScanEvent(
         {
+          camera_id: cameraData.id,
           qrCode: decodedGS1.raw,
           detectedType: decodedGS1.unit_type,
           status: DEVICE_STATUS.ERROR,
           confidence: decodedGS1.confidence,
+          type: MOVEMENT_TYPE.EXIT,
+          errorMessage: "Product not found",
+          itemCode: decodedGS1.code,
+          warehouse_id: cameraData.location?.warehouse_id,
         },
         ctx,
       );
@@ -246,9 +262,10 @@ export const dispatchMerchandiseService = serviceHandler(
     }
 
     //find orders with current product
-    const orders = await findOrdersByWarehouseAndStatusWithProduct(
+    const orders = await findOutgoingOrdersForDispatchService(
       cameraData.location.warehouse_id,
-      productExistance.id,
+      decodedGS1.unit_type,
+      productExistance.code,
       ORDER_STATUS.PENDING,
       ctx,
     );
@@ -256,10 +273,16 @@ export const dispatchMerchandiseService = serviceHandler(
     if (orders.length < 1) {
       await createScanEvent(
         {
-          qrCode: gs1Code,
+          camera_id: cameraData.id,
+          qrCode: decodedGS1.raw,
           detectedType: decodedGS1.unit_type,
           status: DEVICE_STATUS.ERROR,
           confidence: decodedGS1.confidence,
+          type: MOVEMENT_TYPE.EXIT,
+          errorMessage: "No pending orders found for this product",
+          itemCode: decodedGS1.code,
+          warehouse_id: cameraData.location?.warehouse_id,
+          product_id: productExistance.id,
         },
         ctx,
       );
@@ -270,12 +293,9 @@ export const dispatchMerchandiseService = serviceHandler(
       );
     }
 
-    const item = await processDispatchedItem(decodedGS1, ctx);
+    const item = await processDispatchedItem(decodedGS1, cameraData, productExistance, ctx);
 
-    const isOrderCompleted =
-      decodedGS1.unit_type == ITEM_TYPES.PALLET
-        ? orders[0].pallets.length >= orders[0].total_quantity - 1
-        : orders[0].boxes.length >= orders[0].total_quantity - 1;
+    const isOrderCompleted = orders[0].total_dispatched + 1 >= orders[0].total_quantity;
 
     decodedGS1.unit_type == ITEM_TYPES.PALLET
       ? await orders[0].addPallet(item.id, { logging: false })
@@ -287,6 +307,7 @@ export const dispatchMerchandiseService = serviceHandler(
         status: isOrderCompleted
           ? ORDER_STATUS.DISPATCHED
           : ORDER_STATUS.PENDING,
+        total_dispatched: orders[0].total_dispatched + 1,
       },
       ctx,
     );
@@ -305,17 +326,23 @@ export const dispatchMerchandiseService = serviceHandler(
 
     return await createScanEvent(
       {
+        camera_id: cameraData.id,
         qrCode: decodedGS1.raw,
         detectedType: decodedGS1.unit_type,
         status: DEVICE_STATUS.OK,
         confidence: decodedGS1.confidence,
+        type: MOVEMENT_TYPE.EXIT,
+        itemCode: decodedGS1.code,
+        warehouse_id: cameraData.location?.warehouse_id,
+        product_id: productExistance.id,
+        order_id: orders[0].id,
       },
       ctx,
     );
   },
 );
 
-async function processDispatchedItem(decodedGS1 = {}, ctx) {
+async function processDispatchedItem(decodedGS1 = {}, cameraData = {}, productExistance = {}, ctx) {
   //find box or pallet
   const item =
     decodedGS1.unit_type == ITEM_TYPES.PALLET
@@ -325,14 +352,57 @@ async function processDispatchedItem(decodedGS1 = {}, ctx) {
   if (!item) {
     await createScanEvent(
       {
+        camera_id: cameraData.id,
         qrCode: decodedGS1.raw,
         detectedType: decodedGS1.unit_type,
         status: DEVICE_STATUS.ERROR,
         confidence: decodedGS1.confidence,
+        type: MOVEMENT_TYPE.EXIT,
+        errorMessage: "Unidad no encontrada",
+        itemCode: decodedGS1.code,
+        warehouse_id: cameraData.location?.warehouse_id,
+        product_id: productExistance?.id,
       },
       ctx,
     );
-    throw new AppError("Item not found", 404, CODES.SCAN_EVENT.NOT_FOUND);
+    throw new AppError("Unidad no encontrada", 404, CODES.SCAN_EVENT.NOT_FOUND);
+  }
+
+  if (item.product_id !== productExistance.id) {
+    await createScanEvent(
+      {
+        camera_id: cameraData.id,
+        qrCode: decodedGS1.raw,
+        detectedType: decodedGS1.unit_type,
+        status: DEVICE_STATUS.ERROR,
+        confidence: decodedGS1.confidence,
+        type: MOVEMENT_TYPE.EXIT,
+        errorMessage: "Inconsistencia: El bulto escaneado pertenece a otro producto",
+        itemCode: decodedGS1.code,
+        warehouse_id: cameraData.location?.warehouse_id,
+        product_id: productExistance?.id,
+      },
+      ctx,
+    );
+    throw new AppError("Inconsistencia: El bulto escaneado pertenece a otro producto", 404, CODES.SCAN_EVENT.NOT_FOUND);
+  }
+
+  if (item.status === PALLETS_STATUS.PP_DISPATCHED) {
+    await createScanEvent({
+      camera_id: cameraData.id,
+      qrCode: decodedGS1.raw,
+      detectedType: decodedGS1.unit_type,
+      status: DEVICE_STATUS.ERROR,
+      confidence: decodedGS1.confidence,
+      type: MOVEMENT_TYPE.EXIT,
+      errorMessage: "Inconsistencia: El bulto se encuentra despachado",
+      itemCode: decodedGS1.code,
+      warehouse_id: cameraData.location?.warehouse_id,
+      product_id: productExistance?.id,
+    },
+      ctx
+    );
+    throw new AppError("Inconsistencia: El bulto ya se encuentra en proceso de despacho", 400, CODES.SCAN_EVENT.INVALID_STATUS);
   }
 
   const updateItemRequest = {
