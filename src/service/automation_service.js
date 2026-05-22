@@ -16,8 +16,8 @@ import { parseGS1 } from "../utils/gs1_util.js";
 import { createBox, updateBox } from "./box_service.js";
 import { createInventoryMovement } from "./inventory_movement_service.js";
 import {
-  findOrdersByWarehouseAndStatus,
-  findOrdersByWarehouseAndStatusWithProduct,
+  findIncomingOrdersForReceiptService,
+  findOutgoingOrdersForDispatchService,
   updateOrder,
 } from "./order_service.js";
 import { createPallet, updatePallet } from "./pallet_service.js";
@@ -60,7 +60,7 @@ export const registerMerchandiseService = serviceHandler(
         ? await findPalletByCode(decodedGS1.code, ctx)
         : await findBoxByCode(decodedGS1.code, ctx);
 
-    const orders = await findOrdersByWarehouseAndStatus(
+    const orders = await findIncomingOrdersForReceiptService(
       cameraData.location.warehouse_id,
       decodedGS1.unit_type,
       decodedGS1.code,
@@ -262,9 +262,10 @@ export const dispatchMerchandiseService = serviceHandler(
     }
 
     //find orders with current product
-    const orders = await findOrdersByWarehouseAndStatusWithProduct(
+    const orders = await findOutgoingOrdersForDispatchService(
       cameraData.location.warehouse_id,
-      productExistance.id,
+      decodedGS1.unit_type,
+      productExistance.code,
       ORDER_STATUS.PENDING,
       ctx,
     );
@@ -384,6 +385,24 @@ async function processDispatchedItem(decodedGS1 = {}, cameraData = {}, productEx
       ctx,
     );
     throw new AppError("Inconsistencia: El bulto escaneado pertenece a otro producto", 404, CODES.SCAN_EVENT.NOT_FOUND);
+  }
+
+  if (item.status === PALLETS_STATUS.PP_DISPATCHED) {
+    await createScanEvent({
+      camera_id: cameraData.id,
+      qrCode: decodedGS1.raw,
+      detectedType: decodedGS1.unit_type,
+      status: DEVICE_STATUS.ERROR,
+      confidence: decodedGS1.confidence,
+      type: MOVEMENT_TYPE.EXIT,
+      errorMessage: "Inconsistencia: El bulto se encuentra despachado",
+      itemCode: decodedGS1.code,
+      warehouse_id: cameraData.location?.warehouse_id,
+      product_id: productExistance?.id,
+    },
+      ctx
+    );
+    throw new AppError("Inconsistencia: El bulto ya se encuentra en proceso de despacho", 400, CODES.SCAN_EVENT.INVALID_STATUS);
   }
 
   const updateItemRequest = {

@@ -8,8 +8,8 @@ import { ORDER_TYPES, ORDER_STATUS } from "../utils/const/status.js";
 import {
   create,
   findById,
-  findByWarehouseAndStatus,
-  findByWarehouseAndStatusWithProduct,
+  findIncomingOrdersForReceipt,
+  findOutgoingOrdersForDispatch,
   remove,
   update,
   searchOrders,
@@ -282,18 +282,24 @@ export const deleteOrder = serviceHandler(
   },
 );
 
-export const findOrdersByWarehouseAndStatus = serviceHandler(
+export const findIncomingOrdersForReceiptService = serviceHandler(
   orderService,
-  CODES.CAMERA.NOT_FOUND,
-  async (warehouse_id = "", orderUnitType = "", merchandise_code = "", status = "", ctx) => {
+  CODES.ORDER.NOT_FOUND,
+  async (destinationWarehouseId = "", unitType = "", productCode = "", status = "", ctx) => {
     Log.infoCtx(
       ctx,
       orderService + consoleKeys.StartKey,
       consoleKeys.RequestKey,
-      { warehouse_id, orderUnitType, merchandise_code },
+      { destinationWarehouseId, unitType, productCode, status },
     );
 
-    const orders = await findByWarehouseAndStatus(warehouse_id, orderUnitType, merchandise_code, status, ctx);
+    const orders = await findIncomingOrdersForReceipt(
+      destinationWarehouseId,
+      unitType,
+      productCode,
+      status,
+      ctx,
+    );
 
     Log.infoCtx(
       ctx,
@@ -305,18 +311,24 @@ export const findOrdersByWarehouseAndStatus = serviceHandler(
   },
 );
 
-export const findOrdersByWarehouseAndStatusWithProduct = serviceHandler(
+export const findOutgoingOrdersForDispatchService = serviceHandler(
   orderService,
-  CODES.CAMERA.NOT_FOUND,
-  async (origin_warehouse_id = "", product_id = "", status = "", ctx) => {
+  CODES.ORDER.NOT_FOUND,
+  async (sourceWarehouseId = "", unitType = "", productCode = "", status = "", ctx) => {
     Log.infoCtx(
       ctx,
       orderService + consoleKeys.StartKey,
       consoleKeys.RequestKey,
-      { origin_warehouse_id, product_id, status },
+      { sourceWarehouseId, unitType, productCode, status },
     );
 
-    const orders = await findByWarehouseAndStatusWithProduct(origin_warehouse_id, product_id, status, ctx);
+    const orders = await findOutgoingOrdersForDispatch(
+      sourceWarehouseId,
+      unitType,
+      productCode,
+      status,
+      ctx,
+    );
 
     Log.infoCtx(
       ctx,
