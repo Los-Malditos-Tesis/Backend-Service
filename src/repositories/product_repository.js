@@ -96,60 +96,89 @@ export const search = repositoryHandler(
     if (category) whereClouse.category = { [Op.iLike]: `%${category}%` };
 
     const countProducts = `(
-    -- ====================================================================
-    -- FLUJO 1: PALLETS (RESTANDO EXCLUSIVAMENTE LAS CAJAS YA DESPACHADAS)
-    -- ====================================================================
-    SELECT COALESCE(SUM(
-        (p.quantity_box * COALESCE(p.quantity_units_in_box, 0)) -
-        COALESCE((
-            -- Restamos de este pallet ÚNICAMENTE las cajas que ya fueron despachadas (PPD)
-            -- o que pertenecen a un almacén distinto al solicitado.
-            SELECT SUM(b.quantity)
-            FROM boxes AS b
-            WHERE b.pallet_id = p.id
-              AND b.deleted_at IS NULL
-              AND (
-                  b.status = '${PALLETS_STATUS.PP_DISPATCHED}'
-                  ${warehouseId ? `OR b.warehouse_id != '${warehouseId}'` : ''}
-                  OR b.warehouse_id IS NULL
-              )
+        -- ====================================================================
+        -- FLUJO 1: PALLETS (RESTANDO EXCLUSIVAMENTE LAS CAJAS YA DESPACHADAS)
+        -- ====================================================================
+        SELECT COALESCE(SUM(
+            (p.quantity_box * COALESCE(p.quantity_units_in_box, 0)) -
+            COALESCE((
+                -- Restamos de este pallet ÚNICAMENTE las cajas que ya fueron despachadas (PPD)
+                -- o que pertenecen a un almacén distinto al solicitado.
+                SELECT SUM(b.quantity)
+                FROM boxes AS b
+                WHERE b.pallet_id = p.id
+                  AND b.deleted_at IS NULL
+                  AND (
+                      b.status = '${PALLETS_STATUS.PP_DISPATCHED}'
+                      ${warehouseId ? `OR b.warehouse_id != '${warehouseId}'` : ''}
+                      OR b.warehouse_id IS NULL
+                  )
+            ), 0)
         ), 0)
-    ), 0)
-    FROM pallets AS p
-    WHERE p.product_id = "Product".id
-      AND p.deleted_at IS NULL
-      -- Excluimos pallets que ya salieron de la operación disponible
-      AND p.status NOT IN ('${PALLETS_STATUS.PP_DISPATCHED}', '${PALLETS_STATUS.DELIVERED}')
-      -- FILTRO GEOGRÁFICO: Solo se aplica si se busca una bodega en específico
-      ${warehouseId ? `AND p.warehouse_id = '${warehouseId}'` : ""}
-) + (
-    -- ====================================================================
-    -- FLUJO 2: CAJAS INDEPENDIENTES Y CAJAS "VIAJERAS" DE OTROS PALLETS
-    -- ====================================================================
-    SELECT COALESCE(SUM(b.quantity), 0)
-    FROM boxes AS b
-    LEFT JOIN pallets AS p_master ON b.pallet_id = p_master.id 
-    WHERE b.product_id = "Product".id
-      AND b.deleted_at IS NULL
-      -- Cajas sueltas que no han salido del flujo de inventario
-      AND b.status NOT IN ('${PALLETS_STATUS.PP_DISPATCHED}', '${PALLETS_STATUS.DELIVERED}')
-      
-      -- FILTRO GEOGRÁFICO DE LA CAJA
-      ${warehouseId ? `AND b.warehouse_id = '${warehouseId}'` : ""}
-      
-      -- CONDICIÓN DE ADOPCIÓN: Cajas sueltas o cuyo pallet máster fue despachado o movido
-      AND (
-          b.pallet_id IS NULL                                      
-          OR p_master.id IS NULL                                    
-          OR p_master.status IN ('${PALLETS_STATUS.PP_DISPATCHED}', '${PALLETS_STATUS.DELIVERED}')        
-          ${warehouseId ? `OR p_master.warehouse_id != b.warehouse_id` : ''}
-      )
-)`;
+        FROM pallets AS p
+        WHERE p.product_id = "Product".id
+          AND p.deleted_at IS NULL
+          -- Excluimos pallets que ya salieron de la operación disponible
+          AND p.status NOT IN ('${PALLETS_STATUS.PP_DISPATCHED}', '${PALLETS_STATUS.DELIVERED}')
+          -- FILTRO GEOGRÁFICO: Solo se aplica si se busca una bodega en específico
+          ${warehouseId ? `AND p.warehouse_id = '${warehouseId}'` : ""}
+    ) + (
+        -- ====================================================================
+        -- FLUJO 2: CAJAS INDEPENDIENTES Y CAJAS "VIAJERAS" DE OTROS PALLETS
+        -- ====================================================================
+        SELECT COALESCE(SUM(b.quantity), 0)
+        FROM boxes AS b
+        LEFT JOIN pallets AS p_master ON b.pallet_id = p_master.id 
+        WHERE b.product_id = "Product".id
+          AND b.deleted_at IS NULL
+          -- Cajas sueltas que no han salido del flujo de inventario
+          AND b.status NOT IN ('${PALLETS_STATUS.PP_DISPATCHED}', '${PALLETS_STATUS.DELIVERED}')
+
+          -- FILTRO GEOGRÁFICO DE LA CAJA
+          ${warehouseId ? `AND b.warehouse_id = '${warehouseId}'` : ""}
+
+          -- CONDICIÓN DE ADOPCIÓN: Cajas sueltas o cuyo pallet máster fue despachado o movido
+          AND (
+              b.pallet_id IS NULL                                      
+              OR p_master.id IS NULL                                    
+              OR p_master.status IN ('${PALLETS_STATUS.PP_DISPATCHED}', '${PALLETS_STATUS.DELIVERED}')        
+              ${warehouseId ? `OR p_master.warehouse_id != b.warehouse_id` : ''}
+            )
+      )`;
+
+    const countPallets = `(
+      SELECT COALESCE(COUNT(p.id), 0)
+      FROM pallets AS p
+      WHERE p.product_id = "Product".id
+        AND p.deleted_at IS NULL
+        AND p.status NOT IN ('${PALLETS_STATUS.PP_DISPATCHED}', '${PALLETS_STATUS.DELIVERED}')
+        ${warehouseId ? `AND p.warehouse_id = '${warehouseId}'` : ""}
+    )`;
+
+    const countBoxes = `(
+      SELECT COALESCE(COUNT(b.id), 0)
+      FROM boxes AS b
+      LEFT JOIN pallets AS p_master ON b.pallet_id = p_master.id 
+      WHERE b.product_id = "Product".id
+        AND b.deleted_at IS NULL
+        AND b.status NOT IN ('${PALLETS_STATUS.PP_DISPATCHED}', '${PALLETS_STATUS.DELIVERED}')
+        ${warehouseId ? `AND b.warehouse_id = '${warehouseId}'` : ""}
+        AND (
+            b.pallet_id IS NULL                                      
+            OR p_master.id IS NULL                                    
+            OR p_master.status IN ('${PALLETS_STATUS.PP_DISPATCHED}', '${PALLETS_STATUS.DELIVERED}')        
+            ${warehouseId ? `OR p_master.warehouse_id != b.warehouse_id` : ''}
+        )
+    )`;
 
     const { rows, count } = await db.Product.findAndCountAll({
       where: whereClouse,
       attributes: {
-        include: [[literal(countProducts), "total_available_units"]],
+        include: [
+          [literal(countProducts), "total_available_units"],
+          [literal(countPallets), "total_pallets"],
+          [literal(countBoxes), "total_boxes"],
+        ],
       },
       include: [
         {
