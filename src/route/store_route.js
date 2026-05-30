@@ -22,7 +22,7 @@ const storeRouter = Router();
 storeRouter.post(
   "/create",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
   validateCreateStore,
   validateMiddleware,
   createStoreController,
@@ -31,7 +31,7 @@ storeRouter.post(
 storeRouter.get(
   "/find-by-code/:code",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER", "VIEWER-ORDER"]),
   validateGetStoreByCode,
   validateMiddleware,
   findStoreByCodeController,
@@ -40,7 +40,7 @@ storeRouter.get(
 storeRouter.post(
   "/search",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER", "VIEWER-ORDER"]),
   validateSearchStores,
   validateMiddleware,
   searchStoresController,
@@ -49,7 +49,7 @@ storeRouter.post(
 storeRouter.put(
   "/update",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
   validateUpdateStore,
   validateMiddleware,
   updateStoreController,
@@ -58,7 +58,7 @@ storeRouter.put(
 storeRouter.delete(
   "/delete/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
   validateIdParamStore,
   validateMiddleware,
   deleteStoreController,

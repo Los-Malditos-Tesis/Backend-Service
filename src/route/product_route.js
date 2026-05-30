@@ -22,6 +22,7 @@ const productRouter = Router();
 productRouter.get(
   "/find-by-id/:id",
   authMiddleware,
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER", "VIEWER-ORDER"]),
   validateGetProductById,
   validateMiddleware,
   getProductByIdController,
@@ -30,7 +31,7 @@ productRouter.get(
 productRouter.post(
   "/create",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
   validateCreateProduct,
   validateMiddleware,
   createProductController,
@@ -39,6 +40,7 @@ productRouter.post(
 productRouter.post(
   "/search",
   authMiddleware,
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER", "VIEWER-ORDER"]),
   validateSearchProducts,
   validateMiddleware,
   searchProductsController,
@@ -47,7 +49,7 @@ productRouter.post(
 productRouter.put(
   "/update",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
   validateUpdateProduct,
   validateMiddleware,
   updateProductController,
@@ -56,7 +58,7 @@ productRouter.put(
 productRouter.delete(
   "/delete/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
   validateDeleteProduct,
   validateMiddleware,
   deleteProductController,

@@ -17,14 +17,14 @@ const userRouter = Router();
 userRouter.get(
   "/search",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["SUPERADMIN"]),
   searchUserController,
 );
 
 userRouter.put(
   "/profile/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["SUPERADMIN"]),
   updateProfileValidator,
   validateMiddleware,
   updateProfileController,
@@ -33,7 +33,7 @@ userRouter.put(
 userRouter.patch(
   "/status/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["SUPERADMIN"]),
   updateStatusValidator,
   validateMiddleware,
   updateStatusController,

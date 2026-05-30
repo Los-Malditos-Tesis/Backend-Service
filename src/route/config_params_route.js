@@ -19,14 +19,14 @@ configParamsRouter.post(
 configParamsRouter.get(
     "/",
     authMiddleware,
-    authorizeMiddleware(["ADMIN", "USER"]),
+    authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER", "VIEWER-ORDER"]),
     findAllConfigParamsController
 );
 
 configParamsRouter.get(
     "/:id",
     authMiddleware,
-    authorizeMiddleware(["ADMIN", "USER"]),
+    authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER", "VIEWER-ORDER"]),
     validateIdConfigParams,
     validateMiddleware,
     findByIdConfigParamsController
