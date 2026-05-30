@@ -72,17 +72,17 @@ export const searchLocationController = async (req, res, next) => {
 
 export const updateLocationController = async (req, res, next) => {
   try {
-    const { zone } = req.body;
+    const locationData = req.body;
     const { id } = req.params;
 
     Log.infoCtx(
       req.ctx,
       locationController + consoleKeys.StartKey,
       consoleKeys.RequestKey,
-      { zone, id },
+      { ...locationData, id },
     );
 
-    const resp = await updateLocation({ zone, id }, req.ctx);
+    const resp = await updateLocation({ ...locationData, id }, req.ctx);
 
     Log.infoCtx(
       req.ctx,
