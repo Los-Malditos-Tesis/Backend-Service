@@ -149,6 +149,28 @@ export const search = repositoryHandler(
             limit: limit,
             offset: offset,
             order: [["created_at", "DESC"]],
+            include: [
+                {
+                    model: db.Camera,
+                    as: "Camera",
+                    attributes: ["code"]
+                },
+                {
+                    model: db.Product,
+                    as: "Product",
+                    attributes: ["code", "sku", "name", "category"]
+                },
+                {
+                    model: db.Warehouse,
+                    as: "Warehouse",
+                    attributes: ["name", "address"]
+                },
+                {
+                    model: db.Order,
+                    as: "Order",
+                    attributes: ["type", "unit_type", "status", "origin_warehouse_id", "destination_warehouse_id", "store_id"]
+                }
+            ]
         });
 
         return {
