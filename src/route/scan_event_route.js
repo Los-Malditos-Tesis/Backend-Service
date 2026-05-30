@@ -7,12 +7,17 @@ import { validateSearchController } from "../utils/validator/scan_event_validato
 
 const scanRouter = Router();
 
-scanRouter.post("/", createEventController);
+scanRouter.post(
+  "/",
+  authMiddleware,
+  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
+  createEventController,
+);
 
 scanRouter.post(
     "/search",
     authMiddleware,
-    authorizeMiddleware(["ADMIN", "USER"]),
+    authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER", "VIEWER-ORDER"]),
     validateSearchController,
     validateMiddleware,
     searchScanEventController

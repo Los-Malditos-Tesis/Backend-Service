@@ -22,7 +22,7 @@ const orderRouter = Router();
 orderRouter.post(
   "/",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER-ORDER"]),
   createOrderValidator,
   validateMiddleware,
   createOrdenController,
@@ -31,7 +31,7 @@ orderRouter.post(
 orderRouter.get(
   "/",
   authMiddleware,
-  authorizeMiddleware(["ADMIN"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER", "VIEWER-ORDER"]),
   searchOrdersValidator,
   validateMiddleware,
   searchOrdersController,
@@ -40,7 +40,7 @@ orderRouter.get(
 orderRouter.put(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER-ORDER"]),
   updateOrderValidator,
   validateMiddleware,
   updateOrderController,
@@ -49,7 +49,7 @@ orderRouter.put(
 orderRouter.patch(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER-ORDER"]),
   changeOrderStatusValidator,
   validateMiddleware,
   changeOrderStatusController,
@@ -58,7 +58,7 @@ orderRouter.patch(
 orderRouter.delete(
   "/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER-ORDER"]),
   deleteOrderValidator,
   validateMiddleware,
   deleteOrderController,
