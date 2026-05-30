@@ -44,6 +44,12 @@ export const searchCameras = repositoryHandler(
                 model: db.Location,
                 as: "location",
                 attributes: ["id", "zone"],
+                include: [
+                  {
+                    model: db.Warehouse,
+                    as: "Warehouse",
+                  },
+                ],
               },
             ]
           : undefined,
