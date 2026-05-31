@@ -25,6 +25,7 @@ const warehouseRouter = Router();
 warehouseRouter.get(
   "/:id",
   authMiddleware,
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER", "VIEWER-ORDER"]),
   validateGetWarehouseById,
   validateMiddleware,
   getWarehouseByIdController,
@@ -33,6 +34,7 @@ warehouseRouter.get(
 warehouseRouter.get(
   "/inventory/:locationId/in/:id",
   authMiddleware,
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER", "VIEWER-ORDER"]),
   validateGetWarehouseInventory,
   validateMiddleware,
   getWarehouseInventoryController,
@@ -41,6 +43,7 @@ warehouseRouter.get(
 warehouseRouter.get(
   "/structure/:id",
   authMiddleware,
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER", "VIEWER-ORDER"]),
   validateGetWarehouseById,
   validateMiddleware,
   getWarehouseStructureController,
@@ -49,6 +52,7 @@ warehouseRouter.get(
 warehouseRouter.post(
   "/search",
   authMiddleware,
+  authorizeMiddleware(["ADMIN", "SUPERADMIN", "VIEWER", "VIEWER-ORDER"]),
   validateSearchWarehouses,
   validateMiddleware,
   searchWarehousesController,
@@ -57,7 +61,7 @@ warehouseRouter.post(
 warehouseRouter.post(
   "/create",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
   validateCreateWarehouse,
   validateMiddleware,
   createWarehouseController,
@@ -66,7 +70,7 @@ warehouseRouter.post(
 warehouseRouter.put(
   "/update",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
   validateUpdateWarehouse,
   validateMiddleware,
   updateWarehouseController,
@@ -75,7 +79,7 @@ warehouseRouter.put(
 warehouseRouter.delete(
   "/delete/:id",
   authMiddleware,
-  authorizeMiddleware(["ADMIN", "SUPERADMIN", "USER"]),
+  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
   validateDeleteWarehouse,
   validateMiddleware,
   deleteWarehouseController,
