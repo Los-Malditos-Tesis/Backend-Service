@@ -11,6 +11,7 @@ import scanRouter from "./scan_event_route.js";
 import automationRouter from "./automation_route.js";
 import configParamsRouter from "./config_params_route.js";
 import userRouter from "./user_route.js";
+import dashboardRoute from "./dashboard_route.js";
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use("/scan", scanRouter);
 router.use("/automation", automationRouter);
 router.use("/config-params", configParamsRouter);
 router.use("/user", userRouter);
+router.use("/dashboard", dashboardRoute);
 
 export default router;
