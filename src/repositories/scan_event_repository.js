@@ -138,11 +138,11 @@ export const search = repositoryHandler(
 
         if (itemCode) whereClause.itemCode = { [Op.eq]: `${itemCode}` };
 
-        if (productId) whereClause.productId = { [Op.eq]: `${productId}` };
+        if (productId) whereClause.product_id = { [Op.eq]: `${productId}` };
 
-        if (warehouseId) whereClause.warehouseId = { [Op.eq]: `${warehouseId}` };
+        if (warehouseId) whereClause.warehouse_id = { [Op.eq]: `${warehouseId}` };
 
-        if (orderId) whereClause.orderId = { [Op.eq]: `${orderId}` };
+        if (orderId) whereClause.order_id = { [Op.eq]: `${orderId}` };
 
         const { rows, count } = await db.ScanEvent.findAndCountAll({
             where: whereClause,
