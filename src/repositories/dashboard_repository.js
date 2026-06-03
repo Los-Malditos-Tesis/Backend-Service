@@ -4,7 +4,7 @@ import { repositoryHandler } from "../utils/handler/repository_handler.js";
 
 const dashboardRepository = "dashboard repository: ";
 
-export const getStas = repositoryHandler(
+export const getStats = repositoryHandler(
   dashboardRepository,
   async (_, ctx) => {
     const [products, users, suppliers, warehouses, stores, locations, cameras] =
@@ -50,7 +50,6 @@ export const getUsersByRole = repositoryHandler(
   async (_, ctx) => {
     return await db.Role.findAll({
       attributes: [
-        "id",
         "name",
         [Sequelize.fn("COUNT", Sequelize.col("Users.id")), "count"],
       ],
@@ -88,6 +87,46 @@ export const getTopWarehouses = repositoryHandler(
       ],
       group: ["Warehouse.id"],
       raw: true,
+    });
+  },
+);
+
+export const getCameraCoverage = repositoryHandler(
+  dashboardRepository,
+  async (_, ctx) => {
+    const [locations, monitoredLocations] = await Promise.all([
+      db.Location.count(),
+      db.Location.count({
+        include: [
+          {
+            model: db.Camera,
+            attributes: [],
+            required: true,
+          },
+        ],
+        distinct: true,
+      }),
+    ]);
+
+    return {
+      locations,
+      monitoredLocations,
+    };
+  },
+);
+
+export const getRegisteredPallets = repositoryHandler(
+  dashboardRepository,
+  async (_, ctx) => {
+    return await db.Pallet.count();
+  },
+);
+
+export const getLastScan = repositoryHandler(
+  dashboardRepository,
+  async (_, ctx) => {
+    return await db.ScanEvent.findOne({
+      order: [["createdAt", "DESC"]],
     });
   },
 );
