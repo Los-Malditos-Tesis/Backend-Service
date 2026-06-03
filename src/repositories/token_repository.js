@@ -56,4 +56,5 @@ export const deleteToken = repositoryHandler(
       },
     });
   },
+  obfuscateToken,
 );
