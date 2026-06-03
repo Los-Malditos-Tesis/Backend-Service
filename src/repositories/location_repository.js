@@ -66,7 +66,7 @@ export const findByWarehouseId = repositoryHandler(
       where: {
         warehouse_id: warehouseId,
       },
-      include: [{ model: db.Warehouse, as: "Warehouse" }],
+      include: [{ model: db.Warehouse, as: "warehouse" }],
     });
   },
 );
@@ -99,7 +99,7 @@ export const search = repositoryHandler(
       limit,
       offset,
       order: [["zone", "ASC"]],
-      include: [{ model: db.Warehouse, as: "Warehouse" }],
+      include: [{ model: db.Warehouse, as: "warehouse" }],
     });
 
     return {
@@ -135,7 +135,7 @@ export const findByCategory = repositoryHandler(
       where: {
         category: { [Op.iLike]: `%${category}%` },
       },
-      include: [{ model: db.Warehouse, as: "Warehouse" }],
+      include: [{ model: db.Warehouse, as: "warehouse" }],
     });
   },
 );

@@ -47,7 +47,7 @@ export const searchCameras = repositoryHandler(
                 include: [
                   {
                     model: db.Warehouse,
-                    as: "Warehouse",
+                    as: "warehouse",
                   },
                 ],
               },
