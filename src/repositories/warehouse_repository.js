@@ -30,7 +30,7 @@ export const getWarehouseInventory = repositoryHandler(
       include: [
         {
           model: db.Location,
-          as: "Locations",
+          as: "locations",
           include: [
             {
               model: db.Pallet,
@@ -62,7 +62,7 @@ export const getWarehouseInventoryByLocation = repositoryHandler(
       include: [
         {
           model: db.Location,
-          as: "Locations",
+          as: "locations",
           where: {
             id: locationId,
           },
@@ -97,7 +97,7 @@ export const getWarehouseStructure = repositoryHandler(
       include: [
         {
           model: db.Location,
-          as: "Locations",
+          as: "locations",
           include: [
             {
               model: db.Camera,
@@ -117,7 +117,7 @@ export const findLocationByQrInWarehouse = repositoryHandler(
       include: [
         {
           model: db.Location,
-          as: "Locations",
+          as: "locations",
           where: {
             zone: zone,
           },
