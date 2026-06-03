@@ -158,7 +158,7 @@ export const search = repositoryHandler(
         },
         {
           model: db.Warehouse,
-          as: "warehouse",
+          as: "Warehouse",
           attributes: ["name", "address"],
         },
         {

@@ -61,7 +61,7 @@ export const findByWarehouseId = repositoryHandler(
       where: {
         warehouse_id: warehouse_id,
       },
-      include: [{ model: db.Warehouse, as: "warehouse" }],
+      include: [{ model: db.Warehouse, as: "Warehouse" }],
     });
   },
 );
