@@ -29,6 +29,11 @@ export default (sequelize) => {
           notEmpty: true,
         },
       },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+      },
     },
     {
       tableName: "cameras",

@@ -282,7 +282,7 @@ export const dispatchMerchandiseService = serviceHandler(
           status: DEVICE_STATUS.ERROR,
           confidence: decodedGS1.confidence,
           type: MOVEMENT_TYPE.EXIT,
-          errorMessage: "No pending orders found for this product",
+          errorMessage: "No existen ordenes pendientes para este producto",
           itemCode: decodedGS1.code,
           warehouse_id: cameraData.location?.warehouse_id,
           product_id: productExistance.id,
@@ -290,7 +290,7 @@ export const dispatchMerchandiseService = serviceHandler(
         ctx,
       );
       throw new AppError(
-        "No pending orders found for this product",
+        "No existen ordenes pendientes para este producto",
         404,
         CODES.ORDER.NOT_FOUND,
       );

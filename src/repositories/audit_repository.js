@@ -10,7 +10,6 @@ export const registerAuditHooks = (sequelize, db) => {
 
   const createAudit = async (instance, action) => {
     try {
-      console.log("Aca va la data: ", instance.toJSON());
       await Audit.create({
         actions: action,
         table: instance.constructor.tableName,
