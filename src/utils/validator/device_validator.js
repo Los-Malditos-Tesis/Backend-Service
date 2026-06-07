@@ -87,3 +87,13 @@ export const deleteCameraValidator = [
     .isUUID()
     .withMessage(MSG.UUID.es("El id")),
 ];
+
+export const patchCameraStatusValidator = [
+  param("id")
+    .exists()
+    .withMessage(MSG.REQUIRED.es("El id"))
+    .bail()
+    .isUUID()
+    .withMessage(MSG.UUID.es("El id"))
+    .bail(),
+];

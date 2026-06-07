@@ -213,3 +213,39 @@ export const authCamera = serviceHandler(
     return { token };
   },
 );
+
+export const toggleCameraStatusService = serviceHandler(
+  cameraService,
+  CODES.CAMERA.NOT_FOUND,
+  async (id = "", ctx) => {
+    Log.infoCtx(
+      ctx,
+      cameraService + consoleKeys.StartKey,
+      consoleKeys.RequestKey,
+      id,
+    );
+
+    const existsCamera = await findById(id, ctx);
+
+    if (!existsCamera)
+      throw new AppError(
+        "La camara no existe",
+        404,
+        CODES.CAMERA.NOT_FOUND,
+      );
+
+    const currentStatus = existsCamera.isActive;
+    const newStatus = !currentStatus;
+
+    const updated = await updateCamera({ isActive: newStatus }, existsCamera, ctx);
+
+    Log.infoCtx(
+      ctx,
+      cameraService + consoleKeys.SuccessKey,
+      consoleKeys.ResponseKey,
+      updated,
+    );
+    return updated;
+  },
+);
+

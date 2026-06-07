@@ -7,12 +7,14 @@ import {
   searchCamerasValidator,
   deleteCameraValidator,
   updateCameraValidator,
+  patchCameraStatusValidator,
 } from "../utils/validator/device_validator.js";
 import {
   registerCameraController,
   searchCamerasController,
   deleteCameraController,
   updateCameraController,
+  patchCameraStatusController,
 } from "../controller/device_controller.js";
 
 const deviceRouter = Router();
@@ -52,4 +54,14 @@ deviceRouter.put(
   validateMiddleware,
   updateCameraController,
 );
+
+deviceRouter.patch(
+  "/:id/status",
+  authMiddleware,
+  authorizeMiddleware(["ADMIN", "SUPERADMIN"]),
+  patchCameraStatusValidator,
+  validateMiddleware,
+  patchCameraStatusController,
+);
+
 export default deviceRouter;
