@@ -3,6 +3,7 @@ import {
   searchAllCameras,
   updateCameraData,
   deleteCamera,
+  toggleCameraStatusService,
 } from "../service/camera_service.js";
 import { Log } from "../libs/logger/logger.js";
 import { consoleKeys } from "../libs/logger/console/constant.js";
@@ -151,6 +152,42 @@ export const deleteCameraController = async (req, res, next) => {
       200,
       CODES.SUCCESS.OK,
       "Cámara eliminada correctamente",
+      resp,
+    );
+  } catch (e) {
+    Log.errorCtx(req.ctx, deviceController + consoleKeys.FailKey, e);
+    return next(e);
+  } finally {
+    Log.infoCtx(req.ctx, deviceController + consoleKeys.FinishKey);
+  }
+};
+
+
+export const patchCameraStatusController = async (req, res, next) => {
+  try {
+    Log.infoCtx(
+      req.ctx,
+      deviceController + consoleKeys.StartKey,
+      consoleKeys.ParamKey,
+      req.params,
+    );
+
+    const { id } = req.params;
+
+    const resp = await toggleCameraStatusService(id, req.ctx);
+
+    Log.infoCtx(
+      req.ctx,
+      deviceController + consoleKeys.SuccessKey,
+      consoleKeys.ResponseKey,
+      resp,
+    );
+
+    return generalResponse(
+      res,
+      200,
+      CODES.SUCCESS.OK,
+      "Estado de cámara actualizado correctamente",
       resp,
     );
   } catch (e) {

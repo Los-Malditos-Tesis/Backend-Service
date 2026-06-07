@@ -12,7 +12,6 @@ import automationRouter from "./automation_route.js";
 import configParamsRouter from "./config_params_route.js";
 import userRouter from "./user_route.js";
 import dashboardRoute from "./dashboard_route.js";
-import cameraRouter from "./camera_route.js";
 
 const router = Router();
 
@@ -29,6 +28,5 @@ router.use("/automation", automationRouter);
 router.use("/config-params", configParamsRouter);
 router.use("/user", userRouter);
 router.use("/dashboard", dashboardRoute);
-router.use("/cameras", cameraRouter);
 
 export default router;
