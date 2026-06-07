@@ -60,6 +60,8 @@ export const registerMerchandiseService = serviceHandler(
         ? await findPalletByCode(decodedGS1.code, ctx)
         : await findBoxByCode(decodedGS1.code, ctx);
 
+    let resultItem = {};
+
     const orders = await findIncomingOrdersForReceiptService(
       cameraData.location.warehouse_id,
       decodedGS1.unit_type,
@@ -85,6 +87,7 @@ export const registerMerchandiseService = serviceHandler(
             state: PALLETS_STATUS.DELIVERED,
           };
 
+      resultItem = item;
       await createInventoryMovement(inventoryMovement, ctx);
     } else {
       if (item) {
@@ -111,7 +114,7 @@ export const registerMerchandiseService = serviceHandler(
         );
       }
 
-      await processNewMerchandise(decodedGS1, cameraData.location.warehouse_id, ctx);
+      resultItem = await processNewMerchandise(decodedGS1, cameraData.location.warehouse_id, ctx);
 
       Log.infoCtx(
         ctx,
@@ -162,7 +165,7 @@ export const registerMerchandiseService = serviceHandler(
         type: MOVEMENT_TYPE.ENTRY,
         itemCode: decodedGS1.code,
         warehouse_id: cameraData.location.warehouse_id,
-        product_id: item ? item.product_id : null,
+        product_id: resultItem ? resultItem.product_id : null,
         order_id: (orders && orders.length > 0) ? orders[0].id : null,
       },
       ctx,
