@@ -32,8 +32,11 @@ import { findByCode as findPalletByCode } from "../repositories/pallet_repositor
 import { findByKeyAndWarehouseConfigParams } from "../service/config_params_service.js";
 import { waitForScanResults } from "../libs/mqtt/wait_for_scan_result.js";
 import { config } from "../config/config.js";
-import { findByCategory } from "../repositories/location_repository.js";
-import { findAllByLocations } from "../repositories/camera_repository.js";
+import {
+  findAllByCategory,
+  findAllExceptCategory,
+} from "../repositories/location_repository.js";
+import { SEARCH_MODE } from "../utils/const/searchMode.js";
 
 const automationService = "automation service";
 
@@ -77,15 +80,15 @@ export const registerMerchandiseService = serviceHandler(
       const inventoryMovement =
         order.unit_type == ITEM_TYPES.PALLET
           ? {
-            type: ITEM_TYPES.PALLET,
-            pallet_id: item.id,
-            state: PALLETS_STATUS.DELIVERED,
-          }
+              type: ITEM_TYPES.PALLET,
+              pallet_id: item.id,
+              state: PALLETS_STATUS.DELIVERED,
+            }
           : {
-            type: ITEM_TYPES.BOX,
-            box_id: item.id,
-            state: PALLETS_STATUS.DELIVERED,
-          };
+              type: ITEM_TYPES.BOX,
+              box_id: item.id,
+              state: PALLETS_STATUS.DELIVERED,
+            };
 
       resultItem = item;
       await createInventoryMovement(inventoryMovement, ctx);
@@ -114,7 +117,11 @@ export const registerMerchandiseService = serviceHandler(
         );
       }
 
-      resultItem = await processNewMerchandise(decodedGS1, cameraData.location.warehouse_id, ctx);
+      resultItem = await processNewMerchandise(
+        decodedGS1,
+        cameraData.location.warehouse_id,
+        ctx,
+      );
 
       Log.infoCtx(
         ctx,
@@ -131,15 +138,15 @@ export const registerMerchandiseService = serviceHandler(
       const inventoryMovement =
         decodedGS1.unit_type == ITEM_TYPES.PALLET
           ? {
-            type: ITEM_TYPES.PALLET,
-            pallet_id: newItem.id,
-            state: PALLETS_STATUS.CREATED,
-          }
+              type: ITEM_TYPES.PALLET,
+              pallet_id: newItem.id,
+              state: PALLETS_STATUS.CREATED,
+            }
           : {
-            type: ITEM_TYPES.BOX,
-            box_id: newItem.id,
-            state: PALLETS_STATUS.CREATED,
-          };
+              type: ITEM_TYPES.BOX,
+              box_id: newItem.id,
+              state: PALLETS_STATUS.CREATED,
+            };
 
       await createInventoryMovement(
         inventoryMovement,
@@ -166,7 +173,7 @@ export const registerMerchandiseService = serviceHandler(
         itemCode: decodedGS1.code,
         warehouse_id: cameraData.location.warehouse_id,
         product_id: resultItem ? resultItem.product_id : null,
-        order_id: (orders && orders.length > 0) ? orders[0].id : null,
+        order_id: orders && orders.length > 0 ? orders[0].id : null,
       },
       ctx,
     );
@@ -202,28 +209,28 @@ async function processNewMerchandise(decodedGS1 = {}, warehouse_id = "", ctx) {
 
   return decodedGS1.unit_type === ITEM_TYPES.PALLET
     ? await createPallet(
-      {
-        code: decodedGS1.code, // (00)
-        qrCode: decodedGS1.raw,
-        quantityBox: decodedGS1.count37, // (37)
-        quantityUnitsInBox: decodedGS1.count30, // (30)
-        status: PALLETS_STATUS.CREATED,
-        product_id: product.id,
-        warehouse_id: warehouse_id,
-      },
-      ctx,
-    )
+        {
+          code: decodedGS1.code, // (00)
+          qrCode: decodedGS1.raw,
+          quantityBox: decodedGS1.count37, // (37)
+          quantityUnitsInBox: decodedGS1.count30, // (30)
+          status: PALLETS_STATUS.CREATED,
+          product_id: product.id,
+          warehouse_id: warehouse_id,
+        },
+        ctx,
+      )
     : await createBox(
-      {
-        code: decodedGS1.code,
-        qrCode: decodedGS1.raw,
-        quantity: decodedGS1.count30,
-        status: PALLETS_STATUS.CREATED,
-        product_id: product.id,
-        warehouse_id: warehouse_id,
-      },
-      ctx,
-    );
+        {
+          code: decodedGS1.code,
+          qrCode: decodedGS1.raw,
+          quantity: decodedGS1.count30,
+          status: PALLETS_STATUS.CREATED,
+          product_id: product.id,
+          warehouse_id: warehouse_id,
+        },
+        ctx,
+      );
 }
 
 //Missing take shoot to update all zones in warehosue
@@ -296,9 +303,15 @@ export const dispatchMerchandiseService = serviceHandler(
       );
     }
 
-    const item = await processDispatchedItem(decodedGS1, cameraData, productExistance, ctx);
+    const item = await processDispatchedItem(
+      decodedGS1,
+      cameraData,
+      productExistance,
+      ctx,
+    );
 
-    const isOrderCompleted = orders[0].total_dispatched + 1 >= orders[0].total_quantity;
+    const isOrderCompleted =
+      orders[0].total_dispatched + 1 >= orders[0].total_quantity;
 
     decodedGS1.unit_type == ITEM_TYPES.PALLET
       ? await orders[0].addPallet(item.id, { logging: false })
@@ -345,7 +358,12 @@ export const dispatchMerchandiseService = serviceHandler(
   },
 );
 
-async function processDispatchedItem(decodedGS1 = {}, cameraData = {}, productExistance = {}, ctx) {
+async function processDispatchedItem(
+  decodedGS1 = {},
+  cameraData = {},
+  productExistance = {},
+  ctx,
+) {
   //find box or pallet
   const item =
     decodedGS1.unit_type == ITEM_TYPES.PALLET
@@ -380,32 +398,42 @@ async function processDispatchedItem(decodedGS1 = {}, cameraData = {}, productEx
         status: DEVICE_STATUS.ERROR,
         confidence: decodedGS1.confidence,
         type: MOVEMENT_TYPE.EXIT,
-        errorMessage: "Inconsistencia: El bulto escaneado pertenece a otro producto",
+        errorMessage:
+          "Inconsistencia: El bulto escaneado pertenece a otro producto",
         itemCode: decodedGS1.code,
         warehouse_id: cameraData.location?.warehouse_id,
         product_id: productExistance?.id,
       },
       ctx,
     );
-    throw new AppError("Inconsistencia: El bulto escaneado pertenece a otro producto", 404, CODES.SCAN_EVENT.NOT_FOUND);
+    throw new AppError(
+      "Inconsistencia: El bulto escaneado pertenece a otro producto",
+      404,
+      CODES.SCAN_EVENT.NOT_FOUND,
+    );
   }
 
   if (item.status === PALLETS_STATUS.PP_DISPATCHED) {
-    await createScanEvent({
-      camera_id: cameraData.id,
-      qrCode: decodedGS1.raw,
-      detectedType: decodedGS1.unit_type,
-      status: DEVICE_STATUS.ERROR,
-      confidence: decodedGS1.confidence,
-      type: MOVEMENT_TYPE.EXIT,
-      errorMessage: "Inconsistencia: El bulto se encuentra despachado",
-      itemCode: decodedGS1.code,
-      warehouse_id: cameraData.location?.warehouse_id,
-      product_id: productExistance?.id,
-    },
-      ctx
+    await createScanEvent(
+      {
+        camera_id: cameraData.id,
+        qrCode: decodedGS1.raw,
+        detectedType: decodedGS1.unit_type,
+        status: DEVICE_STATUS.ERROR,
+        confidence: decodedGS1.confidence,
+        type: MOVEMENT_TYPE.EXIT,
+        errorMessage: "Inconsistencia: El bulto se encuentra despachado",
+        itemCode: decodedGS1.code,
+        warehouse_id: cameraData.location?.warehouse_id,
+        product_id: productExistance?.id,
+      },
+      ctx,
     );
-    throw new AppError("Inconsistencia: El bulto ya se encuentra en proceso de despacho", 400, CODES.SCAN_EVENT.INVALID_STATUS);
+    throw new AppError(
+      "Inconsistencia: El bulto ya se encuentra en proceso de despacho",
+      400,
+      CODES.SCAN_EVENT.INVALID_STATUS,
+    );
   }
 
   const updateItemRequest = {
@@ -421,15 +449,15 @@ async function processDispatchedItem(decodedGS1 = {}, cameraData = {}, productEx
   const inventoryMovement =
     decodedGS1.unit_type == ITEM_TYPES.PALLET
       ? {
-        type: ITEM_TYPES.PALLET,
-        pallet_id: item.id,
-        state: PALLETS_STATUS.PP_DISPATCHED,
-      }
+          type: ITEM_TYPES.PALLET,
+          pallet_id: item.id,
+          state: PALLETS_STATUS.PP_DISPATCHED,
+        }
       : {
-        type: ITEM_TYPES.BOX,
-        box_id: item.id,
-        state: PALLETS_STATUS.PP_DISPATCHED,
-      };
+          type: ITEM_TYPES.BOX,
+          box_id: item.id,
+          state: PALLETS_STATUS.PP_DISPATCHED,
+        };
 
   await createInventoryMovement(inventoryMovement, ctx);
 
@@ -445,22 +473,39 @@ export const searchProductInZones = async (data = {}, ctx) => {
     throw new AppError("El producto no existe", 404, CODES.PRODUCT.NOT_FOUND);
   }
 
+  let zones;
+  if (data.searchLevel === SEARCH_MODE.PRIMARY_ZONE) {
+    zones = await findAllByCategory(data.category, ctx);
+  } else {
+    zones = await findAllExceptCategory(data.category, ctx);
+  }
+
+  const cameraCodes = buildCameraCodes(zones);
+
+  if (cameraCodes.length === 0) {
+    throw new AppError(
+      "No hay cámaras activas para la categoría: " + data.category,
+      400,
+      CODES.CAMERA.NOT_ACTIVE,
+    );
+  }
+
   const correlationId = crypto.randomUUID();
 
   await publishScanRequest({
-    cameras: data.cameraCodes,
+    cameras: cameraCodes,
     correlationId,
   });
 
   Log.infoCtx(ctx, automationService + "MQTT", "PUBLISH", {
-    cameras: data.cameraCodes,
+    cameras: cameraCodes,
     correlationId,
   });
 
   const scanResult = await waitForScanResults(
     correlationId,
     product.code,
-    data.cameraCodes,
+    cameraCodes,
     config.timeoutMqtt,
   );
 
@@ -480,8 +525,8 @@ export const searchProductInZones = async (data = {}, ctx) => {
   );
 
   const { detections, respondedCameras, pendingCameras } = scanResult;
-  let status = "success";
-  if (detections.length > 0) status = "pending";
+  let status = "not found";
+  if (detections.length > 0) status = "found";
 
   if (pendingCameras.length > 0) status = "partial response";
 
@@ -505,6 +550,12 @@ export const searchProductInZones = async (data = {}, ctx) => {
   };
 };
 
+export const buildCameraCodes = (locations) => {
+  return locations.flatMap((location) =>
+    location.Cameras.map((camera) => camera.code),
+  );
+};
+
 export const inventoryAutomationService = serviceHandler(
   automationService,
   CODES.SCAN_EVENT.NOT_FOUND,
@@ -525,6 +576,5 @@ export const inventoryAutomationService = serviceHandler(
     if (warehouseConfig.value == SCANNING_MODE_CONFIG.ENTRY)
       return await registerMerchandiseService(gs1Code, cameraData, ctx);
     else return await dispatchMerchandiseService(gs1Code, cameraData, ctx);
-
   },
 );

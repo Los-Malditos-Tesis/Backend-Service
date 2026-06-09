@@ -40,6 +40,7 @@ export const CODES = {
   CAMERA: {
     NOT_FOUND: 8000,
     ALREADY_EXISTS: 8001,
+    NOT_ACTIVE: 8002,
   },
   WAREHOUSE: {
     NOT_FOUND: 9000,

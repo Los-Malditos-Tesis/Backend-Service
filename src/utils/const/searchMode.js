@@ -1,0 +1,4 @@
+export const SEARCH_MODE = {
+  PRIMARY_ZONE: "PRIMARY_ZONE",
+  ALL_ZONES: "ALL_ZONES",
+};

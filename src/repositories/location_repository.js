@@ -2,6 +2,7 @@ import db from "../models/index.js";
 import { Op } from "sequelize";
 import { repositoryHandler } from "../utils/handler/repository_handler.js";
 import { PALLETS_STATUS } from "../utils/const/status.js";
+const excludedCategories = ["Muelle de Entrada y Salida"];
 
 const locationRepository = "location repository: ";
 
@@ -136,6 +137,53 @@ export const findByCategory = repositoryHandler(
         category: { [Op.iLike]: `%${category}%` },
       },
       include: [{ model: db.Warehouse, as: "warehouse" }],
+    });
+  },
+);
+
+export const findAllByCategory = repositoryHandler(
+  locationRepository,
+  async (category = "", ctx) => {
+    return await db.Location.findAll({
+      where: {
+        category: {
+          [Op.iLike]: `%${category}%`,
+          [Op.notILike]: `%${excludedCategories[0]}%`,
+        },
+      },
+      include: [
+        {
+          model: db.Camera,
+          where: {
+            isActive: true,
+          },
+          required: false,
+          attributes: ["id", "code", "isActive"],
+        },
+      ],
+    });
+  },
+);
+
+export const findAllExceptCategory = repositoryHandler(
+  locationRepository,
+  async (category = "", ctx) => {
+    return await db.Location.findAll({
+      where: {
+        category: {
+          [Op.notIn]: [category, ...excludedCategories],
+        },
+      },
+      include: [
+        {
+          model: db.Camera,
+          where: {
+            isActive: true,
+          },
+          required: false,
+          attributes: ["id", "code", "isActive"],
+        },
+      ],
     });
   },
 );
