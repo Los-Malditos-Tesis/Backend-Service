@@ -139,3 +139,47 @@ export const findByCategory = repositoryHandler(
     });
   },
 );
+
+export const findAllByCategory = repositoryHandler(
+  locationRepository,
+  async (category = "", ctx) => {
+    return await db.Location.findAll({
+      where: {
+        category: { [Op.iLike]: `%${category}%` },
+      },
+      include: [
+        {
+          model: db.Camera,
+          where: {
+            isActive: true,
+          },
+          required: false,
+          attributes: ["id", "code", "isActive"],
+        },
+      ],
+    });
+  },
+);
+
+export const findAllExceptCategory = repositoryHandler(
+  locationRepository,
+  async (category = "", ctx) => {
+    return await db.Location.findAll({
+      where: {
+        category: {
+          [Op.notILike]: `%${category}%`,
+        },
+      },
+      include: [
+        {
+          model: db.Camera,
+          where: {
+            isActive: true,
+          },
+          required: false,
+          attributes: ["id", "code", "isActive"],
+        },
+      ],
+    });
+  },
+);
