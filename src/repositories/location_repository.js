@@ -2,6 +2,7 @@ import db from "../models/index.js";
 import { Op } from "sequelize";
 import { repositoryHandler } from "../utils/handler/repository_handler.js";
 import { PALLETS_STATUS } from "../utils/const/status.js";
+const excludedCategories = ["Muelle de Entrada y Salida"];
 
 const locationRepository = "location repository: ";
 
@@ -145,7 +146,10 @@ export const findAllByCategory = repositoryHandler(
   async (category = "", ctx) => {
     return await db.Location.findAll({
       where: {
-        category: { [Op.iLike]: `%${category}%` },
+        category: {
+          [Op.iLike]: `%${category}%`,
+          [Op.notILike]: `%${excludedCategories[0]}%`,
+        },
       },
       include: [
         {
@@ -167,7 +171,7 @@ export const findAllExceptCategory = repositoryHandler(
     return await db.Location.findAll({
       where: {
         category: {
-          [Op.notILike]: `%${category}%`,
+          [Op.notIn]: [category, ...excludedCategories],
         },
       },
       include: [
