@@ -16,7 +16,8 @@ const storeController = "store controller: ";
  * @openapi
  * /store/find-by-code/{code}:
  *   get:
- *     summary: Obtener tienda por código.
+ *     tags: [Store]
+ *     summary: Obtener sucursal por código.
  *     description: Recupera la información detallada de una sucursal de destino del inventario utilizando su código único.
  *     security:
  *       - BearerAuth: []
@@ -89,7 +90,8 @@ export const findStoreByCodeController = async (req, res, next) => {
  * @openapi
  * /store/create:
  *   post:
- *     summary: Crear tienda.
+ *     tags: [Store]
+ *     summary: Crear una nueva sucursal.
  *     description: Registra una nueva sucursal o tienda externa de destino en el catálogo de despachos.
  *     security:
  *       - BearerAuth: []
@@ -176,7 +178,8 @@ export const createStoreController = async (req, res, next) => {
  * @openapi
  * /store/update:
  *   put:
- *     summary: Actualizar tienda.
+ *     tags: [Store]
+ *     summary: Actualizar una sucursal.
  *     description: Actualiza los detalles operacionales y de ubicación física de una tienda usando su ID único.
  *     security:
  *       - BearerAuth: []
@@ -264,7 +267,8 @@ export const updateStoreController = async (req, res, next) => {
  * @openapi
  * /store/delete/{id}:
  *   delete:
- *     summary: Eliminar tienda.
+ *     tags: [Store]
+ *     summary: Eliminar una sucursal.
  *     description: Realiza la eliminación lógica de una sucursal del sistema mediante su ID.
  *     security:
  *       - BearerAuth: []
@@ -324,7 +328,8 @@ export const deleteStoreController = async (req, res, next) => {
  * @openapi
  * /store/search:
  *   post:
- *     summary: Buscar y listar tiendas.
+ *     tags: [Store]
+ *     summary: Buscar y listar sucursales.
  *     description: Lista y busca tiendas de destino aplicando filtros y soportando paginación.
  *     security:
  *       - BearerAuth: []

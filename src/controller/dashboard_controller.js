@@ -10,6 +10,7 @@ const dashboardController = "dashboard controller: ";
  * @openapi
  * /dashboard:
  *   get:
+ *     tags: [Dashboard]
  *     summary: Obtener estadísticas del dashboard.
  *     description: Retorna estadísticas operativas consolidadas sobre el stock total de mercancías, volumen de órdenes en procesamiento, alertas y estado de dispositivos IoT.
  *     security:

@@ -16,6 +16,7 @@ const productController = "product controller: ";
  * @openapi
  * /product/create:
  *   post:
+ *     tags: [Product]
  *     summary: Crear un nuevo producto.
  *     description: Registra un nuevo producto en el catálogo general de inventarios, validando el SKU, código y la existencia del proveedor.
  *     security:
@@ -120,6 +121,7 @@ export const createProductController = async (req, res, next) => {
  * @openapi
  * /product/search:
  *   post:
+ *     tags: [Product]
  *     summary: Buscar y listar productos.
  *     description: Recupera una lista filtrada y paginada de productos del catálogo general, permitiendo filtrar por código, SKU, nombre, categoría, proveedor o bodega de almacenamiento.
  *     security:
@@ -231,7 +233,8 @@ export const searchProductsController = async (req, res, next) => {
  * @openapi
  * /product/update:
  *   put:
- *     summary: Actualizar producto.
+ *     tags: [Product]
+ *     summary: Actualizar un producto.
  *     description: Actualiza los detalles del catálogo para un producto existente utilizando su ID único.
  *     security:
  *       - BearerAuth: []
@@ -326,7 +329,8 @@ export const updateProductController = async (req, res, next) => {
  * @openapi
  * /product/delete/{id}:
  *   delete:
- *     summary: Eliminar producto.
+ *     tags: [Product]
+ *     summary: Eliminar un producto.
  *     description: Elimina lógicamente un producto del catálogo por su ID, siempre y cuando no existan unidades en stock dentro del inventario.
  *     security:
  *       - BearerAuth: []
@@ -392,6 +396,7 @@ export const deleteProductController = async (req, res, next) => {
  * @openapi
  * /product/find-by-id/{id}:
  *   get:
+ *     tags: [Product]
  *     summary: Obtener producto por ID.
  *     description: Recupera la información detallada de un producto específico mediante su ID único.
  *     security:

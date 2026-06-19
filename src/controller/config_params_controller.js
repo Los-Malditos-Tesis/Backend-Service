@@ -16,6 +16,7 @@ const configParamsController = "config params controller: ";
  * @openapi
  * /config-params/create:
  *   post:
+ *     tags: [Config]
  *     summary: Crear parámetro de configuración.
  *     description: Registra un nuevo parámetro de configuración para el comportamiento operacional de una bodega específica (por ejemplo, el modo de escaneo).
  *     security:
@@ -118,6 +119,7 @@ export const createConfigParamsController = async (req, res, next) => {
  * @openapi
  * /config-params/{id}:
  *   put:
+ *     tags: [Config]
  *     summary: Actualizar parámetro de configuración.
  *     description: Actualiza los valores de una configuración del sistema previamente registrada mediante su identificador UUID.
  *     security:
@@ -229,6 +231,7 @@ export const updateConfigParamsController = async (req, res, next) => {
  * @openapi
  * /config-params:
  *   get:
+ *     tags: [Config]
  *     summary: Listar parámetros de configuración.
  *     description: Recupera la lista completa de parámetros de configuración global e interna del sistema.
  *     security:
@@ -300,6 +303,7 @@ export const findAllConfigParamsController = async (req, res, next) => {
  * @openapi
  * /config-params/{id}:
  *   get:
+ *     tags: [Config]
  *     summary: Obtener parámetro de configuración por ID.
  *     description: Recupera los detalles de un parámetro de configuración específico usando su ID.
  *     security:
@@ -385,6 +389,7 @@ export const findByIdConfigParamsController = async (req, res, next) => {
  * @openapi
  * /config-params/{id}:
  *   delete:
+ *     tags: [Config]
  *     summary: Eliminar parámetro de configuración.
  *     description: Elimina un parámetro de configuración mediante su ID único.
  *     security:

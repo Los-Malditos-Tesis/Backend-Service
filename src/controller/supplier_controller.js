@@ -15,6 +15,7 @@ const supplierController = "supplier controller: ";
  * @openapi
  * /suppliers:
  *   post:
+ *     tags: [Supplier]
  *     summary: Crear proveedor.
  *     description: Registra un nuevo proveedor en la base de datos de la bodega, configurando información de contacto y códigos de control.
  *     security:
@@ -123,6 +124,7 @@ export const createSupplierController = async (req, res, next) => {
  * @openapi
  * /suppliers:
  *   get:
+ *     tags: [Supplier]
  *     summary: Buscar y listar proveedores.
  *     description: Recupera un listado paginado de los proveedores registrados, permitiendo filtrar por nombre o código.
  *     security:
@@ -230,6 +232,7 @@ export const searchSuppliersController = async (req, res, next) => {
  * @openapi
  * /suppliers/{id}:
  *   put:
+ *     tags: [Supplier]
  *     summary: Actualizar proveedor.
  *     description: Actualiza los detalles de un proveedor existente utilizando su identificador ID único.
  *     security:
@@ -329,6 +332,7 @@ export const updateSupplierController = async (req, res, next) => {
  * @openapi
  * /suppliers/{id}:
  *   delete:
+ *     tags: [Supplier]
  *     summary: Eliminar proveedor.
  *     description: Realiza la eliminación lógica del proveedor por su ID.
  *     security:

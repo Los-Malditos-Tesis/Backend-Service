@@ -18,6 +18,7 @@ const authController = "auth controller: ";
  * @openapi
  * /auth/register:
  *   post:
+ *     tags: [Auth]
  *     summary: Registrar un nuevo usuario.
  *     description: Permite registrar un nuevo usuario en la plataforma asignándole roles y opcionalmente una bodega asociada. Requiere rol SUPERADMIN.
  *     security:
@@ -120,6 +121,7 @@ export const registerController = async (req, res, next) => {
  * @openapi
  * /auth/login:
  *   post:
+ *     tags: [Auth]
  *     summary: Iniciar sesión de usuario.
  *     description: Autentica un usuario en el sistema con credenciales estándar y retorna un token JWT firmado junto con el perfil del usuario.
  *     requestBody:
@@ -158,7 +160,7 @@ export const registerController = async (req, res, next) => {
  *                 code:
  *                   type: string
  *                   example: OK
-                 data:
+ *                 data:
  *                   type: object
  *                   properties:
  *                     token:
@@ -215,6 +217,7 @@ export const loginController = async (req, res, next) => {
  * @openapi
  * /auth/login/camera:
  *   post:
+ *     tags: [Auth]
  *     summary: Autenticar cámara inteligente.
  *     description: Autentica una cámara de escaneo IoT usando su código único y clave API (api_key) para obtener un token JWT de cámara.
  *     requestBody:
@@ -307,6 +310,7 @@ export const loginCameraController = async (req, res, next) => {
  * @openapi
  * /auth/get-me:
  *   get:
+ *     tags: [Auth]
  *     summary: Obtener perfil del usuario autenticado.
  *     description: Recupera los detalles del usuario y sus roles a partir del token JWT proporcionado en los encabezados.
  *     security:

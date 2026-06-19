@@ -15,6 +15,7 @@ const locationController = "location controller: ";
  * @openapi
  * /location/create:
  *   post:
+ *     tags: [Location]
  *     summary: Crear ubicación/zona.
  *     description: Registra una nueva zona o ubicación de almacenamiento dentro de una bodega para organizar y segmentar la mercadería.
  *     security:
@@ -102,6 +103,7 @@ export const createLocationController = async (req, res, next) => {
  * @openapi
  * /location/search:
  *   post:
+ *     tags: [Location]
  *     summary: Buscar y listar ubicaciones.
  *     description: Permite buscar y listar ubicaciones aplicando filtros como bodega, zona o categoría con paginación integrada.
  *     security:
@@ -201,6 +203,7 @@ export const searchLocationController = async (req, res, next) => {
  * @openapi
  * /location/{id}:
  *   put:
+ *     tags: [Location]
  *     summary: Actualizar ubicación.
  *     description: Actualiza los atributos de una ubicación física específica (zona, categoría) mediante su ID.
  *     security:
@@ -292,6 +295,7 @@ export const updateLocationController = async (req, res, next) => {
  * @openapi
  * /location/{id}:
  *   delete:
+ *     tags: [Location]
  *     summary: Eliminar ubicación.
  *     description: Realiza la eliminación lógica de una zona o ubicación.
  *     security:

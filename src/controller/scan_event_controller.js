@@ -10,6 +10,7 @@ const scanEventController = "scan event controller: ";
  * @openapi
  * /scan:
  *   post:
+ *     tags: [Scan]
  *     summary: Crear evento de escaneo manual.
  *     description: Permite a un administrador registrar manualmente un evento de escaneo de caja o pallet en el sistema.
  *     security:
@@ -91,6 +92,7 @@ export const createEventController = async (req, res, next) => {
  * @openapi
  * /scan/search:
  *   post:
+ *     tags: [Scan]
  *     summary: Buscar y filtrar logs de escaneo.
  *     description: Retorna los logs históricos de eventos de escaneo realizados por dispositivos inteligentes o de forma manual, aplicando criterios de filtrado y paginación.
  *     security:

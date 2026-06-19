@@ -112,3 +112,35 @@ export const findByProductId = repositoryHandler(
     });
   },
 );
+
+export const search = repositoryHandler(
+  palletRepository,
+  async (query = {}, limit = 10, page = 1, ctx) => {
+    const offset = (page - 1) * limit;
+    const { code, qrCode, status, warehouse_id, product_id } = query;
+    const whereClause = {};
+
+    if (code) whereClause.code = { [db.Sequelize.Op.iLike]: `%${code}%` };
+    if (qrCode) whereClause.qrCode = { [db.Sequelize.Op.iLike]: `%${qrCode}%` };
+    if (status) whereClause.status = status;
+    if (warehouse_id) whereClause.warehouse_id = warehouse_id;
+    if (product_id) whereClause.product_id = product_id;
+
+    const { rows, count } = await db.Pallet.findAndCountAll({
+      where: whereClause,
+      limit,
+      offset,
+      order: [["createdAt", "DESC"]],
+      include: [
+        { model: db.Warehouse, as: "Warehouse" },
+        { model: db.Product, as: "Product" }
+      ]
+    });
+
+    return {
+      items: rows,
+      total: count,
+    };
+  },
+);
+

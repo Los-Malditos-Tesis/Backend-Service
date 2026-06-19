@@ -15,6 +15,7 @@ const automationController = "automation controller: ";
  * @openapi
  * /automation/register/merchandise:
  *   post:
+ *     tags: [Automation]
  *     summary: Registrar ingreso de mercancía por cámara.
  *     description: Registra el ingreso automático de una caja o pallet cuando es capturado por una cámara de escaneo IoT autorizada.
  *     security:
@@ -90,6 +91,7 @@ export const registerMerchandiseController = async (req, res, next) => {
  * @openapi
  * /automation/dispatch/merchandise:
  *   post:
+ *     tags: [Automation]
  *     summary: Registrar despacho de mercancía por cámara.
  *     description: Registra la salida automática o despacho de una caja o pallet cuando es escaneado por una cámara de salida IoT autorizada.
  *     security:
@@ -165,6 +167,7 @@ export const dispatchMerchandiseController = async (req, res, next) => {
  * @openapi
  * /automation:
  *   post:
+ *     tags: [Automation]
  *     summary: Buscar ubicación de productos en zonas.
  *     description: Identifica las zonas físicas y ubicaciones detalladas dentro de las bodegas donde se almacenan unidades del producto consultado.
  *     security:
@@ -239,6 +242,7 @@ export const searchProductInZonesController = async (req, res, next) => {
  * @openapi
  * /automation/inventory/merchandise:
  *   post:
+ *     tags: [Automation]
  *     summary: Verificar mercancía en inventario por cámara.
  *     description: Realiza el escaneo y validación de presencia/estado de una caja o pallet mediante cámaras inteligentes en tiempo real para control de auditoría interna.
  *     security:

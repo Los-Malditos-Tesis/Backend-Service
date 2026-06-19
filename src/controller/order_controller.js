@@ -17,6 +17,7 @@ const orderController = "order controller: ";
  * @openapi
  * /order:
  *   post:
+ *     tags: [Order]
  *     summary: Crear una nueva orden de inventario.
  *     description: Registra una orden de entrada (IN) o salida (OUT) de mercancía de la bodega, especificando el producto, tipo de unidad (caja/pallet) y cantidades.
  *     security:
@@ -130,6 +131,7 @@ export const createOrdenController = async (req, res, next) => {
  * @openapi
  * /order:
  *   get:
+ *     tags: [Order]
  *     summary: Buscar y listar órdenes.
  *     description: Recupera una lista paginada de órdenes filtrando opcionalmente por tipo, estado, origen o destino.
  *     security:
@@ -239,6 +241,7 @@ export const searchOrdersController = async (req, res, next) => {
  * @openapi
  * /order/{id}:
  *   put:
+ *     tags: [Order]
  *     summary: Actualizar orden.
  *     description: Actualiza los detalles operacionales (tipo, unidad) de una orden específica identificada por su ID único.
  *     security:
@@ -332,6 +335,7 @@ export const updateOrderController = async (req, res, next) => {
  * @openapi
  * /order/{id}:
  *   patch:
+ *     tags: [Order]
  *     summary: Cambiar estado de orden.
  *     description: Actualiza manualmente el estado de una orden de inventario (ej. a PENDING, IN_PROGRESS, COMPLETED, CANCELLED).
  *     security:
@@ -424,6 +428,7 @@ export const changeOrderStatusController = async (req, res, next) => {
  * @openapi
  * /order/{id}:
  *   delete:
+ *     tags: [Order]
  *     summary: Eliminar orden.
  *     description: Elimina lógicamente una orden del sistema por su ID.
  *     security:

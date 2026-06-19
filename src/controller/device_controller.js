@@ -17,6 +17,7 @@ const deviceController = "device controller: ";
  * @openapi
  * /device/register:
  *   post:
+ *     tags: [Device]
  *     summary: Registrar y vincular una cámara.
  *     description: Registra una nueva cámara inteligente en el sistema, vinculándola a una ubicación física específica para capturar eventos de escaneo de mercancías.
  *     security:
@@ -118,6 +119,7 @@ export const registerCameraController = async (req, res, next) => {
  * @openapi
  * /device/search:
  *   get:
+ *     tags: [Device]
  *     summary: Buscar y listar cámaras.
  *     description: Retorna una lista paginada de cámaras registradas en el sistema, permitiendo filtrar por código o ubicación física.
  *     security:
@@ -226,6 +228,7 @@ export const searchCamerasController = async (req, res, next) => {
  * @openapi
  * /device/{id}:
  *   put:
+ *     tags: [Device]
  *     summary: Actualizar cámara.
  *     description: Actualiza los detalles de configuración o vinculación de ubicación de una cámara inteligente identificada por su ID único.
  *     security:
@@ -319,6 +322,7 @@ export const updateCameraController = async (req, res, next) => {
  * @openapi
  * /device/{id}:
  *   delete:
+ *     tags: [Device]
  *     summary: Eliminar cámara.
  *     description: Elimina lógicamente una cámara del sistema por su ID.
  *     security:
@@ -382,6 +386,7 @@ export const deleteCameraController = async (req, res, next) => {
  * @openapi
  * /device/{id}/status:
  *   patch:
+ *     tags: [Device]
  *     summary: Activar/desactivar cámara.
  *     description: Cambia el estado operativo de la cámara inteligente de activo a inactivo o viceversa.
  *     security:
