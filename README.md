@@ -307,8 +307,3 @@ Para vincular una cámara física con la red local y con el backend, debes crear
 1. **Registro:** El administrador crea la cámara en el backend llamando a `POST /device/register` especificando el código de cámara (`CAM-01`) y la zona asignada. El backend responde con una `api_key` cifrada de un solo uso.
 2. **Login Inicial:** Al encender el ESP32, se inicia el servicio `auth.service` y realiza una petición HTTPS POST al backend en la ruta `MAIN_BACKEND_LOGIN` enviando el JSON: `{"code": "CAM-01", "api_key": "..."}`.
 3. **Gestión de Token:** El backend verifica la firma e integridad, y si coincide, devuelve un JWT firmado con validez de larga duración. El ESP32 almacena el token temporal en la RAM (`auth.store.cpp`) para incluirlo en la cabecera `Authorization: Bearer <token>` en futuros envíos REST de mercancías.
-
-### Detección de Objetos en el Borde (FOMO Edge Impulse)
-
-La carpeta `IoT_FOMO_DEC_CONF` implementa un firmware autónomo donde el ESP32-S3 ejecuta un modelo de inteligencia artificial local (FOMO - Faster Objects, More Objects) entrenado en Edge Impulse:
-*   **Lógica:** Captura fotogramas de forma continua. Si detecta cajas (`box`) o pallets (`pallet`) con un nivel de confianza aceptable, activa el envío serial de la captura de imagen codificada en Base64 (`[SNAPSHOT_BEGIN]...[SNAPSHOT_END]`) para procesamiento alternativo o auditoría sin depender del broker de mensajería principal para la detección inicial.
