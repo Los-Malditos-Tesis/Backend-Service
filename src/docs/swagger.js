@@ -1613,7 +1613,8 @@ const options = {
       },
     },
   },
-  apis: ["./src/docs/swagger.js", "./src/controller/*.js"],
+  apis: ["./src/docs/swagger.js", "./src/docs/paths/*.js"],
 };
 
 export const swaggerSpec = swaggerJsdoc(options);
+
