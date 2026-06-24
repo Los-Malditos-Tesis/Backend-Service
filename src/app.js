@@ -6,6 +6,7 @@ import { globalErrorHandler } from "./errors/global_error_handler.js";
 import { config } from "./config/config.js";
 import router from "./route/index.js";
 import cors from "cors";
+import { setupSwagger } from "./config/swagger.js";
 
 const app = express();
 syncDatabase();
@@ -14,6 +15,7 @@ app.set("trust proxy", true);
 app.use(cors());
 app.use(express.json());
 app.use(contextMiddleware);
+setupSwagger(app);
 app.use(config.basePath, router);
 app.use(globalErrorHandler);
 

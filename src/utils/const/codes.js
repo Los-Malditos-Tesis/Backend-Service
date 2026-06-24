@@ -80,6 +80,10 @@ export const CODES = {
   SERVER: {
     INTERNAL_ERROR: 17000,
   },
+  AUDIT: {
+    NOT_FOUND: 18000,
+    ALREADY_EXISTS: 18001,
+  },
 };
 
 export const locationCodes = {};

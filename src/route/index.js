@@ -12,6 +12,8 @@ import automationRouter from "./automation_route.js";
 import configParamsRouter from "./config_params_route.js";
 import userRouter from "./user_route.js";
 import dashboardRoute from "./dashboard_route.js";
+import palletRouter from "./pallet_route.js";
+import auditRouter from "./audit_route.js";
 
 const router = Router();
 
@@ -28,5 +30,6 @@ router.use("/automation", automationRouter);
 router.use("/config-params", configParamsRouter);
 router.use("/user", userRouter);
 router.use("/dashboard", dashboardRoute);
-
+router.use("/pallet", palletRouter);
+router.use("/audit", auditRouter);
 export default router;
