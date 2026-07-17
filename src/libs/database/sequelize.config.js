@@ -10,9 +10,11 @@ const sequelize = new Sequelize(
     port: config.dbPort,
     dialect: config.dialect,
     dialectOptions: {
+      //Habilitar SSL cuando la base de datos requiera conexión segura
+      //Desactivar o eliminar esta configuración en entornos locales sin SSL.
       ssl: {
         require: config.dbSslRequire,
-        rejectUnauthorized: config.dbSslUnauthorized, // IMPORTANTE para Neon
+        rejectUnauthorized: config.dbSslUnauthorized,
       },
     },
     logging: false, // Disable logging; default: console.log
